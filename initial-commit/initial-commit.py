@@ -9,62 +9,52 @@ import os
 def handler(event, context):
     print("log -- Event: %s " % json.dumps(event))
     codecommit = boto3.client('codecommit')
+    
     # Variables
     repo = event['ResourceProperties']['Repo']
+    repoConfig = event['ResourceProperties']['RepoConfig']
     masterbranch = 'master'
     devbranch = 'development'
-    buildspec = '''
-version: 0.2
-
-phases:
-    pre_build:
-        commands:
-        - echo Logging in to Amazon ECR...
-        - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
-    build:
-        commands:
-        - echo Build started on `date`
-        - echo Building the Docker image...          
-        - docker build -t $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-        - docker tag $IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION     
-    post_build:
-        commands:
-        - echo Build completed on `date`
-        - echo Pushing the Docker image...
-        - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION'''
-    Dockerfile = '''
-FROM ubuntu:12.04
-
-MAINTAINER Kimbro Staken version: 0.1
-
-RUN apt-get update && apt-get install -y apache2 && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-ENV APACHE_RUN_USER www-data
-ENV APACHE_RUN_GROUP www-data
-ENV APACHE_LOG_DIR /var/log/apache2
-
-EXPOSE 80
-
-CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]'''
 
     if event['RequestType'] == 'Create':
         print("log -- Create Event ")
         try:
+
+            # Read in files
+            buildspecPath = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec-df.yml"
+            buildspec = open(buildspecPath).read()
+            DockerfilePath = os.environ['LAMBDA_TASK_ROOT'] + "/Dockerfile"
+            Dockerfile = open(DockerfilePath).read()
+            hadolintConfigPath = os.environ['LAMBDA_TASK_ROOT'] + "/hadolint.yml"
+            hadolintConfig = open(hadolintConfigPath).read()
+
+            # Add Dockerfile buildspec file to configs repo
             commit = codecommit.put_file(
-                repositoryName=repo,
-                branchName=devbranch,
+                repositoryName=repoConfig,
+                branchName=masterbranch,
                 fileContent=buildspec,
-                filePath='buildspec.yml',
+                filePath='buildspec_dockerfile.yml',
                 commitMessage='Initial Commit',
                 name='Your Lambda Helper'
             )
+
+            codecommit.put_file(
+                repositoryName=repoConfig,
+                branchName=masterbranch,
+                parentCommitId=commit['commitId'],
+                fileContent=hadolintConfig,
+                filePath='hadolint.yml',
+                commitMessage='Added Hadolint Configuration',
+                name='Your Lambda Helper'
+            )
+
+            # Add Dockerfile to application repo
             commit2 = codecommit.put_file(
                 repositoryName=repo,
                 branchName=devbranch,
                 fileContent=Dockerfile,
                 filePath='Dockerfile',
-                parentCommitId=commit['commitId'],
-                commitMessage='Second Commit',
+                commitMessage='Initial Commit',
                 name='Your Lambda Helper'
             )
 

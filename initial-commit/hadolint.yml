@@ -1,0 +1,7 @@
+ignored:
+  - DL3000
+  - SC1010
+  - DL4000
+
+trustedRegistries:
+  - docker.io
