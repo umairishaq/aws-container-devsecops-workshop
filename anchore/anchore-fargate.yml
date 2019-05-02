@@ -530,4 +530,4 @@ Outputs:
         - SendFindingsLambda
         - Arn
     Export:
-      Name: AnchoreFargateStack:SendFindingsToSecurityHubArn
+      Name: AnchoreFargateStack:SendFindingsToSecurityHub
