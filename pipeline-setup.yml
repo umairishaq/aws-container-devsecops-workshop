@@ -589,7 +589,9 @@ Resources:
                 Action:
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
-                Resource: !GetAtt 'CodeBuildDFProject.Arn'
+                Resource: 
+                  - !GetAtt 'CodeBuildDFProject.Arn'
+                  - !GetAtt  'CodeBuildVulnProject.Arn'
   
   ### CodePipeline
   CodePipeline:
@@ -645,6 +647,24 @@ Resources:
                   ProjectName: !Ref CodeBuildDFProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
+        - Name: 'VulnAnalysis-Dockerbuild'
+          Actions:
+            - Name: BuildPushAndScan
+              ActionTypeId:
+                  Category: Build
+                  Owner: AWS
+                  Version: 1
+                  Provider: CodeBuild
+              OutputArtifacts:
+                - Name: "VulnAppSourceOutput"
+                - Name: "VulnConfigSourceOutput"
+              InputArtifacts:
+                - Name: "AppSource"
+                - Name: "ConfigSource"
+              Configuration:
+                  ProjectName: !Ref CodeBuildVulnProject
+                  PrimarySource: "ConfigSource"
+              RunOrder: 1
 
   ################### CodeBuild Projects ###################
 
@@ -696,6 +716,12 @@ Resources:
               -
                 Effect: Allow
                 Action:
+                  - lambda:InvokeFunction
+                  - lambda:InvokeAsync
+                Resource: !ImportValue 'AnchoreFargateStack:SendFindingsToSecurityHubArn'
+              -
+                Effect: Allow
+                Action:
                   - s3:PutObject
                   - s3:GetObject
                   - s3:ListObject
@@ -730,8 +756,75 @@ Resources:
 
   #### CodeBuild Vulnerability Scanning ####
 
-  # ADD CONTENT HERE
-
+  CodeBuildVulnProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:18.09.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Type: PLAINTEXT
+            Value: !Ref AWS::AccountId
+          - Name: IMAGE_REPO_NAME
+            Type: PLAINTEXT
+            Value: !Ref ECRRepository
+          - Name: IMAGE_ARN
+            Type: PLAINTEXT
+            Value: !GetAtt ECRRepository.Arn
+          - Name: FUNCTION_ARN
+            Value: !ImportValue 'AnchoreFargateStack:SendFindingsToSecurityHubArn'
+          - Name: ANCHORE_CLI_URL
+            Type: PLAINTEXT
+            Value: !Join
+              - '/'
+              - - http:/
+                - !ImportValue 'AnchoreFargateStack:AnchoreLB'
+                - v1
+          - Name: ANCHORE_CLI_USER
+            Type: PLAINTEXT
+            Value: admin
+          - Name: ANCHORE_CLI_PASS
+            Type: PLAINTEXT
+            Value:
+              !Join
+                  - ""
+                  - - "{{resolve:secretsmanager:"
+                    - !ImportValue 'AnchoreFargateStack:AnchoreAdminPasswordArn'
+                    - :SecretString:::}}
+      Name: !Join [ '-', [ !Ref ResourceName, 'scan', 'image'  ] ]
+      ServiceRole: !GetAtt 'CodeBuildRole.Arn'
+      Source: 
+        Type: CODEPIPELINE
+        BuildSpec: |
+          version: 0.2
+          phases: 
+            pre_build: 
+              commands:
+                - apt-get update && apt-get install -y python-dev jq
+                - docker pull anchore/engine-cli:v0.3.4
+                - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py  
+                - python get-pip.py
+                - pip install awscli
+                - $(aws ecr get-login --no-include-email)
+                - ANCHORE_CMD="docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli:v0.3.4 anchore-cli"
+                - $ANCHORE_CMD registry add $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com awsauto awsauto --registry-type=awsecr || return 0
+            build: 
+              commands:
+                - IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+                - docker build $CODEBUILD_SRC_DIR_AppSource -t $IMAGE
+                - docker push $IMAGE
+            post_build:
+              commands:
+                - $ANCHORE_CMD image add $IMAGE
+                - while [ $($ANCHORE_CMD --json image get $IMAGE | jq -r '.[0].analysis_status') != "analyzed" ]; do sleep 1; done
+                - $ANCHORE_CMD --json image vuln $IMAGE os > scan_results.json
+                - jq -c --arg image $IMAGE --arg arn $IMAGE_ARN '. + {image_id:$image, image_arn:$arn}' scan_results.json >> tmp.json
+                - mv tmp.json scan_results.json
+                - aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile
   #### CodeBuild IMAGE Build and Signing ####
 
   # ADD CONTENT HERE
