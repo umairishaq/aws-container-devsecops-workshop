@@ -100,9 +100,6 @@ Resources:
       FunctionName: !Join [ '-', [ !Ref ResourceName, 'initial-commit'  ] ]
       Handler: "initial-commit.handler"
       Description: "Creates initial commits to respository."
-      Environment:
-        Variables:
-          PREFIX: !Ref ResourceName
       Role: !GetAtt 'LambdaRepositoryInitialCommitRole.Arn'
       Code: 
         S3Bucket: 'sa-security-specialist-workshops-us-east-2'
@@ -416,12 +413,14 @@ Resources:
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt PREventRule.Arn
 
+  ################### FEEDBACK LOOPS ###################
+
   ### Feedback Loop - Dockerfile analysis codebuild
 
   CBDFEventRule:
     Type: "AWS::Events::Rule"
     Properties:
-      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild'  ] ]
+      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-dockerfile'  ] ]
       Description: "Triggers when builds fail/pass in CodeBuild for the static analysis of the Dockerfile."
       EventPattern:
         source:
@@ -437,7 +436,7 @@ Resources:
       State: "ENABLED"
       Targets:
         - Arn: !GetAtt LambdaCBDF.Arn
-          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild'  ] ]
+          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-dockerfile'  ] ]
 
   LambdaCBDF: 
     Type: "AWS::Lambda::Function"
@@ -493,7 +492,7 @@ Resources:
               # Add Errors
               errors = '## Static Analysis - Dockerfile Configuration (using Hadolint)\n'
               if not build_results:
-                errors = errors + 'No Errors!'
+                errors = errors + 'No Misconfigurations!'
               else:
                 for i in build_results:
                   errors = errors + '* **%s** (%s): %s \n' % (i['code'], i['level'], i['message'])
@@ -523,13 +522,127 @@ Resources:
       Timeout: "35"
       MemorySize: 128
 
-  PermissionForEventsToInvokeLambdaCB:
+  PermissionForEventsToInvokeLambdaCBDF:
     Type: "AWS::Lambda::Permission"
     Properties:
       FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-dockerfile'  ] ]
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBDFEventRule.Arn
+
+  ### Feedback Loop - Secrets analysis codebuild
+
+  CBSCEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-secrets'  ] ]
+      Description: "Triggers when builds fail/pass in CodeBuild for the secrets analysis."
+      EventPattern:
+        source:
+          - "aws.codebuild"
+        detail-type:
+          - "CodeBuild Build State Change"
+        detail:
+          build-status:
+            - "FAILED"
+            - "SUCCEEDED"
+          project-name:
+            - !Ref CodeBuildSecretsProject
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaCBSC.Arn
+          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-secrets'  ] ]
+
+  LambdaCBSC: 
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-secrets'  ] ]
+      Description: "Adds a comment to the pull request regarding the success or failure of the secrets analysis codebuild."
+      Handler: "index.handler"
+      Environment:
+        Variables:
+          PREFIX: !Ref ResourceName
+          CODEBUILDSCPROJECT: !Ref CodeBuildSecretsProject
+      Role: !GetAtt 'LambdaPRCommentRole.Arn'
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import boto3
+          import os
+          import json
+
+          codecommit_client = boto3.client('codecommit')
+          ssm = boto3.client('ssm')
+          scproject = os.environ['CODEBUILDSCPROJECT']
+
+          def handler(event, context):
+
+            # Log event
+            print(json.dumps(event))
+
+            # Get PR Details
+            pull_request_id = ssm.get_parameter(
+              Name='prid'
+            )
+
+            repository_name = ssm.get_parameter(
+              Name='repo'
+            )
+
+            source_commit = ssm.get_parameter(
+              Name='sourceCommit'
+            )
+
+            destination_commit = ssm.get_parameter(
+              Name='destinationCommit'
+            )
+
+            build_results = ssm.get_parameter(
+              Name='codebuild-secrets-results'
+            )
+
+            s3_prefix = 's3-{0}'.format(event['region']) if event['region'] != 'us-east-1' else 's3'
+            if event['detail']['project-name'] in [scproject]:
+              build_results = build_results['Parameter']['Value']
+              # Add Errors
+              errors = '## Static Analysis - Secrets Identification  (using truffleHog)\n'
+              if build_results == '[]':
+                errors = errors + 'No secrets found!'
+              else:
+                errors = errors + 'Secrets found! Please review the logs and remove any sensitive data.'
+              for phase in event['detail']['additional-information']['phases']:
+                if phase.get('phase-status') == 'FAILED':
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/failing.svg'.format(s3_prefix, event['region'])
+                    content = '![Failing]({0} "Failing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+                    break
+                else:
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/passing.svg'.format(s3_prefix, event['region'])
+                    content = '![Passing]({0} "Passing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+
+            codecommit_client.post_comment_for_pull_request(
+              pullRequestId = pull_request_id['Parameter']['Value'],
+              repositoryName = repository_name['Parameter']['Value'],
+              beforeCommitId = source_commit['Parameter']['Value'],
+              afterCommitId = destination_commit['Parameter']['Value'],
+              content = content
+            )
+
+            ssm.delete_parameter(
+              Name='codebuild-dockerfile-results'
+            )
+      Runtime: "python2.7"
+      Timeout: "35"
+      MemorySize: 128
+
+  PermissionForEventsToInvokeLambdaCBSC:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-secrets'  ] ]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CBSCEventRule.Arn
 
   ################### Pipeline ###################
 
@@ -589,9 +702,7 @@ Resources:
                 Action:
                   - codebuild:StartBuild
                   - codebuild:BatchGetBuilds
-                Resource: 
-                  - !GetAtt 'CodeBuildDFProject.Arn'
-                  - !GetAtt  'CodeBuildVulnProject.Arn'
+                Resource: '*'
   
   ### CodePipeline
   CodePipeline:
@@ -645,6 +756,24 @@ Resources:
                 - Name: "ConfigSource"
               Configuration:
                   ProjectName: !Ref CodeBuildDFProject
+                  PrimarySource: "ConfigSource"
+              RunOrder: 1
+        - Name: 'StaticAnalysis-Secrets'
+          Actions:
+            - Name: Validation
+              ActionTypeId:
+                  Category: Build
+                  Owner: AWS
+                  Version: 1
+                  Provider: CodeBuild
+              OutputArtifacts:
+                - Name: "SecretsAppSourceOutput"
+                - Name: "SecretsConfigSourceOutput"
+              InputArtifacts:
+                - Name: "AppSource"
+                - Name: "ConfigSource"
+              Configuration:
+                  ProjectName: !Ref CodeBuildSecretsProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
         - Name: 'VulnAnalysis-Dockerbuild'
@@ -741,21 +870,36 @@ Resources:
           - Name: AWS_ACCOUNT_ID
             Type: PLAINTEXT
             Value: !Ref "AWS::AccountId"
-          - Name: IMAGE_REPO_NAME
-            Type: PLAINTEXT
-            Value: !Join [ '-', [ !Ref ResourceName, 'sample'  ] ]
       Name: !Join [ '-', [ !Ref ResourceName, 'build', 'dockerfile'  ] ]
       ServiceRole: !GetAtt 'CodeBuildRole.Arn'
       Source: 
         Type: CODEPIPELINE
         BuildSpec: buildspec_dockerfile.yml
 
-  #### CodeBuild Secrets Scanning ####
+  #### CodeBuild Project - Secrets Analysis ####
+  CodeBuildSecretsProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: 'BUILD_GENERAL1_SMALL'
+        Image: aws/codebuild/docker:18.09.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Type: PLAINTEXT
+            Value: !Ref "AWS::AccountId"
+          - Name: APP_REPO_URL
+            Type: PLAINTEXT
+            Value: !GetAtt AppRepository.CloneUrlHttp
+      Name: !Join [ '-', [ !Ref ResourceName, 'build', 'secrets'  ] ]
+      ServiceRole: !GetAtt 'CodeBuildRole.Arn'
+      Source: 
+        Type: CODEPIPELINE
+        BuildSpec: buildspec_secrets.yml
 
-  # ADD CONTENT HERE
-
-  #### CodeBuild Vulnerability Scanning ####
-
+  #### CodeBuild Project - Vulnerability Scanning ####
   CodeBuildVulnProject:
     Type: AWS::CodeBuild::Project
     Properties:
@@ -825,9 +969,6 @@ Resources:
                 - jq -c --arg image $IMAGE --arg arn $IMAGE_ARN '. + {image_id:$image, image_arn:$arn}' scan_results.json >> tmp.json
                 - mv tmp.json scan_results.json
                 - aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile
-  #### CodeBuild IMAGE Build and Signing ####
-
-  # ADD CONTENT HERE
 
   #### CodeDeploy App Deployment ####
 

@@ -17,5 +17,5 @@ phases:
   post_build:
     commands:
     - echo $result
-    - aws ssm put-parameter --name "codebuild-dockerfile-results" --type "String" --value "$result"
+    - aws ssm put-parameter --name "codebuild-dockerfile-results" --type "String" --value "$result" --overwrite
     - echo Build completed on `date`

@@ -20,13 +20,21 @@ def handler(event, context):
         print("log -- Create Event ")
         try:
 
-            # Read in files
-            buildspecPath = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec-df.yml"
+            # Read in files for Dockerfile Analysis
+            buildspecPath = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec_dockerfile.yml"
             buildspec = open(buildspecPath).read()
-            DockerfilePath = os.environ['LAMBDA_TASK_ROOT'] + "/Dockerfile"
-            Dockerfile = open(DockerfilePath).read()
             hadolintConfigPath = os.environ['LAMBDA_TASK_ROOT'] + "/hadolint.yml"
             hadolintConfig = open(hadolintConfigPath).read()
+
+            # Read in files for Secrets Analysis
+            buildspecPathSecrets = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec_secrets.yml"
+            buildspecSecrets = open(buildspecPathSecrets).read()
+            secretsConfigPath = os.environ['LAMBDA_TASK_ROOT'] + "/secrets_config.json"
+            secretsConfig = open(secretsConfigPath).read()
+
+            # Read in file for Dockerfile
+            DockerfilePath = os.environ['LAMBDA_TASK_ROOT'] + "/Dockerfile"
+            Dockerfile = open(DockerfilePath).read()
 
             # Add Dockerfile buildspec file to configs repo
             commit = codecommit.put_file(
@@ -38,13 +46,33 @@ def handler(event, context):
                 name='Your Lambda Helper'
             )
 
-            codecommit.put_file(
+            commit2 = codecommit.put_file(
                 repositoryName=repoConfig,
                 branchName=masterbranch,
                 parentCommitId=commit['commitId'],
                 fileContent=hadolintConfig,
                 filePath='hadolint.yml',
                 commitMessage='Added Hadolint Configuration',
+                name='Your Lambda Helper'
+            )
+
+            commit3 = codecommit.put_file(
+                repositoryName=repoConfig,
+                branchName=masterbranch,
+                parentCommitId=commit2['commitId'],
+                fileContent=buildspecSecrets,
+                filePath='buildspec_secrets.yml',
+                commitMessage='Added Secrets BuildSpec file',
+                name='Your Lambda Helper'
+            )
+
+            codecommit.put_file(
+                repositoryName=repoConfig,
+                branchName=masterbranch,
+                parentCommitId=commit3['commitId'],
+                fileContent=secretsConfig,
+                filePath='secrets_config.json',
+                commitMessage='Added Secrets Configuration file',
                 name='Your Lambda Helper'
             )
 
