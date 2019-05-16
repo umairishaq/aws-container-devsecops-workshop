@@ -40,9 +40,13 @@ def handler(event, context):
             secretsConfigPath = os.environ['LAMBDA_TASK_ROOT'] + "/secrets_config.json"
             secretsConfig = open(secretsConfigPath).read()
 
-            # Read in file for Dockerfile
+            # Read in file for Python app
             DockerfilePath = os.environ['LAMBDA_TASK_ROOT'] + "/Dockerfile"
             Dockerfile = open(DockerfilePath).read()
+            AppPath = os.environ['LAMBDA_TASK_ROOT'] + "/index.py"
+            App = open(AppPath).read()
+            ReqPath = os.environ['LAMBDA_TASK_ROOT'] + "/requirements.txt"
+            Req = open(ReqPath).read()
 
             # Add Dockerfile buildspec file to configs repo
             commit = codecommit.put_file(
@@ -91,6 +95,26 @@ def handler(event, context):
                 fileContent=Dockerfile,
                 filePath='Dockerfile',
                 commitMessage='Initial Commit',
+                name='Your Lambda Helper'
+            )
+
+            commit2a = codecommit.put_file(
+                repositoryName=repo,
+                branchName=devbranch,
+                parentCommitId=commit2['commitId'],
+                fileContent=App,
+                filePath='/app/index.py',
+                commitMessage='Added Python App file',
+                name='Your Lambda Helper'
+            )
+
+            codecommit.put_file(
+                repositoryName=repo,
+                branchName=devbranch,
+                parentCommitId=commit2a['commitId'],
+                fileContent=Req,
+                filePath='requirements.txt',
+                commitMessage='Added requirements file',
                 name='Your Lambda Helper'
             )
 
