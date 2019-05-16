@@ -415,7 +415,7 @@ Resources:
 
   ################### FEEDBACK LOOPS ###################
 
-  ### Feedback Loop - Dockerfile analysis codebuild
+  ### Feedback Loop - Dockerfile Analysis CodeBuild
 
   CBDFEventRule:
     Type: "AWS::Events::Rule"
@@ -530,7 +530,7 @@ Resources:
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBDFEventRule.Arn
 
-  ### Feedback Loop - Secrets analysis codebuild
+  ### Feedback Loop - Secrets Scanning CodeBuild
 
   CBSCEventRule:
     Type: "AWS::Events::Rule"
@@ -605,7 +605,7 @@ Resources:
             if event['detail']['project-name'] in [scproject]:
               build_results = build_results['Parameter']['Value']
               # Add Errors
-              errors = '## Static Analysis - Secrets Identification  (using truffleHog)\n'
+              errors = '## Static Analysis - Secrets Scanning  (using truffleHog)\n'
               if build_results == '[]':
                 errors = errors + 'No secrets found!'
               else:
@@ -630,7 +630,7 @@ Resources:
             )
 
             ssm.delete_parameter(
-              Name='codebuild-dockerfile-results'
+              Name='codebuild-secrets-results'
             )
       Runtime: "python2.7"
       Timeout: "35"
@@ -643,6 +643,121 @@ Resources:
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBSCEventRule.Arn
+  
+  ### Feedback Loop - Vunerability Scanning CodeBuild
+
+  CBVCEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-vulnerability'  ] ]
+      Description: "Triggers when builds fail/pass in CodeBuild for the vulnerability scanning."
+      EventPattern:
+        source:
+          - "aws.codebuild"
+        detail-type:
+          - "CodeBuild Build State Change"
+        detail:
+          build-status:
+            - "FAILED"
+            - "SUCCEEDED"
+          project-name:
+            - !Ref CodeBuildVulnProject
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaCBVC.Arn
+          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-vulnerability'  ] ]
+
+  LambdaCBVC: 
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-vulnerability'  ] ]
+      Description: "Adds a comment to the pull request regarding the success or failure of the vulnerability scanning codebuild."
+      Handler: "index.handler"
+      Environment:
+        Variables:
+          PREFIX: !Ref ResourceName
+          CODEBUILDVCPROJECT: !Ref CodeBuildVulnProject
+      Role: !GetAtt 'LambdaPRCommentRole.Arn'
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import boto3
+          import os
+          import json
+
+          codecommit_client = boto3.client('codecommit')
+          ssm = boto3.client('ssm')
+          vcproject = os.environ['CODEBUILDVCPROJECT']
+
+          def handler(event, context):
+
+            # Log event
+            print(json.dumps(event))
+
+            # Get PR Details
+            pull_request_id = ssm.get_parameter(
+              Name='prid'
+            )
+
+            repository_name = ssm.get_parameter(
+              Name='repo'
+            )
+
+            source_commit = ssm.get_parameter(
+              Name='sourceCommit'
+            )
+
+            destination_commit = ssm.get_parameter(
+              Name='destinationCommit'
+            )
+
+            build_results = ssm.get_parameter(
+              Name='codebuild-secrets-results'
+            )
+
+            s3_prefix = 's3-{0}'.format(event['region']) if event['region'] != 'us-east-1' else 's3'
+            sec_hub = 'https://%s.console.aws.amazon.com/securityhub/' % event['region'] 
+            if event['detail']['project-name'] in [vcproject]:
+              build_results = build_results['Parameter']['Value']
+              # Add Errors
+              errors = '## Static Analysis - Vulnerability Scanning  (using Anchore)\n'
+              if build_results == '[]':
+                errors = errors + 'No critical or high findings!  Please manage all other vulnerabilities in [Security Hub](%s).' % sec_hub
+              else:
+                errors = errors + 'Critical or high findings found! Please review the logs and fix the vulnerabilities.'
+              for phase in event['detail']['additional-information']['phases']:
+                if phase.get('phase-status') == 'FAILED':
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/failing.svg'.format(s3_prefix, event['region'])
+                    content = '![Failing]({0} "Failing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+                    break
+                else:
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/passing.svg'.format(s3_prefix, event['region'])
+                    content = '![Passing]({0} "Passing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+
+            codecommit_client.post_comment_for_pull_request(
+              pullRequestId = pull_request_id['Parameter']['Value'],
+              repositoryName = repository_name['Parameter']['Value'],
+              beforeCommitId = source_commit['Parameter']['Value'],
+              afterCommitId = destination_commit['Parameter']['Value'],
+              content = content
+            )
+
+            #ssm.delete_parameter(
+            #  Name='codebuild-secrets-results'
+            #)
+      Runtime: "python2.7"
+      Timeout: "35"
+      MemorySize: 128
+
+  PermissionForEventsToInvokeLambdaCBVC:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-vulnerability'  ] ]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CBVCEventRule.Arn
 
   ################### Pipeline ###################
 

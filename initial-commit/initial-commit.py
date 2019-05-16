@@ -9,12 +9,20 @@ import os
 def handler(event, context):
     print("log -- Event: %s " % json.dumps(event))
     codecommit = boto3.client('codecommit')
+    sechub = boto3.client('securityhub')
     
     # Variables
     repo = event['ResourceProperties']['Repo']
     repoConfig = event['ResourceProperties']['RepoConfig']
     masterbranch = 'master'
     devbranch = 'development'
+
+    # Enable Security Hub
+    try:
+        sechub.enable_security_hub()
+        print('Enabled Security Hub')
+    except ClientError as e:
+        print('Security Hub is already enabled')
 
     if event['RequestType'] == 'Create':
         print("log -- Create Event ")
