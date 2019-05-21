@@ -1,6 +1,10 @@
-## Container Build Workshop
+## Integrating security into your container pipeline
 
-This workshop is designed to help attendees understand the security concerns of container images and how to develop a devsecops pipeline for securely building and releasing images.
+In this hands-on workshop, you will learn to leverage AWS development tools and open-source projects to integrate automated security testing into a CI/CD pipeline to build and release hardened container images.  You will learn about common security concerns within containers and discuss a variety of patterns for creating security-centric release control into an AWS CodePipeline.  Additionally, you'll learn how to add feedback loops to ensure your developers are quickly able to respond to security issues within their container-based applications.
+
+## Start the workshop:
+
+Visit the site to get started: [https://container-devsecops.awssecworkshops.com](https://container-devsecops.awssecworkshops.com/)
 
 ## License Summary
 

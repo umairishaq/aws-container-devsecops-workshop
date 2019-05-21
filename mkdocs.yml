@@ -2,8 +2,7 @@
 
 site_name: Integrating security into your container pipeline
 site_short_name: Container DevSecOps
-site_description: 'This hands-on workshop is where you will learn about a number of AWS services involved with threat detection and response as we walk through real-world threat scenarios. Learn about the threat detection capabilities of Amazon GuardDuty, Amazon Macie and AWS Security Hub and the available response options. For each hands-on scenario, we review methods to detect and respond to threats using the following services: AWS CloudTrail, Amazon VPC flow logs, Amazon CloudWatch Events, Amazon Macie, AWS Lambda, Amazon Inspector, Amazon GuardDuty and Amazon Security Hub.'
-site_author: 'aws-security-workshops@amazon.com'
+site_description: 'In this hands-on workshop, you will learn to leverage AWS development tools and open-source projects to integrate automated security testing into a CI/CD pipeline to build and release hardened container images.  You will learn about common security concerns within containers and discuss a variety of patterns for creating security-centric release control into an AWS CodePipeline.  Additionally, you'll learn how to add feedback loops to ensure your developers are quickly able to respond to security issues within their container-based applications.'
 site_url: 'https://container-devsecops.awssecworkshops.com/'
 
 # Repository
