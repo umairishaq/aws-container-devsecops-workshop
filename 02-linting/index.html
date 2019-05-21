@@ -401,36 +401,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#create-the-codebuild-project" title="Create the CodeBuild Project" class="md-nav__link">
+    Create the CodeBuild Project
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#add-a-stage-to-codepipeline" title="Add a Stage to CodePipeline" class="md-nav__link">
+    Add a Stage to CodePipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#integrate-the-feedback-loop" title="Integrate the feedback loop" class="md-nav__link">
+    Integrate the feedback loop
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#test-the-pipeline" title="Test the Pipeline" class="md-nav__link">
+    Test the Pipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#stage-architecture" title="Stage Architecture" class="md-nav__link">
+    Stage Architecture
   </a>
   
 </li>
@@ -527,36 +527,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#create-the-codebuild-project" title="Create the CodeBuild Project" class="md-nav__link">
+    Create the CodeBuild Project
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#add-a-stage-to-codepipeline" title="Add a Stage to CodePipeline" class="md-nav__link">
+    Add a Stage to CodePipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#integrate-the-feedback-loop" title="Integrate the feedback loop" class="md-nav__link">
+    Integrate the feedback loop
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#test-the-pipeline" title="Test the Pipeline" class="md-nav__link">
+    Test the Pipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#stage-architecture" title="Stage Architecture" class="md-nav__link">
+    Stage Architecture
   </a>
   
 </li>
@@ -589,11 +589,22 @@
 <li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative</li>
 <li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
 </ul>
-<h2 id="scenario">Scenario</h2>
-<h2 id="architecture">Architecture</h2>
-<h2 id="presentation-deck">Presentation deck</h2>
-<h2 id="region">Region</h2>
-<h2 id="modules">Modules</h2>
+<h2 id="create-the-codebuild-project">Create the CodeBuild Project</h2>
+<div class="codehilite"><pre><span></span>aws codebuild create-project \
+    --name &quot;my-demo-project&quot; \
+    --source &quot;{\&quot;type\&quot;: \&quot;S3\&quot;,\&quot;location\&quot;: \&quot;codebuild-us-west-2-123456789012-input-bucket/my-source.zip\&quot;}&quot; \
+    --artifacts {&quot;\&quot;type\&quot;: \&quot;S3\&quot;,\&quot;location\&quot;: \&quot;codebuild-us-west-2-123456789012-output-bucket\&quot;&quot;} \
+    --environment &quot;{\&quot;type\&quot;: \&quot;LINUX_CONTAINER\&quot;,\&quot;image\&quot;: \&quot;aws/codebuild/standard:1.0\&quot;,\&quot;computeType\&quot;: \&quot;BUILD_GENERAL1_SMALL\&quot;}&quot; \
+    --service-role &quot;arn:aws:iam::123456789012:role/service-role/my-codebuild-service-role&quot;
+</pre></div>
+
+
+<h2 id="add-a-stage-to-codepipeline">Add a Stage to CodePipeline</h2>
+<h2 id="integrate-the-feedback-loop">Integrate the feedback loop</h2>
+<h2 id="test-the-pipeline">Test the Pipeline</h2>
+<hr />
+<h2 id="stage-architecture">Stage Architecture</h2>
+<p>After you have successfully added the Dockerfile linting stage to your CodePipeline and successfully remediated any issues, you can proceed to the next module.</p>
                 
                   
                 

@@ -669,19 +669,13 @@
 <li>Within your Cloud9 IDE expand your <strong>sample application</strong> on the left side.</li>
 <li>Open the <strong>Dockerfile</strong>.</li>
 <li>Add a name to the maintainer line.</li>
-<li>Push your commit.</li>
+<li>Push your commit and create a Pull Request.</li>
 </ol>
 <div class="codehilite"><pre><span></span>    cd sample-application/
     git add Dockerfile
     git commit -m &quot;Modified Maintainer in Dockerfile&quot;
     git push -u origin development
-</pre></div>
-
-
-<ol>
-<li>Create a Pull Request.</li>
-</ol>
-<div class="codehilite"><pre><span></span>aws codecommit create-pull-request --title &quot;Updated Maintainer&quot; --description &quot;Please review these changes.&quot; --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
+    aws codecommit create-pull-request --title &quot;Updated Maintainer&quot; --description &quot;Please review these changes.&quot; --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
 </pre></div>
 
 
