@@ -10,13 +10,11 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
-        <meta name="description" content="This hands-on workshop is where you will learn about a number of AWS services involved with threat detection and response as we walk through real-world threat scenarios. Learn about the threat detection capabilities of Amazon GuardDuty, Amazon Macie and AWS Security Hub and the available response options. For each hands-on scenario, we review methods to detect and respond to threats using the following services: AWS CloudTrail, Amazon VPC flow logs, Amazon CloudWatch Events, Amazon Macie, AWS Lambda, Amazon Inspector, Amazon GuardDuty and Amazon Security Hub.">
+        <meta name="description" content="This workshop is designed to help attendees understand the security concerns of container images and learn how to create a devsecops pipeline for securely building and releasing images.">
       
       
         <link rel="canonical" href="https://container-devsecops.awssecworkshops.com/01-env-setup/">
       
-      
-        <meta name="author" content="aws-security-workshops@amazon.com">
       
       
         <meta name="lang:clipboard.copy" content="Copy to clipboard">
@@ -391,36 +389,71 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#browse-to-your-cloud9-ide" title="Browse to your Cloud9 IDE" class="md-nav__link">
+    Browse to your Cloud9 IDE
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#deploy-your-pipeline" title="Deploy your pipeline" class="md-nav__link">
+    Deploy your pipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#test-your-pipeline" title="Test your pipeline" class="md-nav__link">
+    Test your pipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#deploy-the-anchore-service" title="Deploy the Anchore service" class="md-nav__link">
+    Deploy the Anchore service
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#setup-amazon-cloudwatch-event-rules-and-automatic-response" title="Setup Amazon CloudWatch event rules and automatic response" class="md-nav__link">
+    Setup Amazon CloudWatch event rules and automatic response
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-amazon-guardduty" title="Enable Amazon GuardDuty" class="md-nav__link">
+    Enable Amazon GuardDuty
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-amazon-macie" title="Enable Amazon Macie" class="md-nav__link">
+    Enable Amazon Macie
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-amazon-macie-for-data-discovery-classification" title="Setup Amazon Macie for data discovery &amp; classification" class="md-nav__link">
+    Setup Amazon Macie for data discovery &amp; classification
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-aws-security-hub" title="Enable AWS Security Hub" class="md-nav__link">
+    Enable AWS Security Hub
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" title="Architecture overview" class="md-nav__link">
+    Architecture overview
   </a>
   
 </li>
@@ -478,8 +511,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../cleanup/" title="Cleanup: Discussion" class="md-nav__link">
-      Cleanup: Discussion
+    <a href="../review.md" title="Module 5: Review and Discussion" class="md-nav__link">
+      Module 5: Review and Discussion
     </a>
   </li>
 
@@ -529,36 +562,71 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#browse-to-your-cloud9-ide" title="Browse to your Cloud9 IDE" class="md-nav__link">
+    Browse to your Cloud9 IDE
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#deploy-your-pipeline" title="Deploy your pipeline" class="md-nav__link">
+    Deploy your pipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#test-your-pipeline" title="Test your pipeline" class="md-nav__link">
+    Test your pipeline
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#deploy-the-anchore-service" title="Deploy the Anchore service" class="md-nav__link">
+    Deploy the Anchore service
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#setup-amazon-cloudwatch-event-rules-and-automatic-response" title="Setup Amazon CloudWatch event rules and automatic response" class="md-nav__link">
+    Setup Amazon CloudWatch event rules and automatic response
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-amazon-guardduty" title="Enable Amazon GuardDuty" class="md-nav__link">
+    Enable Amazon GuardDuty
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-amazon-macie" title="Enable Amazon Macie" class="md-nav__link">
+    Enable Amazon Macie
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#setup-amazon-macie-for-data-discovery-classification" title="Setup Amazon Macie for data discovery &amp; classification" class="md-nav__link">
+    Setup Amazon Macie for data discovery &amp; classification
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#enable-aws-security-hub" title="Enable AWS Security Hub" class="md-nav__link">
+    Enable AWS Security Hub
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-overview" title="Architecture overview" class="md-nav__link">
+    Architecture overview
   </a>
   
 </li>
@@ -583,19 +651,214 @@
                 
                 
                 <h1 id="module-1-environment-setup">Module 1 <small>Environment Setup</small></h1>
-<p>Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.</p>
-<ul>
-<li><strong>Level</strong>: Intermediate</li>
-<li><strong>Duration</strong>: 2 - 3 hours</li>
-<li><strong><a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a></strong>: Prevent</li>
-<li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative</li>
-<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
+<p>In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating the pipeline with later on in this workshop.  This module requires you to run two separate <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.</p>
+<h2 id="browse-to-your-cloud9-ide">Browse to your Cloud9 IDE</h2>
+<p>You will be doing the majority of the workshop using the <a href="https://aws.amazon.com/cli/" target="_blank">AWS Command Line Interface (CLI)</a> within <a href="https://aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>, a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser.</p>
+<ol>
+<li>Open the <a href="https://us-east-2.console.aws.amazon.com/cloud9/home?region=us-east-2" target="_blank">AWS Cloud9 console</a> (us-east-2)</li>
+<li>Click <strong>Open IDE</strong> in the <strong>container-devsecops-wksp-ide</strong> environment.  This will take you to your IDE in a new tab.  Always keep this tab open  </li>
+</ol>
+<div class="admonition info">
+<p class="admonition-title">To make life easier on yourself, always keep your IDE tab open and use a different tab for all other activities.</p>
+</div>
+<h2 id="deploy-your-pipeline">Deploy your pipeline</h2>
+<p>The first CloudFormation you run will create the initial pipeline.  Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/pipeline-setup.yml" target="_blank">here</a href>.</p>
+<ol>
+<li>Create the CloudFormation stack:</li>
+</ol>
+<div class="codehilite"><pre><span></span>aws cloudformation create-stack \
+    --stack-name container-dso-wksp-pipeline-stack \
+    --template-url https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml \
+    --capabilities CAPABILITY_NAMED_IAM \
+    --region us-east-2
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>aws cloudformation create-stack \
+    --stack-name container-dso-wksp-anchore-stack \
+    --template-url https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-fargate.yml \
+    --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
+    --region us-east-2
+</pre></div>
+
+
+<p>https://s3-us-west-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/threat-detect-workshop/staging/01-environment-setup.yml</p>
+<h2 id="test-your-pipeline">Test your pipeline</h2>
+<h2 id="deploy-the-anchore-service">Deploy the Anchore service</h2>
+<ol>
+<li>Open the <a href="https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2" target="_blank">CloudWatch console</a> (us-west-2)</li>
+</ol>
+<p>To initiate the scenario and configure your environment you will need to run the module 1 CloudFormation template: </p>
+<div class="admonition info">
+<p class="admonition-title">Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-scaling-threat-detection-workshop/blob/master/templates/01-environment-setup.yml" target="_blank">here</a href>.</p>
+</div>
+<table>
+<thead>
+<tr>
+<th>Region</th>
+<th>Deploy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>US West 2 (Oregon)</td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=ThreatDetectionWksp-Env-Setup&templateURL=https://s3-us-west-2.amazonaws.com/sa-security-specialist-workshops-us-west-2/threat-detect-workshop/staging/01-environment-setup.yml" target="_blank"><img alt="Deploy Module 1 in us-west-2" src="../images/deploy-to-aws.png" /></a></td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>
+<p>Click the <strong>Deploy to AWS</strong> button above.  This will automatically take you to the console to run the template.  </p>
+</li>
+<li>
+<p>On the <strong>Specify Details</strong> section enter the necessary parameters as shown below. </p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stack name</td>
+<td>ThreatDetectionWksp-Env-Setup</td>
+</tr>
+<tr>
+<td>Email Address</td>
+<td>A <strong><em>valid</em></strong> email address</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Once you have entered your parameters click <strong>Next</strong>, then <strong>Next</strong> again (leave everything on this page at the default).</p>
+</li>
+<li>
+<p>Finally, acknowledge that the template will create IAM roles and click <strong>Create</strong>.</p>
+</li>
+</ol>
+<p><img alt="IAM Capabilities" src="../images/iam-capabilities.png" /></p>
+<p>This will bring you back to the CloudFormation console. You can refresh the page to see the stack starting to create. Before moving on, make sure the stack is in a <strong>CREATE_COMPLETE</strong> status as shown below.</p>
+<p><img alt="Stack Complete" src="./images/01-stack-complete.png" /></p>
+<p>You will get an email from SNS asking you to confirm the Subscription. <strong>Confirm the subscription</strong> so you can receive email alerts from AWS services during the Workshop.</p>
+<h2 id="setup-amazon-cloudwatch-event-rules-and-automatic-response">Setup Amazon CloudWatch event rules and automatic response</h2>
+<p>The CloudFormation template you just ran created three <a href="https://docs.aws.amazon.com/AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html" target="_blank">CloudWatch Event Rules</a> for alerting and response purposes. The steps below will walk you through creating the final rule.  After this you'll have rules in place to receive email notifications and trigger AWS Lambda functions to respond to threats.</p>
+<p>Below are steps to create this rule through the console but you can also find out more about doing it programmatically by reviewing the <a href="http://docs.aws.amazon.com/guardduty/latest/ug/guardduty_findings_cloudwatch.html" target="_blank">Amazon GuardDuty Documentation</a>.</p>
+<ol>
+<li>Open the <a href="https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2" target="_blank">CloudWatch console</a> (us-west-2)</li>
+<li>
+<p>In the navigation pane on the left, under <strong>Events</strong>, click <strong>Rules</strong></p>
+<div class="admonition question">
+<p class="admonition-title">What are the current Rules in place setup to do?</p>
+</div>
+</li>
+<li>
+<p>Click <strong>Create Rule</strong></p>
+</li>
+<li>
+<p>Under <strong>Event Pattern</strong> click <strong>Build event pattern to match events by service</strong> and select <strong>Custom event pattern</strong> in the drop down.
+Copy and paste in the custom event pattern below:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><span class="p">{</span>
+  <span class="nt">&quot;source&quot;</span><span class="p">:</span> <span class="p">[</span>
+    <span class="s2">&quot;aws.guardduty&quot;</span>
+  <span class="p">],</span>
+  <span class="nt">&quot;detail&quot;</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="p">[</span>
+      <span class="s2">&quot;UnauthorizedAccess:EC2/MaliciousIPCaller.Custom&quot;</span>
+    <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>For <em>Targets</em>, click <strong>Add Target</strong>, select <strong>Lambda Function</strong>, and then select <strong>threat-detection-wksp-remediation-nacl</strong>. Click <strong>Configure details</strong>.</p>
+<ol>
+<li>On the <strong>Configure rule details</strong> screen fill out the <strong>Name</strong> and <strong>Description</strong> (suggestions below).<ul>
+<li>Name: <strong>threat-detection-wksp-guardduty-finding-ec2-maliciousip</strong></li>
+<li>Description: <strong>GuardDuty Finding: UnauthorizedAccess:EC2/MaliciousIPCaller.Custom</strong></li>
 </ul>
-<h2 id="scenario">Scenario</h2>
-<h2 id="architecture">Architecture</h2>
-<h2 id="presentation-deck">Presentation deck</h2>
-<h2 id="region">Region</h2>
-<h2 id="modules">Modules</h2>
+</li>
+<li>Click <strong>Create rule</strong>.</li>
+<li>
+<p><strong>Optional:</strong> Consider examining the Lambda function to see what it does.  Open the <a href="https://us-west-2.console.aws.amazon.com/lambda/home?region=us-west-2" target="_blank">Lambda console</a>. Click on the function named <strong>threat-detection-wksp-remediation-nacl</strong></p>
+<div class="admonition question">
+<p class="admonition-title">What will the function do when invoked?</p>
+</div>
+</li>
+</ol>
+<h2 id="enable-amazon-guardduty">Enable Amazon GuardDuty</h2>
+<p>The next step is to enable Amazon GuardDuty, which will continuously monitor your environment for malicious or unauthorized behavior.</p>
+<ol>
+<li>
+<p>Go to the <a href="https://us-west-2.console.aws.amazon.com/guardduty/home?region=us-west-2" target="_blank">Amazon GuardDuty</a> console (us-west-2).</p>
+</li>
+<li>
+<p>Click the <strong>Get Started</strong> button.</p>
+</li>
+<li>
+<p>On the next screen click the <strong>Enable GuardDuty</strong> button.</p>
+</li>
+</ol>
+<p>GuardDuty is now enabled and continuously monitoring your CloudTrail logs, VPC flow logs, and DNS Query logs for threats in your environment.</p>
+<h2 id="enable-amazon-macie">Enable Amazon Macie</h2>
+<p>Since you plan on storing sensitive data in S3, let’s quickly enable Amazon Macie.  Macie is a security service that will continuously monitor data access activity for anomalies and generate alerts when it detects risk of unauthorized access or inadvertent data leaks.</p>
+<ol>
+<li>
+<p>Go to the <a href="https://us-west-2.redirection.macie.aws.amazon.com/" target="_blank">Amazon Macie</a> console (us-west-2).</p>
+</li>
+<li>
+<p>Click <strong>Get Started</strong>.</p>
+</li>
+<li>
+<p>Macie will create a service-linked role when you enable it. If you would like to see the permissions that the role will have you can click the <strong>View service role permissions</strong>.</p>
+</li>
+<li>
+<p>Click <strong>Enable Macie</strong>.</p>
+</li>
+</ol>
+<h2 id="setup-amazon-macie-for-data-discovery-classification">Setup Amazon Macie for data discovery &amp; classification</h2>
+<p>Macie is also used for automatically discovering and classifying sensitive data.  Now that Macie is enabled, setup an integration to classify data in your S3 bucket.</p>
+<ol>
+<li>
+<p>In the Amazon Macie console click on <strong>Integrations</strong> on the left navigation.</p>
+</li>
+<li>
+<p>Find your AWS account ID (there should be only one) and click <strong>Select</strong> </p>
+</li>
+<li>
+<p>Click <strong>Add</strong> then on the next screen click the check box next to the S3 bucket that ends with <strong>“-data”</strong>. Click <strong>Add</strong></p>
+</li>
+<li>
+<p>Leave the options here at the default, click <strong>Review</strong>.</p>
+</li>
+<li>
+<p>On the next screen click <strong>Start Classification</strong>. </p>
+</li>
+<li>
+<p>Finally click <strong>Done</strong>. Macie is now enabled and has begun to discover, classify and protect your data.</p>
+</li>
+</ol>
+<h2 id="enable-aws-security-hub">Enable AWS Security Hub</h2>
+<p>Now that all of your detective controls have been configured you need to enable <a href="https://aws.amazon.com/security-hub/" target="_blank">AWS Security Hub</a>, which will provide you with a comprehensive view of the security and compliance of your AWS environment.</p>
+<ol>
+<li>
+<p>Go to the <a href="https://us-west-2.console.aws.amazon.com/securityhub/home?region=us-west-2#" target="_blank">AWS Security Hub</a> console.</p>
+</li>
+<li>
+<p>Click the <strong>Enable Security Hub</strong> button.</p>
+</li>
+<li>
+<p>On the next screen click the <strong>Enable AWS Security Hub</strong> button.</p>
+</li>
+</ol>
+<p>AWS Security Hub is now enabled and will begin collecting and aggregating findings from the security services we have enabled so far.</p>
+<h2 id="architecture-overview">Architecture overview</h2>
+<p>Your environment is now configured and ready for operations.  Below is a diagram to depict the detective controls you now have in place.</p>
+<p><img alt="Detective Controls" src="./images/01-diagram-module1.png" /></p>
+<p>After you have successfully setup your environment, you can proceed to the next module.</p>
                 
                   
                 

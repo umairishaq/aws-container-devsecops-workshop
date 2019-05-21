@@ -10,13 +10,11 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
-        <meta name="description" content="This hands-on workshop is where you will learn about a number of AWS services involved with threat detection and response as we walk through real-world threat scenarios. Learn about the threat detection capabilities of Amazon GuardDuty, Amazon Macie and AWS Security Hub and the available response options. For each hands-on scenario, we review methods to detect and respond to threats using the following services: AWS CloudTrail, Amazon VPC flow logs, Amazon CloudWatch Events, Amazon Macie, AWS Lambda, Amazon Inspector, Amazon GuardDuty and Amazon Security Hub.">
+        <meta name="description" content="This workshop is designed to help attendees understand the security concerns of container images and learn how to create a devsecops pipeline for securely building and releasing images.">
       
       
         <link rel="canonical" href="https://container-devsecops.awssecworkshops.com/">
       
-      
-        <meta name="author" content="aws-security-workshops@amazon.com">
       
       
         <meta name="lang:clipboard.copy" content="Copy to clipboard">
@@ -478,8 +476,8 @@
 
 
   <li class="md-nav__item">
-    <a href="cleanup/" title="Cleanup: Discussion" class="md-nav__link">
-      Cleanup: Discussion
+    <a href="review.md" title="Module 5: Review and Discussion" class="md-nav__link">
+      Module 5: Review and Discussion
     </a>
   </li>
 
@@ -587,17 +585,30 @@
 <ul>
 <li><strong>Level</strong>: Advanced</li>
 <li><strong>Duration</strong>: 2 - 3 hours</li>
+<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
 <li><strong><a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a></strong>: Prevent, Detect</li>
 <li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative, Detective</li>
-<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
+<li><strong>AWS Services</strong>: <a href="https://aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>, <a href="https://aws.amazon.com/codecommit/" target="_blank">AWS CodeCommit</a>, <a href="https://aws.amazon.com/codebuild/" target="_blank">AWS CodeBuild</a>, <a href="https://aws.amazon.com/codepipeline/" target="_blank">AWS CodePipeline</a>, <a href="https://aws.amazon.com/ecr/" target="_blank">Amazon ECR</a>, <a href="https://aws.amazon.com/lambda/" target="_blank">AWS Lambda</a>, and <a href="https://aws.amazon.com/security-hub/ " target="_blank">AWS Security Hub</a></li>
+<li><strong>Open Source Projects</strong>: <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, <a href="https://github.com/dxa4481/truffleHog" target="_blank">Trufflehog</a>, and <a href="https://anchore.com/opensource/" target="_blank">Anchore</a></li>
 </ul>
 <h2 id="scenario">Scenario</h2>
+<p>Your company has just kicked off a new DevSecOps initiative in an effort to improve the security of critical applications by embedding security in every part of the software development lifecycle.  You are part of a DevOps team tasked with integrating security testing into a rudimentary pipeline for building and releasing container images.  Your initial tasks include adding in Dockerfile linting, secrets scanning, and vulnerability scanning.  The decision has been made to evaluate and make use of open source projects with the possibility of moving to a commercial offering based on how well the requirements are met. </p>
 <h2 id="architecture">Architecture</h2>
+<p>For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD/pipelin as shown below.  It will include stages with in your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and Lambda Functions to create feedback loops for each stage of security testing you create.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure delivery.</p>
+<p><img alt="Architecture" src="images/diagram-basic-arch.png" title="Workload Architecture" /></p>
 <h2 id="presentation-deck">Presentation deck</h2>
+<p><a href="container-devsecops-presentation.pdf">Workshop Presentation Deck</a></p>
 <h2 id="region">Region</h2>
-<p>Please use the us-east-2 (Ohio) region for this workshop.</p>
+<p>Please use the <strong>us-east-2</strong> (Ohio) region for this workshop.</p>
 <h2 id="modules">Modules</h2>
-<p>Please use the us-west-2 (Oregon) region for this workshop.</p>
+<p>This workshop is broken up into the four modules below: </p>
+<ol>
+<li><a href="01-env-setup/">Environment Setup</a></li>
+<li><a href="02-linting/">Dockerfile Linting</a> </li>
+<li><a href="03-secrets-scanning/">Secrets Scanning</a> </li>
+<li><a href="04-vuln-scanning/">Vulnerability Scanning</a></li>
+<li><a href="05-review/">Review and Discussion</a></li>
+</ol>
                 
                   
                 
