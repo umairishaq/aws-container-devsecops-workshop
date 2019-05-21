@@ -926,24 +926,6 @@ Resources:
                   ProjectName: !Ref CodeBuildVulnProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
-        - Name: 'PushImage'
-          Actions:
-            - Name: Build
-              ActionTypeId:
-                  Category: Build
-                  Owner: AWS
-                  Version: 1
-                  Provider: CodeBuild
-              OutputArtifacts:
-                - Name: "PushAppSourceOutput"
-                - Name: "PushConfigSourceOutput"
-              InputArtifacts:
-                - Name: "AppSource"
-                - Name: "ConfigSource"
-              Configuration:
-                  ProjectName: !Ref CodeBuildPushProject
-                  PrimarySource: "ConfigSource"
-              RunOrder: 1
 
   ################### CodeBuild Projects ###################
 
@@ -1124,28 +1106,8 @@ Resources:
                 - aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile
                 - if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN '.vulnerabilities[] | (.severity==$threshold)' | grep -q true; then echo "Vulnerabilties Found" && exit 1; fi
 
-  #### CodeBuild Project - Build and Push Image ####
+  #### CodeDeploy App Deployment ####
 
-  CodeBuildPushProject:
-    Type: AWS::CodeBuild::Project
-    Properties:
-      Artifacts:
-        Type: CODEPIPELINE
-      Environment:
-        ComputeType: 'BUILD_GENERAL1_SMALL'
-        Image: aws/codebuild/docker:18.09.0
-        Type: LINUX_CONTAINER
-        EnvironmentVariables:
-          - Name: AWS_ACCOUNT_ID
-            Type: PLAINTEXT
-            Value: !Ref "AWS::AccountId"
-          - Name: IMAGE_REPO_NAME
-            Type: PLAINTEXT
-            Value: !Join [ '-', [ !Ref ResourceName, 'sample'  ] ]
-      Name: !Join [ '-', [ !Ref ResourceName, 'build', 'push'  ] ]
-      ServiceRole: !GetAtt 'CodeBuildRole.Arn'
-      Source: 
-        Type: CODEPIPELINE
-        BuildSpec: buildspec_push.yml
+  # ADD CONTENT HERE
 
 Outputs: {}

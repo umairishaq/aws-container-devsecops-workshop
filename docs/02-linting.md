@@ -8,21 +8,26 @@ Attendees will learn about the security considerations around building container
 * **<a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a>**: Preventative
 * **<a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href>**: AWS Account, Admin IAM User
 
-## Scenario
+## Create the CodeBuild Project
+
+```
+aws codebuild create-project \
+    --name "my-demo-project" \
+    --source "{\"type\": \"S3\",\"location\": \"codebuild-us-west-2-123456789012-input-bucket/my-source.zip\"}" \
+    --artifacts {"\"type\": \"S3\",\"location\": \"codebuild-us-west-2-123456789012-output-bucket\""} \
+    --environment "{\"type\": \"LINUX_CONTAINER\",\"image\": \"aws/codebuild/standard:1.0\",\"computeType\": \"BUILD_GENERAL1_SMALL\"}" \
+    --service-role "arn:aws:iam::123456789012:role/service-role/my-codebuild-service-role"
+```
+
+## Add a Stage to CodePipeline
+
+## Integrate the feedback loop
+
+## Test the Pipeline
 
 
+---
 
-## Architecture
+## Stage Architecture
 
-
-
-
-
-## Presentation deck
-
-
-## Region
-
-
-## Modules
-
+After you have successfully added the Dockerfile linting stage to your CodePipeline and successfully remediated any issues, you can proceed to the next module.

@@ -63,19 +63,14 @@ Now you can test your pipeline to see how your Pull Requests result with an imag
 1.	Within your Cloud9 IDE expand your **sample application** on the left side.
 2.  Open the **Dockerfile**.
 3.  Add a name to the maintainer line.
-4.  Push your commit.
+4.  Push your commit and create a Pull Request.
 
 ```
     cd sample-application/
     git add Dockerfile
     git commit -m "Modified Maintainer in Dockerfile"
     git push -u origin development
-```
-5. Create a Pull Request.
-
-```
-aws codecommit create-pull-request --title "Updated Maintainer" --description "Please review these changes." --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
-
+    aws codecommit create-pull-request --title "Updated Maintainer" --description "Please review these changes." --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
 ```
 
 You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your code progress through the pipeline.  You can see that there are currently only two stages in the pipeline; one for pulling the source code and one for building and pushing the image to ECR.
