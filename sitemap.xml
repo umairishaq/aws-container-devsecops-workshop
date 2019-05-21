@@ -1,28 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-     <loc>https://scaling-threat-detection.awssecworkshops.com/</loc>
-     <lastmod>2019-05-15</lastmod>
+     <loc>https://container-devsecops.awssecworkshops.com/</loc>
+     <lastmod>2019-05-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc></loc>
-     
+     <loc>https://container-devsecops.awssecworkshops.com/01-env-setup/</loc>
+     <lastmod>2019-05-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc></loc>
-     
+     <loc>https://container-devsecops.awssecworkshops.com/02-linting/</loc>
+     <lastmod>2019-05-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://scaling-threat-detection.awssecworkshops.com/contribute/</loc>
-     <lastmod>2019-05-15</lastmod>
+     <loc>https://container-devsecops.awssecworkshops.com/03-secrets-scanning/</loc>
+     <lastmod>2019-05-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
-     <loc>https://scaling-threat-detection.awssecworkshops.com/license/</loc>
-     <lastmod>2019-05-15</lastmod>
+     <loc>https://container-devsecops.awssecworkshops.com/04-vuln-scanning/</loc>
+     <lastmod>2019-05-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://container-devsecops.awssecworkshops.com/cleanup/</loc>
+     <lastmod>2019-05-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://container-devsecops.awssecworkshops.com/contribute/</loc>
+     <lastmod>2019-05-20</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    <url>
+     <loc>https://container-devsecops.awssecworkshops.com/license/</loc>
+     <lastmod>2019-05-20</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
