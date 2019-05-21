@@ -11,6 +11,16 @@ Parameters:
       - container-devsecops-wksp
     Description: Prefix of Resources created for this workshop.
 
+  FailWhen:
+    Type: String
+    Default: High
+    AllowedValues: 
+      - Low
+      - Medium
+      - High
+      - Critical
+    Description: Threshold to fail the pipeline if app image has vulnerabilities
+
 Metadata: 
   AWS::CloudFormation::Interface:
     ParameterGroups: 
@@ -19,10 +29,17 @@ Metadata:
           default: "Resource and Notification Configuration"
         Parameters: 
           - ResourceName
+      - 
+        Label: 
+          default: "Fail Pipeline Threshold"
+        Parameters: 
+          - FailWhen
 
     ParameterLabels: 
       ResourceName:
         default: "Resource Prefix"
+      FailWhen:
+        default: "Fail When"
 
 
 Mappings: {}
@@ -847,7 +864,7 @@ Resources:
                 Action:
                   - lambda:InvokeFunction
                   - lambda:InvokeAsync
-                Resource: !ImportValue 'AnchoreFargateStack:SendFindingsToSecurityHubArn'
+                Resource: !ImportValue 'AnchoreFargateStack:SendFindingsToSecurityHub'
               -
                 Effect: Allow
                 Action:
@@ -910,6 +927,9 @@ Resources:
         Image: aws/codebuild/docker:18.09.0
         Type: LINUX_CONTAINER
         EnvironmentVariables:
+          - Name: FAIL_WHEN
+            Type: PLAINTEXT
+            Value: !Ref FailWhen
           - Name: AWS_ACCOUNT_ID
             Type: PLAINTEXT
             Value: !Ref AWS::AccountId
@@ -920,7 +940,7 @@ Resources:
             Type: PLAINTEXT
             Value: !GetAtt ECRRepository.Arn
           - Name: FUNCTION_ARN
-            Value: !ImportValue 'AnchoreFargateStack:SendFindingsToSecurityHubArn'
+            Value: !ImportValue 'AnchoreFargateStack:SendFindingsToSecurityHub'
           - Name: ANCHORE_CLI_URL
             Type: PLAINTEXT
             Value: !Join
@@ -969,6 +989,7 @@ Resources:
                 - jq -c --arg image $IMAGE --arg arn $IMAGE_ARN '. + {image_id:$image, image_arn:$arn}' scan_results.json >> tmp.json
                 - mv tmp.json scan_results.json
                 - aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile
+                - if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN '.vulnerabilities[] | (.severity==$threshold)' | grep -q true; then echo "Vulnerabilties Found" && exit 1; fi
 
   #### CodeDeploy App Deployment ####
 
