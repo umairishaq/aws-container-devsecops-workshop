@@ -2,17 +2,192 @@ AWSTemplateFormatVersion: '2010-09-09'
 
 Description: >
   This AWS CloudFormation Template creates a Fargate
-  application for Anchore Open sources. 
-
-Parameters:
-  AnchoreRepo:
-    Type: String
-    Description: ECR Repo for Anchore Image
-  AnchoreImageName:
-    Type: String
-    Description: Anchore Open Source image name with tag
+  application for Anchore Open sources.
 
 Resources:
+
+  AnchoreRepository:
+    Type: AWS::ECR::Repository
+
+  AnchoreCodeBuildRole: 
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: AnchoreCodeBuildRole
+      AssumeRolePolicyDocument: 
+        Version: 2012-10-17
+        Statement: 
+          - 
+            Effect: Allow
+            Principal: 
+              Service: 
+                - codebuild.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+      Path: /
+      Policies: 
+        - 
+          PolicyName: ServicePolicy
+          PolicyDocument: 
+            Version: 2012-10-17
+            Statement: 
+              - 
+                Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - ecr:*
+                Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                  - s3:ListObject
+                Resource: '*'
+
+  AnchoreCodeBuild:
+    Type: AWS::CodeBuild::Project
+    Properties: 
+      Artifacts: 
+        Type:
+          NO_ARTIFACTS
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+        PrivilegedMode: True
+        Type: LINUX_CONTAINER
+        ImagePullCredentialsType: CODEBUILD
+        EnvironmentVariables:
+          - Name: IMAGE
+            Value: !Sub
+              - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}
+              - { Repo: !Ref AnchoreRepository}
+      ServiceRole: !GetAtt AnchoreCodeBuildRole.Arn
+      Source: 
+        Type: S3
+        Location: sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-build.zip
+        BuildSpec: |
+          version: 0.2
+          phases:
+            install:
+              runtime-versions:
+                docker: 18
+                python: 3.7
+            pre_build: 
+              commands:
+                - apt-get update && apt-get install -y python-dev
+                - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py  
+                - python get-pip.py
+                - pip install awscli
+                - $(aws ecr get-login --no-include-email)
+            build: 
+              commands:
+                - docker build $CODEBUILD_SRC_DIR -t $IMAGE
+                - docker push $IMAGE
+
+  CodeBuildStarter:
+    Type: Custom::CodeBuildStarter
+    Properties:
+        ServiceToken: !GetAtt CodeBuildStarterLambda.Arn
+        ProjectName: !Ref AnchoreCodeBuild
+
+  CodeBuildStarterLambdaRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      RoleName: CodeBuildStarterLambdaRole
+      AssumeRolePolicyDocument: 
+        Version: 2012-10-17
+        Statement: 
+          - 
+            Effect: Allow
+            Principal: 
+              Service: 
+                - lambda.amazonaws.com
+            Action: 
+              - sts:AssumeRole
+      Path: /
+      Policies: 
+        - 
+          PolicyName: Policy
+          PolicyDocument: 
+            Version: 2012-10-17
+            Statement: 
+              - 
+                Effect: Allow
+                Action:
+                  - codebuild:*
+                Resource: '*'
+
+  CodeBuildStarterLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Role: !GetAtt CodeBuildStarterLambdaRole.Arn
+      Runtime: python3.7
+      Handler: index.handler
+      Code:
+        ZipFile: |
+          import json
+          import boto3
+          from botocore.vendored import requests
+
+          codebuild_client = boto3.client('codebuild')
+
+          def handler(event, context):
+              try:
+                  if event['RequestType'] == 'Create':
+                      response = codebuild_client.start_build(
+                        projectName=event['ResourceProperties']['ProjectName']
+                      )
+                      send(event, context, "SUCCESS")
+                  elif event['RequestType'] == 'Update':
+                      response = codebuild_client.start_build(
+                        projectName=event['ResourceProperties']['ProjectName']
+                      )
+                      send(event, context, "SUCCESS")
+                  elif event['RequestType'] == 'Delete':
+                      send(event, context, "SUCCESS")
+                  else:
+                      send(event, context, "FAILED")
+              except:
+                  send(event, context, "FAILED")
+          
+          def send(event, context, responseStatus):
+            responseUrl = event['ResponseURL']
+
+            print(responseUrl)
+
+            responseBody = {}
+            responseBody['Status'] = responseStatus
+            responseBody['Reason'] = 'See the details in CloudWatch Log Stream: ' + context.log_stream_name
+            responseBody['PhysicalResourceId'] = context.log_stream_name
+            responseBody['StackId'] = event['StackId']
+            responseBody['RequestId'] = event['RequestId']
+            responseBody['LogicalResourceId'] = event['LogicalResourceId']
+
+            json_responseBody = json.dumps(responseBody,
+              indent=4,
+              sort_keys=True,
+              default=str)
+
+            print("Response body:\n" + json_responseBody)
+
+            headers = {
+                'content-type' : '',
+                'content-length' : str(len(json_responseBody))
+            }
+
+            try:
+                response = requests.put(responseUrl,
+                                        data=json_responseBody,
+                                        headers=headers)
+                print("Status code: " + response.reason)
+            except Exception as e:
+                print("send(..) failed executing requests.put(..): " + str(e))
 
   AnchoreVpcStack:
     Type: AWS::CloudFormation::Stack
@@ -25,12 +200,13 @@ Resources:
     Type: AWS::SecretsManager::Secret
     Properties:
       GenerateSecretString:
-        ExcludeCharacters: '"@/\'
+        ExcludePunctuation: True
 
   AdminPassword:
     Type: AWS::SecretsManager::Secret
     Properties:
-      GenerateSecretString: {}
+      GenerateSecretString:
+        ExcludePunctuation: True
 
   DbSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
@@ -80,6 +256,7 @@ Resources:
 
   Cluster:
     Type: AWS::ECS::Cluster
+
   AnchoreTaskTaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -179,29 +356,20 @@ Resources:
                   - ""
                   - - "{{resolve:secretsmanager:"
                     - !Ref dbPassword
-                    - :SecretString:::}}
+                    - ::::}}
             - Name: ANCHORE_ADMIN_PASSWORD
               Value:
                 !Join
                   - ""
                   - - "{{resolve:secretsmanager:"
                     - !Ref AdminPassword
-                    - :SecretString:::}}
+                    - ::::}}
             - Name: ANCHORE_DB_HOST
               Value: !GetAtt DB.Endpoint.Address
-          Essential: true
-          Image:
-            !Join
-              - /
-              - - !Ref AnchoreRepo
-                - !Ref AnchoreImageName
-          Links: []
-          LinuxParameters:
-            Capabilities:
-              Add: []
-              Drop: []
-            Devices: []
-            Tmpfs: []
+          Essential: True
+          Image: !Sub
+            - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}
+            - { Repo: !Ref AnchoreRepository}
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -209,13 +377,10 @@ Resources:
               awslogs-stream-prefix: Anchore
               awslogs-region:
                 Ref: AWS::Region
-          MountPoints: []
           Name: AnchoreContainer
           PortMappings:
             - ContainerPort: 8228
               Protocol: tcp
-          Ulimits: []
-          VolumesFrom: []
       Cpu: "1024"
       ExecutionRoleArn:
         !GetAtt
@@ -230,7 +395,8 @@ Resources:
         !GetAtt
           - AnchoreTaskTaskRole
           - Arn
-      Volumes: []
+    DependsOn: 
+      - CodeBuildStarter
 
   LBSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -340,7 +506,6 @@ Resources:
             !Split
               - ","
               - !GetAtt AnchoreVpcStack.Outputs.PrivateSubnets
-      ServiceRegistries: []
     DependsOn:
       - LBPublicListener
   
@@ -392,7 +557,7 @@ Resources:
     Properties:
       LayerName: boto3-layer
       Content:
-        S3Bucket: sa-security-specialist-workshops-us-east-2-temp
+        S3Bucket: sa-security-specialist-workshops-us-east-2
         S3Key: devsecops/layers/boto3.zip
       CompatibleRuntimes:
         - python3.7
@@ -400,8 +565,7 @@ Resources:
 
   SendFindingsLambda: 
     Type: AWS::Lambda::Function
-    Properties: 
-      FunctionName: SendFindingsToSecurityHub
+    Properties:
       Layers:
         - !Ref Boto3LambdaLayer
       Description: Sends payload with vulnerabilities findings to Security Hub
