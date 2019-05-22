@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#module-2-add-a-dockerfile-linting-stage" tabindex="1" class="md-skip">
+      <a href="#module-2-dockerfile-linting" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -401,36 +401,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#create-the-codebuild-project" title="Create the CodeBuild Project" class="md-nav__link">
-    Create the CodeBuild Project
+  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
+    View your CodeBuild Project
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-a-stage-to-codepipeline" title="Add a Stage to CodePipeline" class="md-nav__link">
-    Add a Stage to CodePipeline
+  <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
+    Create the Build Spec file
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#integrate-the-feedback-loop" title="Integrate the feedback loop" class="md-nav__link">
-    Integrate the feedback loop
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-the-pipeline" title="Test the Pipeline" class="md-nav__link">
-    Test the Pipeline
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#stage-architecture" title="Stage Architecture" class="md-nav__link">
-    Stage Architecture
+  <a href="#add-the-hadolint-configuration" title="Add the Hadolint configuration" class="md-nav__link">
+    Add the Hadolint configuration
   </a>
   
 </li>
@@ -527,36 +513,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#create-the-codebuild-project" title="Create the CodeBuild Project" class="md-nav__link">
-    Create the CodeBuild Project
+  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
+    View your CodeBuild Project
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-a-stage-to-codepipeline" title="Add a Stage to CodePipeline" class="md-nav__link">
-    Add a Stage to CodePipeline
+  <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
+    Create the Build Spec file
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#integrate-the-feedback-loop" title="Integrate the feedback loop" class="md-nav__link">
-    Integrate the feedback loop
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-the-pipeline" title="Test the Pipeline" class="md-nav__link">
-    Test the Pipeline
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#stage-architecture" title="Stage Architecture" class="md-nav__link">
-    Stage Architecture
+  <a href="#add-the-hadolint-configuration" title="Add the Hadolint configuration" class="md-nav__link">
+    Add the Hadolint configuration
   </a>
   
 </li>
@@ -580,31 +552,75 @@
                   <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/02-linting.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="module-2-add-a-dockerfile-linting-stage">Module 2 <small>Add a Dockerfile linting stage</small></h1>
-<p>Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.</p>
-<ul>
-<li><strong>Level</strong>: Intermediate</li>
-<li><strong>Duration</strong>: 2 - 3 hours</li>
-<li><strong><a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a></strong>: Prevent</li>
-<li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative</li>
-<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
-</ul>
-<h2 id="create-the-codebuild-project">Create the CodeBuild Project</h2>
-<div class="codehilite"><pre><span></span>aws codebuild create-project \
-    --name &quot;my-demo-project&quot; \
-    --source &quot;{\&quot;type\&quot;: \&quot;S3\&quot;,\&quot;location\&quot;: \&quot;codebuild-us-west-2-123456789012-input-bucket/my-source.zip\&quot;}&quot; \
-    --artifacts {&quot;\&quot;type\&quot;: \&quot;S3\&quot;,\&quot;location\&quot;: \&quot;codebuild-us-west-2-123456789012-output-bucket\&quot;&quot;} \
-    --environment &quot;{\&quot;type\&quot;: \&quot;LINUX_CONTAINER\&quot;,\&quot;image\&quot;: \&quot;aws/codebuild/standard:1.0\&quot;,\&quot;computeType\&quot;: \&quot;BUILD_GENERAL1_SMALL\&quot;}&quot; \
-    --service-role &quot;arn:aws:iam::123456789012:role/service-role/my-codebuild-service-role&quot;
+                <h1 id="module-2-dockerfile-linting">Module 2 <small>Dockerfile Linting</small></h1>
+<p><strong>Time</strong>: 15 minutes</p>
+<p>Now that you have your initial pipeline setup, it is time to start integrating security testing.  The first stage you'll add is for doing linting of Dockerfiles to help you build best practice Docker images.  For linting you'll be leveraging <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, which is a popular open source project for linting Dockerfiles and validating inline bash. The linter parses the Dockerfile into an AST and performs rules on top of the AST.  The rules aren't all security specific but they have good coverage across best practices.</p>
+<h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
+<p>For each AWS CodePipeline stage you'll be using <a href="https://github.com/hadolint/hadolint" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  </p>
+<ol>
+<li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-dockerfile/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
+</ol>
+<h2 id="create-the-build-spec-file">Create the Build Spec file</h2>
+<p>Each CodeBuild project contains a build specification (build spec) file, which is a collection of build commands and related settings, in YAML format, that CodeBuild uses to run a build.   THis is the file where you define the commands for doing Dockerfile linting using Hadolint. </p>
+<ol>
+<li>
+<p>Click on your Cloud9 IDE tab.</p>
+</li>
+<li>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_dockerfile.yml</strong>.</p>
+</li>
+<li>
+<p>Paste the YAML below and save the file.</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
+
+<span class="l l-Scalar l-Scalar-Plain">phases</span><span class="p p-Indicator">:</span>
+<span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying hadolint.yml to the application directory</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Switching to the application directory</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd $CODEBUILD_SRC_DIR_AppSource</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Pulling the hadolint docker image</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker pull hadolint/hadolint:v1.16.2</span>
+<span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with Hadolint...</span>          
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - &lt; Dockerfile`</span>
+<span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
+    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-dockerfile-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build completed on `date`</span>
 </pre></div>
 
 
-<h2 id="add-a-stage-to-codepipeline">Add a Stage to CodePipeline</h2>
-<h2 id="integrate-the-feedback-loop">Integrate the feedback loop</h2>
-<h2 id="test-the-pipeline">Test the Pipeline</h2>
+<h2 id="add-the-hadolint-configuration">Add the Hadolint configuration</h2>
+<p>When using Hadolint you can optionally specify a configuration file to ignore certain rules you might not necessary care about as well as specify trusted registries. </p>
+<div class="admonition info">
+<p class="admonition-title">You can view all the current rules by scrolling down on the <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a> github project </p>
+</div>
+<ol>
+<li>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>hadolint.yml</strong>.</p>
+</li>
+<li>
+<p>Paste the YAML below and save the file.</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ignored</span><span class="p p-Indicator">:</span> 
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DL3000</span> 
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DL3025</span> 
+
+<span class="l l-Scalar l-Scalar-Plain">trustedRegistries</span><span class="p p-Indicator">:</span> 
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">examplecorp.com</span> 
+</pre></div>
+
+
 <hr />
-<h2 id="stage-architecture">Stage Architecture</h2>
-<p>After you have successfully added the Dockerfile linting stage to your CodePipeline and successfully remediated any issues, you can proceed to the next module.</p>
+<p>After you have successfully configured the Dockerfile linting stage, you can proceed to the next module.</p>
                 
                   
                 

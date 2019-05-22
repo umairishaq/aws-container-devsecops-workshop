@@ -410,8 +410,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-your-pipeline" title="Test your pipeline" class="md-nav__link">
-    Test your pipeline
+  <a href="#enable-aws-security-hub" title="Enable AWS Security Hub" class="md-nav__link">
+    Enable AWS Security Hub
   </a>
   
 </li>
@@ -541,8 +541,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#test-your-pipeline" title="Test your pipeline" class="md-nav__link">
-    Test your pipeline
+  <a href="#enable-aws-security-hub" title="Enable AWS Security Hub" class="md-nav__link">
+    Enable AWS Security Hub
   </a>
   
 </li>
@@ -567,6 +567,7 @@
                 
                 
                 <h1 id="module-1-environment-setup">Module 1 <small>Environment Setup</small></h1>
+<p><strong>Time</strong>: 15 minutes</p>
 <p>In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating the pipeline with later on in this workshop.  This module requires you to run two separate <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.</p>
 <h2 id="deploy-the-anchore-service">Deploy the Anchore service</h2>
 <p>The first CloudFormation you run will create the Anchore vulnerability scanning service.  Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/anchore/anchore-fargate.yml" target="_blank">here</a href>.</p>
@@ -659,27 +660,27 @@
 <ol>
 <li>Open the <a href="https://us-east-2.console.aws.amazon.com/cloud9/home?region=us-east-2" target="_blank">AWS Cloud9 console</a> (us-east-2)</li>
 <li>Click <strong>Open IDE</strong> in the <strong>container-devsecops-wksp-ide</strong> environment.  This will take you to your IDE in a new tab.  Always keep this tab open  </li>
+<li>Setup your git credentials and clone the repo that contains all the configurations for your pipeline:</li>
 </ol>
-<div class="admonition info">
-<p class="admonition-title">To make life easier on yourself, always keep your IDE tab open and use a different tab for all other activities.</p>
-</div>
-<h2 id="test-your-pipeline">Test your pipeline</h2>
-<p>Now you can test your pipeline to see how your Pull Requests result with an image being built and pushed to <a href="https://aws.amazon.com/ecr/" target="_blank">AWS ECR</a>.</p>
-<ol>
-<li>Within your Cloud9 IDE expand your <strong>sample application</strong> on the left side.</li>
-<li>Open the <strong>Dockerfile</strong>.</li>
-<li>Add a name to the maintainer line.</li>
-<li>Push your commit and create a Pull Request.</li>
-</ol>
-<div class="codehilite"><pre><span></span>    cd sample-application/
-    git add Dockerfile
-    git commit -m &quot;Modified Maintainer in Dockerfile&quot;
-    git push -u origin development
-    aws codecommit create-pull-request --title &quot;Updated Maintainer&quot; --description &quot;Please review these changes.&quot; --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
+<div class="codehilite"><pre><span></span>git config --global credential.helper &#39;!aws codecommit credential-helper $@&#39;
+git config --global credential.UseHttpPath true
+git clone https://git-codecommit.us-east-2.amazonaws.com/v1/repos/container-devsecops-wksp-config
 </pre></div>
 
 
-<p>You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your code progress through the pipeline.  You can see that there are currently only two stages in the pipeline; one for pulling the source code and one for building and pushing the image to ECR.</p>
+<div class="admonition info">
+<p class="admonition-title">To make life easier on yourself, always keep your IDE tab open and use a different tab for all other activities.</p>
+</div>
+<h2 id="enable-aws-security-hub">Enable AWS Security Hub</h2>
+<p>You will be using AWS Security Hub to manage your container image vulnerabilities.</p>
+<ol>
+<li>Enable Security Hub</li>
+</ol>
+<div class="codehilite"><pre><span></span>aws securityhub enable-security-hub
+</pre></div>
+
+
+<p>You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your current pipeline.  All the stages are there but they have not been properly configured.</p>
 <hr />
 <p>After you have successfully setup your environment, you can proceed to the next module.</p>
                 

@@ -2,27 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/01-env-setup/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/02-linting/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/03-secrets-scanning/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/04-vuln-scanning/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
@@ -32,12 +32,12 @@
     </url>
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/contribute/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://container-devsecops.awssecworkshops.com/license/</loc>
-     <lastmod>2019-05-21</lastmod>
+     <lastmod>2019-05-22</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
