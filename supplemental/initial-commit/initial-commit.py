@@ -40,6 +40,10 @@ def handler(event, context):
             secretsConfigPath = os.environ['LAMBDA_TASK_ROOT'] + "/secrets_config.json"
             secretsConfig = open(secretsConfigPath).read()
 
+            # Read in files for Push Stage
+            buildspecPathPush = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec_push.yml"
+            buildspecPush = open(buildspecPathPush).read()
+
             # Read in file for Python app
             DockerfilePath = os.environ['LAMBDA_TASK_ROOT'] + "/Dockerfile"
             Dockerfile = open(DockerfilePath).read()
@@ -78,13 +82,23 @@ def handler(event, context):
                 name='Your Lambda Helper'
             )
 
-            codecommit.put_file(
+            commit4 = codecommit.put_file(
                 repositoryName=repoConfig,
                 branchName=masterbranch,
                 parentCommitId=commit3['commitId'],
                 fileContent=secretsConfig,
                 filePath='secrets_config.json',
                 commitMessage='Added Secrets Configuration file',
+                name='Your Lambda Helper'
+            )
+
+            codecommit.put_file(
+                repositoryName=repoConfig,
+                branchName=masterbranch,
+                parentCommitId=commit4['commitId'],
+                fileContent=buildspecPush,
+                filePath='buildspec_push.yml',
+                commitMessage='Added Push BuildSpec file',
                 name='Your Lambda Helper'
             )
 

@@ -53,8 +53,25 @@ You will be doing the majority of the workshop using the <a href="https://aws.am
 
 1.	Open the <a href="https://us-east-2.console.aws.amazon.com/cloud9/home?region=us-east-2" target="_blank">AWS Cloud9 console</a> (us-east-2)
 2.	Click **Open IDE** in the **container-devsecops-wksp-ide** environment.  This will take you to your IDE in a new tab.  Always keep this tab open  
+3.  Setup your git credentials and clone the repo that contains all the configurations for your pipeline:
+
+```
+git config --global credential.helper '!aws codecommit credential-helper $@'
+git config --global credential.UseHttpPath true
+git clone https://git-codecommit.us-east-2.amazonaws.com/v1/repos/container-devsecops-wksp-config
+```
 
 !!! info "To make life easier on yourself, always keep your IDE tab open and use a different tab for all other activities."
+
+## Enable AWS Security Hub
+
+You will be using AWS Security Hub to manage your container image vulnerabilities.
+
+1.  Enable Security Hub
+
+```
+aws securityhub enable-security-hub
+```
 
 ## Test your pipeline
 
@@ -62,7 +79,7 @@ Now you can test your pipeline to see how your Pull Requests result with an imag
 
 1.	Within your Cloud9 IDE expand your **sample application** on the left side.
 2.  Open the **Dockerfile**.
-3.  Add a name to the maintainer line.
+3.  Add a name to the Label line.
 4.  Push your commit and create a Pull Request.
 
 ```

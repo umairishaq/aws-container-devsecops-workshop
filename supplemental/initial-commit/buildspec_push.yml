@@ -5,6 +5,10 @@ phases:
     commands:
       - echo Logging in to Amazon ECR...
       - $(aws ecr get-login --no-include-email --region $AWS_DEFAULT_REGION)
+      - echo Switching to the application directory
+      - cd $CODEBUILD_SRC_DIR_AppSource
+      - IMAGE_TAG=`aws ssm get-parameter --name "destinationCommit" --query "Parameter.Value" --output text`
+      - 
   build:
     commands:
       - echo Build started on `date`

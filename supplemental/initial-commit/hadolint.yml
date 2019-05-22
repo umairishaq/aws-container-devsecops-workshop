@@ -1,0 +1,5 @@
+ignored:
+  - DL3000
+
+trustedRegistries:
+  - docker.io

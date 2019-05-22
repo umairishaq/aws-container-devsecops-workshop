@@ -1,6 +1,6 @@
-FROM python:alpine3.7
+FROM python:latest
 
-MAINTAINER Kimbro Staken version: 0.1
+LABEL maintainer="Sasquatch"
 
 COPY . /app
 
@@ -12,5 +12,7 @@ ENV APACHE_RUN_GROUP www-data
 ENV APACHE_LOG_DIR /var/log/apache2
 
 EXPOSE 5000
+
+USER root
 
 CMD python ./index.py

@@ -775,6 +775,111 @@ Resources:
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBVCEventRule.Arn
+  
+  ### Feedback Loop - Merge PR, Build and Push Image
+
+  CBPUEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+      Description: "Triggers when builds fail/pass in CodeBuild for the Build and Push Stage."
+      EventPattern:
+        source:
+          - "aws.codebuild"
+        detail-type:
+          - "CodeBuild Build State Change"
+        detail:
+          build-status:
+            - "FAILED"
+            - "SUCCEEDED"
+          project-name:
+            - !Ref CodeBuildPushProject
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaCBPU.Arn
+          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+
+  LambdaCBPU: 
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+      Description: "Adds a comment to the pull request regarding the success or failure of the push codebuild project."
+      Handler: "index.handler"
+      Environment:
+        Variables:
+          PREFIX: !Ref ResourceName
+          CODEBUILDVCPROJECT: !Ref CodeBuildPushProject
+      Role: !GetAtt 'LambdaPRCommentRole.Arn'
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import boto3
+          import os
+          import json
+
+          codecommit_client = boto3.client('codecommit')
+          ssm = boto3.client('ssm')
+          puproject = os.environ['CodeBuildPushProject']
+
+          def handler(event, context):
+
+            # Log event
+            print(json.dumps(event))
+
+            # Get PR Details
+            pull_request_id = ssm.get_parameter(
+              Name='prid'
+            )
+
+            repository_name = ssm.get_parameter(
+              Name='repo'
+            )
+
+            source_commit = ssm.get_parameter(
+              Name='sourceCommit'
+            )
+
+            destination_commit = ssm.get_parameter(
+              Name='destinationCommit'
+            )
+
+            s3_prefix = 's3-{0}'.format(event['region']) if event['region'] != 'us-east-1' else 's3'
+            sec_hub = 'https://%s.console.aws.amazon.com/securityhub/' % event['region'] 
+            if event['detail']['project-name'] in [puproject]:
+              errors = '## Image Build and Push\n'
+              if event['detail']['build-status'] == 'SUCCEEDED':
+                errors = errors + 'Image has successfully been built and pushed to the AWS ECR repository.  The Pull Request has been merged and closed.'
+              else:
+                errors = errors + 'Image has failed to build.  Please review the logs'
+              for phase in event['detail']['additional-information']['phases']:
+                if phase.get('phase-status') == 'FAILED':
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/failing.svg'.format(s3_prefix, event['region'])
+                    content = '![Failing]({0} "Failing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+                    break
+                else:
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/passing.svg'.format(s3_prefix, event['region'])
+                    content = '![Passing]({0} "Passing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+
+            codecommit_client.post_comment_for_pull_request(
+              pullRequestId = pull_request_id['Parameter']['Value'],
+              repositoryName = repository_name['Parameter']['Value'],
+              beforeCommitId = source_commit['Parameter']['Value'],
+              afterCommitId = destination_commit['Parameter']['Value'],
+              content = content
+            )
+      Runtime: "python2.7"
+      Timeout: "35"
+      MemorySize: 128
+
+  PermissionForEventsToInvokeLambdaCBPU:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CBPUEventRule.Arn
 
   ################### Pipeline ###################
 

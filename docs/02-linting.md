@@ -1,29 +1,48 @@
-# Module 2 <small>Add a Dockerfile linting stage</small>
+# Module 2 <small>Dockerfile Linting</small>
 
-Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.
+## Create the buildspec file
 
-* **Level**: Intermediate
-* **Duration**: 2 - 3 hours
-* **<a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a>**: Prevent
-* **<a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a>**: Preventative
-* **<a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href>**: AWS Account, Admin IAM User
+```yaml
+version: 0.2
 
-## Create the CodeBuild Project
-
+phases:
+pre_build:
+    commands:
+    - echo Copying hadolint.yml to the application directory
+    - cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml
+    - echo Switching to the application directory
+    - cd $CODEBUILD_SRC_DIR_AppSource
+    - echo Pulling the hadolint docker image
+    - docker pull hadolint/hadolint:v1.16.2
+build:
+    commands:
+    - echo Build started on `date`
+    - echo Scanning with Hadolint...          
+    - result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - < Dockerfile`
+post_build:
+    commands:
+    - echo $result
+    - aws ssm put-parameter --name "codebuild-dockerfile-results" --type "String" --value "$result" --overwrite
+    - echo Build completed on `date`
 ```
-aws codebuild create-project \
-    --name "my-demo-project" \
-    --source "{\"type\": \"S3\",\"location\": \"codebuild-us-west-2-123456789012-input-bucket/my-source.zip\"}" \
-    --artifacts {"\"type\": \"S3\",\"location\": \"codebuild-us-west-2-123456789012-output-bucket\""} \
-    --environment "{\"type\": \"LINUX_CONTAINER\",\"image\": \"aws/codebuild/standard:1.0\",\"computeType\": \"BUILD_GENERAL1_SMALL\"}" \
-    --service-role "arn:aws:iam::123456789012:role/service-role/my-codebuild-service-role"
-```
 
-## Add a Stage to CodePipeline
+## Add a Dockerlinting Stage
 
-## Integrate the feedback loop
+## Test Pipeline
 
-## Test the Pipeline
+## Fix issues
+
+FROM python:alpine3.7
+
+FROM python:latest
+
+USER root change to guest
+
+
+  - docker.io
+
+
+  "AWS API Key": "AKIA[0-9A-Z]{16}",
 
 
 ---

@@ -1,10 +1,6 @@
-ignored:
-  - DL3000
-  - SC1010
-  - DL4000
-  - DL3008
-  - DL3015
-  - DL3025
-
-trustedRegistries:
-  - docker.io
+ignored: 
+  - DL3000 
+  - DL3025 
+ 
+trustedRegistries: 
+  - examplecorp.com 
