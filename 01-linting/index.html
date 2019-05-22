@@ -13,7 +13,7 @@
         <meta name="description" content="This workshop is designed to help attendees understand the security concerns of container images and learn how to create a devsecops pipeline for securely building and releasing images.">
       
       
-        <link rel="canonical" href="https://container-devsecops.awssecworkshops.com/03-secrets-scanning/">
+        <link rel="canonical" href="https://container-devsecops.awssecworkshops.com/01-linting/">
       
       
       
@@ -40,7 +40,7 @@
     
     
       
-        <title>Module 3: Secrets Scanning - Integrating security into your container pipeline</title>
+        <title>Module 1: Dockerfile Linting - Integrating security into your container pipeline</title>
       
     
     
@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#module-3-add-a-secrets-scanning-stage" tabindex="1" class="md-skip">
+      <a href="#module-2-add-a-dockerfile-linting-stage" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -158,7 +158,7 @@
                   Integrating security into your container pipeline
                 </span>
                 <span class="md-header-nav__topic">
-                  Module 3: Secrets Scanning
+                  Module 1: Dockerfile Linting
                 </span>
               
             
@@ -274,6 +274,8 @@
       
         
       
+        
+      
     </ul>
   </div>
 </nav>
@@ -362,20 +364,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../01-env-setup/" title="Module 1: Environment Setup" class="md-nav__link">
-      Module 1: Environment Setup
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../02-linting/" title="Module 2: Dockerfile Linting" class="md-nav__link">
-      Module 2: Dockerfile Linting
+    <a href="../00-env-setup/" title="Module 0: Environment Setup" class="md-nav__link">
+      Module 0: Environment Setup
     </a>
   </li>
 
@@ -395,11 +385,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Module 3: Secrets Scanning
+        Module 1: Dockerfile Linting
       </label>
     
-    <a href="./" title="Module 3: Secrets Scanning" class="md-nav__link md-nav__link--active">
-      Module 3: Secrets Scanning
+    <a href="./" title="Module 1: Dockerfile Linting" class="md-nav__link md-nav__link--active">
+      Module 1: Dockerfile Linting
     </a>
     
       
@@ -427,8 +417,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-the-trufflehog-regex-configuration" title="Add the trufflehog regex configuration" class="md-nav__link">
-    Add the trufflehog regex configuration
+  <a href="#add-the-hadolint-configuration" title="Add the Hadolint configuration" class="md-nav__link">
+    Add the Hadolint configuration
   </a>
   
 </li>
@@ -450,8 +440,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../04-vuln-scanning/" title="Module 4: Vulnerability Scanning" class="md-nav__link">
-      Module 4: Vulnerability Scanning
+    <a href="../02-secrets-scanning/" title="Module 2: Secrets Scanning" class="md-nav__link">
+      Module 2: Secrets Scanning
     </a>
   </li>
 
@@ -462,8 +452,32 @@
 
 
   <li class="md-nav__item">
-    <a href="../review.md" title="Module 5: Review and Discussion" class="md-nav__link">
-      Module 5: Review and Discussion
+    <a href="../03-vuln-scanning/" title="Module 3: Vulnerability Scanning" class="md-nav__link">
+      Module 3: Vulnerability Scanning
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../04-testing/" title="Module 4: Pipeline Testing" class="md-nav__link">
+      Module 4: Pipeline Testing
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../05-cleanup/" title="Module 5: Cleanup" class="md-nav__link">
+      Module 5: Cleanup
     </a>
   </li>
 
@@ -527,8 +541,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-the-trufflehog-regex-configuration" title="Add the trufflehog regex configuration" class="md-nav__link">
-    Add the trufflehog regex configuration
+  <a href="#add-the-hadolint-configuration" title="Add the Hadolint configuration" class="md-nav__link">
+    Add the Hadolint configuration
   </a>
   
 </li>
@@ -549,24 +563,25 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/03-secrets-scanning.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/01-linting.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="module-3-add-a-secrets-scanning-stage">Module 3 <small>Add a secrets scanning stage</small></h1>
+                <h1 id="module-2-add-a-dockerfile-linting-stage">Module 2 <small>Add a Dockerfile linting stage</small></h1>
 <p><strong>Time</strong>: 15 minutes</p>
-<p>Next, you need to setup a stage for identifying secrets throughout your code.  For this stage you'll be leveraging <a href="https://github.com/dxa4481/truffleHog" target="_blank">trufflehog</a>, a popular open source project for finding secrets accidentally committed in repositories.  It essentially searches through git repositories for secrets, digging deep into commit history and branches.  It identifies secrets by running entropy checks as well as high signal regex checks. </p>
+<p>Now that you have your initial pipeline setup, it is time to start integrating security testing.  The first stage you'll add is for doing linting of Dockerfiles to help you build best practice Docker images.  For linting you'll be leveraging <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, which is a popular open source project for linting Dockerfiles and validating inline bash. The linter parses the Dockerfile into an AST and performs rules on top of the AST.  The rules aren't all security specific but they have good coverage across best practices.</p>
 <h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
-<p>The CodeBuild project for secrets scanning has already been created but hasn't been properly configured.  </p>
+<p>For each AWS CodePipeline stage you'll be using <a href="https://github.com/hadolint/hadolint" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  </p>
 <ol>
-<li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-secrets/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
+<li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-dockerfile/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
 </ol>
 <h2 id="create-the-build-spec-file">Create the Build Spec file</h2>
+<p>Each CodeBuild project contains a build specification (build spec) file, which is a collection of build commands and related settings, in YAML format, that CodeBuild uses to run a build.   This is the file where you define the commands for doing Dockerfile linting using Hadolint. </p>
 <ol>
 <li>
 <p>Click on your Cloud9 IDE tab.</p>
 </li>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_secrets.yml</strong>.</p>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_dockerfile.yml</strong>.</p>
 </li>
 <li>
 <p>Paste the YAML below and save the file.</p>
@@ -575,66 +590,51 @@
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
 
 <span class="l l-Scalar l-Scalar-Plain">phases</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
+<span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Setting CodeCommit Credentials</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.helper &#39;!aws codecommit credential-helper $@&#39;</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.UseHttpPath true</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying secrets_config.json to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp secrets_config.json $CODEBUILD_SRC_DIR_AppSource/secrets_config.json</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying hadolint.yml to the application directory</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Switching to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Installing pip and truffleHog</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span> 
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python get-pip.py</span> 
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install truffleHog</span>
-  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd $CODEBUILD_SRC_DIR_AppSource</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Pulling the hadolint docker image</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker pull hadolint/hadolint:v1.16.2</span>
+<span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with truffleHog...</span>          
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`trufflehog --regex --rules secrets_config.json --entropy=False &quot;$APP_REPO_URL&quot;`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">if [ -z &quot;$var&quot; ]; then result=&quot;[]&quot;; fi</span>  
-  <span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with Hadolint...</span>          
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - &lt; Dockerfile`</span>
+<span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-secrets-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-dockerfile-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build completed on `date`</span>
 </pre></div>
 
 
-<h2 id="add-the-trufflehog-regex-configuration">Add the trufflehog regex configuration</h2>
-<p>When using trufflehog you can optionally specify a configuration file that contains custom regex checks.</p>
+<h2 id="add-the-hadolint-configuration">Add the Hadolint configuration</h2>
+<p>When using Hadolint you can optionally specify a configuration file to ignore certain rules you might not necessary care about as well as specify trusted registries. </p>
+<div class="admonition info">
+<p class="admonition-title">You can view all the current rules by scrolling down on the <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a> github project </p>
+</div>
 <ol>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>secrets_config.json</strong>.</p>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>hadolint.yml</strong>.</p>
 </li>
 <li>
 <p>Paste the YAML below and save the file.</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;Slack Token&quot;</span><span class="p">:</span> <span class="s2">&quot;(xox[p|b|o|a]-[0-9]{12}-[0-9]{12}-[0-9]{12}-[a-z0-9]{32})&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;RSA private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN RSA PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;SSH (OPENSSH) private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN OPENSSH PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;SSH (DSA) private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN DSA PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;SSH (EC) private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN EC PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;PGP private key block&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN PGP PRIVATE KEY BLOCK-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Facebook Oauth&quot;</span><span class="p">:</span> <span class="s2">&quot;[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*[&#39;|\&quot;][0-9a-f]{32}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Twitter Oauth&quot;</span><span class="p">:</span> <span class="s2">&quot;[t|T][w|W][i|I][t|T][t|T][e|E][r|R].*[&#39;|\&quot;][0-9a-zA-Z]{35,44}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;GitHub&quot;</span><span class="p">:</span> <span class="s2">&quot;[g|G][i|I][t|T][h|H][u|U][b|B].*[&#39;|\&quot;][0-9a-zA-Z]{35,40}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Google Oauth&quot;</span><span class="p">:</span> <span class="s2">&quot;(\&quot;client_secret\&quot;:\&quot;[a-zA-Z0-9-_]{24}\&quot;)&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;AWS API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;AKIA[0-9A-Z]{16}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Heroku API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;[h|H][e|E][r|R][o|O][k|K][u|U].*[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Generic Secret&quot;</span><span class="p">:</span> <span class="s2">&quot;[s|S][e|E][c|C][r|R][e|E][t|T].*[&#39;|\&quot;][0-9a-zA-Z]{32,45}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Generic API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;[a|A][p|P][i|I][_]?[k|K][e|E][y|Y].*[&#39;|\&quot;][0-9a-zA-Z]{32,45}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Slack Webhook&quot;</span><span class="p">:</span> <span class="s2">&quot;https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Google (GCP) Service-account&quot;</span><span class="p">:</span> <span class="s2">&quot;\&quot;type\&quot;: \&quot;service_account\&quot;&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Twilio API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;SK[a-z0-9]{32}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Password in URL&quot;</span><span class="p">:</span> <span class="s2">&quot;[a-zA-Z]{3,10}://[^/\\s:@]{3,20}:[^/\\s:@]{3,20}@.{1,100}[\&quot;&#39;\\s]&quot;</span>
-<span class="p">}</span>
+<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ignored</span><span class="p p-Indicator">:</span> 
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DL3000</span> 
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DL3025</span> 
+
+<span class="l l-Scalar l-Scalar-Plain">trustedRegistries</span><span class="p p-Indicator">:</span> 
+  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">examplecorp.com</span> 
 </pre></div>
 
 
-<p>After you have successfully configured the secrets scanning stage, you can proceed to the next module.</p>
+<hr />
+<p>After you have successfully configured the Dockerfile linting stage, you can proceed to the next module.</p>
                 
                   
                 
@@ -655,7 +655,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../02-linting/" title="Module 2: Dockerfile Linting" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../00-env-setup/" title="Module 0: Environment Setup" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -664,19 +664,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Module 2: Dockerfile Linting
+                Module 0: Environment Setup
               </span>
             </div>
           </a>
         
         
-          <a href="../04-vuln-scanning/" title="Module 4: Vulnerability Scanning" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../02-secrets-scanning/" title="Module 2: Secrets Scanning" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Module 4: Vulnerability Scanning
+                Module 2: Secrets Scanning
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">

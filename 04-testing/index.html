@@ -13,7 +13,7 @@
         <meta name="description" content="This workshop is designed to help attendees understand the security concerns of container images and learn how to create a devsecops pipeline for securely building and releasing images.">
       
       
-        <link rel="canonical" href="https://container-devsecops.awssecworkshops.com/02-linting/">
+        <link rel="canonical" href="https://container-devsecops.awssecworkshops.com/04-testing/">
       
       
       
@@ -40,7 +40,7 @@
     
     
       
-        <title>Module 2: Dockerfile Linting - Integrating security into your container pipeline</title>
+        <title>Module 4: Pipeline Testing - Integrating security into your container pipeline</title>
       
     
     
@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#module-2-dockerfile-linting" tabindex="1" class="md-skip">
+      <a href="#cleaup" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -158,7 +158,7 @@
                   Integrating security into your container pipeline
                 </span>
                 <span class="md-header-nav__topic">
-                  Module 2: Dockerfile Linting
+                  Module 4: Pipeline Testing
                 </span>
               
             
@@ -274,6 +274,8 @@
       
         
       
+        
+      
     </ul>
   </div>
 </nav>
@@ -362,8 +364,44 @@
 
 
   <li class="md-nav__item">
-    <a href="../01-env-setup/" title="Module 1: Environment Setup" class="md-nav__link">
-      Module 1: Environment Setup
+    <a href="../00-env-setup/" title="Module 0: Environment Setup" class="md-nav__link">
+      Module 0: Environment Setup
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../01-linting/" title="Module 1: Dockerfile Linting" class="md-nav__link">
+      Module 1: Dockerfile Linting
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../02-secrets-scanning/" title="Module 2: Secrets Scanning" class="md-nav__link">
+      Module 2: Secrets Scanning
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../03-vuln-scanning/" title="Module 3: Vulnerability Scanning" class="md-nav__link">
+      Module 3: Vulnerability Scanning
     </a>
   </li>
 
@@ -383,11 +421,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Module 2: Dockerfile Linting
+        Module 4: Pipeline Testing
       </label>
     
-    <a href="./" title="Module 2: Dockerfile Linting" class="md-nav__link md-nav__link--active">
-      Module 2: Dockerfile Linting
+    <a href="./" title="Module 4: Pipeline Testing" class="md-nav__link md-nav__link--active">
+      Module 4: Pipeline Testing
     </a>
     
       
@@ -401,22 +439,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
-    View your CodeBuild Project
+  <a href="#scenario" title="Scenario" class="md-nav__link">
+    Scenario
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
-    Create the Build Spec file
+  <a href="#architecture" title="Architecture" class="md-nav__link">
+    Architecture
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-the-hadolint-configuration" title="Add the Hadolint configuration" class="md-nav__link">
-    Add the Hadolint configuration
+  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
+    Presentation deck
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#region" title="Region" class="md-nav__link">
+    Region
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules" title="Modules" class="md-nav__link">
+    Modules
   </a>
   
 </li>
@@ -438,32 +490,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../03-secrets-scanning/" title="Module 3: Secrets Scanning" class="md-nav__link">
-      Module 3: Secrets Scanning
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../04-vuln-scanning/" title="Module 4: Vulnerability Scanning" class="md-nav__link">
-      Module 4: Vulnerability Scanning
-    </a>
-  </li>
-
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../review.md" title="Module 5: Review and Discussion" class="md-nav__link">
-      Module 5: Review and Discussion
+    <a href="../05-cleanup/" title="Module 5: Cleanup" class="md-nav__link">
+      Module 5: Cleanup
     </a>
   </li>
 
@@ -513,22 +541,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
-    View your CodeBuild Project
+  <a href="#scenario" title="Scenario" class="md-nav__link">
+    Scenario
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
-    Create the Build Spec file
+  <a href="#architecture" title="Architecture" class="md-nav__link">
+    Architecture
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-the-hadolint-configuration" title="Add the Hadolint configuration" class="md-nav__link">
-    Add the Hadolint configuration
+  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
+    Presentation deck
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#region" title="Region" class="md-nav__link">
+    Region
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modules" title="Modules" class="md-nav__link">
+    Modules
   </a>
   
 </li>
@@ -549,78 +591,23 @@
             <article class="md-content__inner md-typeset">
               
                 
-                  <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/02-linting.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
+                  <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/04-testing.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="module-2-dockerfile-linting">Module 2 <small>Dockerfile Linting</small></h1>
-<p><strong>Time</strong>: 15 minutes</p>
-<p>Now that you have your initial pipeline setup, it is time to start integrating security testing.  The first stage you'll add is for doing linting of Dockerfiles to help you build best practice Docker images.  For linting you'll be leveraging <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, which is a popular open source project for linting Dockerfiles and validating inline bash. The linter parses the Dockerfile into an AST and performs rules on top of the AST.  The rules aren't all security specific but they have good coverage across best practices.</p>
-<h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
-<p>For each AWS CodePipeline stage you'll be using <a href="https://github.com/hadolint/hadolint" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  </p>
-<ol>
-<li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-dockerfile/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
-</ol>
-<h2 id="create-the-build-spec-file">Create the Build Spec file</h2>
-<p>Each CodeBuild project contains a build specification (build spec) file, which is a collection of build commands and related settings, in YAML format, that CodeBuild uses to run a build.   This is the file where you define the commands for doing Dockerfile linting using Hadolint. </p>
-<ol>
-<li>
-<p>Click on your Cloud9 IDE tab.</p>
-</li>
-<li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_dockerfile.yml</strong>.</p>
-</li>
-<li>
-<p>Paste the YAML below and save the file.</p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
-
-<span class="l l-Scalar l-Scalar-Plain">phases</span><span class="p p-Indicator">:</span>
-<span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying hadolint.yml to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Switching to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd $CODEBUILD_SRC_DIR_AppSource</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Pulling the hadolint docker image</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker pull hadolint/hadolint:v1.16.2</span>
-<span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with Hadolint...</span>          
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - &lt; Dockerfile`</span>
-<span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-dockerfile-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build completed on `date`</span>
-</pre></div>
-
-
-<h2 id="add-the-hadolint-configuration">Add the Hadolint configuration</h2>
-<p>When using Hadolint you can optionally specify a configuration file to ignore certain rules you might not necessary care about as well as specify trusted registries. </p>
-<div class="admonition info">
-<p class="admonition-title">You can view all the current rules by scrolling down on the <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a> github project </p>
-</div>
-<ol>
-<li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>hadolint.yml</strong>.</p>
-</li>
-<li>
-<p>Paste the YAML below and save the file.</p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">ignored</span><span class="p p-Indicator">:</span> 
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DL3000</span> 
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">DL3025</span> 
-
-<span class="l l-Scalar l-Scalar-Plain">trustedRegistries</span><span class="p p-Indicator">:</span> 
-  <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">examplecorp.com</span> 
-</pre></div>
-
-
-<hr />
-<p>After you have successfully configured the Dockerfile linting stage, you can proceed to the next module.</p>
+                <h1 id="cleaup">Cleaup</h1>
+<p>Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.</p>
+<ul>
+<li><strong>Level</strong>: Intermediate</li>
+<li><strong>Duration</strong>: 2 - 3 hours</li>
+<li><strong><a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a></strong>: Prevent</li>
+<li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative</li>
+<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
+</ul>
+<h2 id="scenario">Scenario</h2>
+<h2 id="architecture">Architecture</h2>
+<h2 id="presentation-deck">Presentation deck</h2>
+<h2 id="region">Region</h2>
+<h2 id="modules">Modules</h2>
                 
                   
                 
@@ -641,7 +628,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../01-env-setup/" title="Module 1: Environment Setup" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../03-vuln-scanning/" title="Module 3: Vulnerability Scanning" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -650,19 +637,19 @@
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Module 1: Environment Setup
+                Module 3: Vulnerability Scanning
               </span>
             </div>
           </a>
         
         
-          <a href="../03-secrets-scanning/" title="Module 3: Secrets Scanning" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../05-cleanup/" title="Module 5: Cleanup" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Module 3: Secrets Scanning
+                Module 5: Cleanup
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
