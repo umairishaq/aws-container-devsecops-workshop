@@ -44,10 +44,11 @@ markdown_extensions:
 # Navigation
 nav:
   - Overview: 'index.md'
-  - 'Module 1: Environment Setup': '01-env-setup.md'
-  - 'Module 2: Dockerfile Linting': '02-linting.md'
-  - 'Module 3: Secrets Scanning': '03-secrets-scanning.md'
-  - 'Module 4: Vulnerability Scanning': '04-vuln-scanning.md'
-  - 'Module 5: Review and Discussion': 'review.md'
+    - 'Module 0: Environment Setup': '00-env-setup.md'
+    - 'Module 1: Dockerfile Linting': '01-linting.md'
+    - 'Module 2: Secrets Scanning': '02-secrets-scanning.md'
+    - 'Module 3: Vulnerability Scanning': '03-vuln-scanning.md'
+    - 'Module 4: Pipeline Testing': '04-testing.md'
+    - 'Module 5: Cleanup': '05-cleanup.md'
   - Contributing: 'contribute.md'
   - License: 'license.md'

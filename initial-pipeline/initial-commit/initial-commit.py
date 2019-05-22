@@ -9,20 +9,12 @@ import os
 def handler(event, context):
     print("log -- Event: %s " % json.dumps(event))
     codecommit = boto3.client('codecommit')
-    #sechub = boto3.client('securityhub')
     
     # Variables
     repo = event['ResourceProperties']['Repo']
     repoConfig = event['ResourceProperties']['RepoConfig']
     masterbranch = 'master'
     devbranch = 'development'
-
-    # Enable Security Hub
-    #try:
-    #    sechub.enable_security_hub()
-    #    print('Enabled Security Hub')
-    #except ClientError as e:
-     #   print('Security Hub is already enabled')
 
     if event['RequestType'] == 'Create':
         print("log -- Create Event ")
@@ -39,6 +31,10 @@ def handler(event, context):
             buildspecSecrets = open(buildspecPathSecrets).read()
             secretsConfigPath = os.environ['LAMBDA_TASK_ROOT'] + "/secrets_config.json"
             secretsConfig = open(secretsConfigPath).read()
+
+            # Read in files for Vulnerability Scanning 
+            buildspecPathVuln = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec_vuln.yml"
+            buildspecVuln = open(buildspecPathVuln).read()
 
             # Read in files for Push Stage
             buildspecPathPush = os.environ['LAMBDA_TASK_ROOT'] + "/buildspec_push.yml"
@@ -92,10 +88,20 @@ def handler(event, context):
                 name='Your Lambda Helper'
             )
 
-            codecommit.put_file(
+            commit5 = codecommit.put_file(
                 repositoryName=repoConfig,
                 branchName=masterbranch,
                 parentCommitId=commit4['commitId'],
+                fileContent=buildspecVuln,
+                filePath='buildspec_vuln.yml',
+                commitMessage='Added Build Spec for Vulnerability Scanning Stage',
+                name='Your Lambda Helper'
+            )
+
+            codecommit.put_file(
+                repositoryName=repoConfig,
+                branchName=masterbranch,
+                parentCommitId=commit5['commitId'],
                 fileContent=buildspecPush,
                 filePath='buildspec_push.yml',
                 commitMessage='Added Push BuildSpec file',
@@ -103,7 +109,7 @@ def handler(event, context):
             )
 
             # Add Dockerfile to application repo
-            commit2 = codecommit.put_file(
+            commita = codecommit.put_file(
                 repositoryName=repo,
                 branchName=devbranch,
                 fileContent=Dockerfile,
@@ -112,10 +118,10 @@ def handler(event, context):
                 name='Your Lambda Helper'
             )
 
-            commit2a = codecommit.put_file(
+            commitb = codecommit.put_file(
                 repositoryName=repo,
                 branchName=devbranch,
-                parentCommitId=commit2['commitId'],
+                parentCommitId=commita['commitId'],
                 fileContent=App,
                 filePath='/app/index.py',
                 commitMessage='Added Python App file',
@@ -125,7 +131,7 @@ def handler(event, context):
             codecommit.put_file(
                 repositoryName=repo,
                 branchName=devbranch,
-                parentCommitId=commit2a['commitId'],
+                parentCommitId=commitb['commitId'],
                 fileContent=Req,
                 filePath='requirements.txt',
                 commitMessage='Added requirements file',

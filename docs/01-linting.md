@@ -1,4 +1,4 @@
-# Module 2 <small>Dockerfile Linting</small>
+# Module 2 <small>Add a Dockerfile linting stage</small>
 
 **Time**: 15 minutes
 
