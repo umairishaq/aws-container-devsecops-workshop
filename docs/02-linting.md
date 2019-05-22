@@ -12,7 +12,7 @@ For each AWS CodePipeline stage you'll be using <a href="https://github.com/hado
 
 ## Create the Build Spec file
 
-Each CodeBuild project contains a build specification (build spec) file, which is a collection of build commands and related settings, in YAML format, that CodeBuild uses to run a build.   THis is the file where you define the commands for doing Dockerfile linting using Hadolint. 
+Each CodeBuild project contains a build specification (build spec) file, which is a collection of build commands and related settings, in YAML format, that CodeBuild uses to run a build.   This is the file where you define the commands for doing Dockerfile linting using Hadolint. 
 
 1.  Click on your Cloud9 IDE tab.
 

@@ -16,7 +16,7 @@ Your company has just kicked off a new DevSecOps initiative in an effort to impr
 
 ## Architecture
 
-For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD/pipelin as shown below.  It will include stages with in your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and Lambda Functions to create feedback loops for each stage of security testing you create.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure delivery.
+For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD pipeline as shown below.  It will include stages with in your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and Lambda Functions to create feedback loops for each stage of security testing you create.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure delivery.
 
 ![Architecture](./images/diagram-basic-arch.png "Workload Architecture")
 ## Presentation deck
