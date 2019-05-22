@@ -1,6 +1,24 @@
 # Module 2 <small>Dockerfile Linting</small>
 
-## Create the buildspec file
+**Time**: 15 minutes
+
+Now that you have your initial pipeline setup, it is time to start integrating security testing.  The first stage you'll add is for doing linting of Dockerfiles to help you build best practice Docker images.  For linting you'll be leveraging <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, which is a popular open source project for linting Dockerfiles and validating inline bash. The linter parses the Dockerfile into an AST and performs rules on top of the AST.  The rules aren't all security specific but they have good coverage across best practices.
+
+## View your CodeBuild Project
+
+For each AWS CodePipeline stage you'll be using <a href="https://github.com/hadolint/hadolint" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  
+
+1.  Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-dockerfile/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project
+
+## Create the Build Spec file
+
+Each CodeBuild project contains a build specification (build spec) file, which is a collection of build commands and related settings, in YAML format, that CodeBuild uses to run a build.   THis is the file where you define the commands for doing Dockerfile linting using Hadolint. 
+
+1.  Click on your Cloud9 IDE tab.
+
+2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_dockerfile.yml**.
+
+3.  Paste the YAML below and save the file.
 
 ```yaml
 version: 0.2
@@ -26,27 +44,24 @@ post_build:
     - echo Build completed on `date`
 ```
 
-## Add a Dockerlinting Stage
+## Add the Hadolint configuration
 
-## Test Pipeline
+When using Hadolint you can optionally specify a configuration file to ignore certain rules you might not necessary care about as well as specify trusted registries. 
 
-## Fix issues
+!!! info "You can view all the current rules by scrolling down on the <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a> github project "
 
-FROM python:alpine3.7
+1.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **hadolint.yml**.
 
-FROM python:latest
+3.  Paste the YAML below and save the file.
 
-USER root change to guest
-
-
-  - docker.io
-
-
-  "AWS API Key": "AKIA[0-9A-Z]{16}",
-
-
+```yaml
+ignored: 
+  - DL3000 
+  - DL3025 
+ 
+trustedRegistries: 
+  - examplecorp.com 
+```
 ---
 
-## Stage Architecture
-
-After you have successfully added the Dockerfile linting stage to your CodePipeline and successfully remediated any issues, you can proceed to the next module.
+After you have successfully configured the Dockerfile linting stage, you can proceed to the next module.

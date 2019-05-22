@@ -1,5 +1,7 @@
 # Module 1 <small>Environment Setup</small>
 
+**Time**: 15 minutes
+
 In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating the pipeline with later on in this workshop.  This module requires you to run two separate <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.
 
 ## Deploy the Anchore service
@@ -73,24 +75,7 @@ You will be using AWS Security Hub to manage your container image vulnerabilitie
 aws securityhub enable-security-hub
 ```
 
-## Test your pipeline
-
-Now you can test your pipeline to see how your Pull Requests result with an image being built and pushed to <a href="https://aws.amazon.com/ecr/" target="_blank">AWS ECR</a>.
-
-1.	Within your Cloud9 IDE expand your **sample application** on the left side.
-2.  Open the **Dockerfile**.
-3.  Add a name to the Label line.
-4.  Push your commit and create a Pull Request.
-
-```
-    cd sample-application/
-    git add Dockerfile
-    git commit -m "Modified Maintainer in Dockerfile"
-    git push -u origin development
-    aws codecommit create-pull-request --title "Updated Maintainer" --description "Please review these changes." --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
-```
-
-You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your code progress through the pipeline.  You can see that there are currently only two stages in the pipeline; one for pulling the source code and one for building and pushing the image to ECR.
+You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your current pipeline.  All the stages are there but they have not been properly configured.
 
 ---
 
