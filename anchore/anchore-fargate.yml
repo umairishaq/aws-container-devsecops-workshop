@@ -208,52 +208,6 @@ Resources:
       GenerateSecretString:
         ExcludePunctuation: True
 
-  DbSubnetGroup:
-    Type: AWS::RDS::DBSubnetGroup
-    Properties:
-      DBSubnetGroupDescription: Private Subnets
-      SubnetIds:
-        !Split
-          - ","
-          - !GetAtt AnchoreVpcStack.Outputs.PrivateSubnets
-
-  DbSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Allow access to db
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
-      SecurityGroupIngress:
-        - CidrIp: 0.0.0.0/0
-          Description: allow db access from all
-          FromPort: 5432
-          IpProtocol: tcp
-          ToPort: 5432
-      VpcId: !GetAtt AnchoreVpcStack.Outputs.VPC
-
-  DB:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBInstanceClass: db.t2.large
-      AllocatedStorage: "100"
-      DBSubnetGroupName: !Ref DbSubnetGroup
-      Engine: postgres
-      MasterUsername: postgres
-      MasterUserPassword:
-        !Join
-          - ""
-          - - "{{resolve:secretsmanager:"
-            - !Ref dbPassword
-            - :SecretString:::}}
-      Port: "5432"
-      StorageType: gp2
-      VPCSecurityGroups:
-        - !GetAtt
-            - DbSecurityGroup
-            - GroupId
-
   Cluster:
     Type: AWS::ECS::Cluster
 
@@ -365,7 +319,7 @@ Resources:
                     - !Ref AdminPassword
                     - ::::}}
             - Name: ANCHORE_DB_HOST
-              Value: !GetAtt DB.Endpoint.Address
+              Value: 127.0.0.1
           Essential: True
           Image: !Sub
             - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}
@@ -380,6 +334,27 @@ Resources:
           Name: AnchoreContainer
           PortMappings:
             - ContainerPort: 8228
+              Protocol: tcp
+        - Environment:
+            - Name: POSTGRES_PASSWORD
+              Value:
+                !Join
+                  - ""
+                  - - "{{resolve:secretsmanager:"
+                    - !Ref dbPassword
+                    - ::::}}
+          Essential: True
+          Image: postgres
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref TaskLoggingLogGroup
+              awslogs-stream-prefix: AnchoreDb
+              awslogs-region:
+                Ref: AWS::Region
+          Name: postgres
+          PortMappings:
+            - ContainerPort: 5432
               Protocol: tcp
       Cpu: "1024"
       ExecutionRoleArn:
