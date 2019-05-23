@@ -648,7 +648,7 @@
 <li><strong>Dockerfile Linting Stage</strong>: The stage pulls in the artifacts from S3 and uses Hadolint (build spec file and configuration file pulled in from S3) to lint the Dockerfile to ensure it adheres to best practices.</li>
 <li><strong>Secrets Scanning Stage</strong>: The stage runs high signal regex checks directly against the CodeCommit Repository (<em>container-devsecops-wksp-app - development branch</em>)</li>
 <li><strong>Vulnerability Scanning Stage</strong>: The stage builds the container image, pushes it to ECR, and triggers an Anchore vulnerability assessment against the image.  If the scan results include any vulnerabilites that meet or exceed the threshold the build fails.  If the vulnerabilites are lower than the threshold the CodeBuild project will invoke a Lambda function with the scan results as the payload and the Lambda function will push the vulnerabilites into AWS Security Hub for future triaging since the risk for those have been accepted.</li>
-<li><strong>Image Push</strong>: The last stage builds the image using the destination commit hash as the tag and pushes it to AWS ECR.</li>
+<li><strong>Publish Imaeg</strong>: The last stage builds the image using the destination commit hash as the tag and publishes it to AWS ECR.</li>
 <li><strong>CodeBuild Triggers</strong>: If any CodeBuild Project fails a CloudWatch Event Rule is triggered.</li>
 <li><strong>Triggers Lambda Function</strong>: The Lambda Function is setup as a target for the CloudWatch Event Rule and is invoked after the CloudWatch Event Rule is triggered.</li>
 <li><strong>Adds Feedback to Pull Request</strong>:  The Lambda Function takes the results from each stage and CodeBuild project and posts a comment back to the Pull Requst.  This gives the developers fast feedback so they're able to fix any issues that are identified through the pipeline.</li>
@@ -743,8 +743,11 @@ git push -u origin development
 <li>
 <p>Click on <strong>Logs</strong> in the comment or view the CodeBuild Project history to identify the secret and the file it is located in.</p>
 <div class="admonition question">
-<p class="admonition-title">How could you improve the feedback loop to remove this step?</p>
+<p class="admonition-title">How could you improve the feedback loop to make it easier for the developer?</p>
 </div>
+</li>
+<li>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>secrets_config.yml</strong>.</p>
 </li>
 <li>
 <p>Update your trufflehog configuration to only scan 1 commit deep.</p>
