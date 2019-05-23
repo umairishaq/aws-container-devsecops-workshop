@@ -586,12 +586,9 @@
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with truffleHog...</span>          
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`trufflehog --regex --rules secrets_config.json --entropy=False &quot;$APP_REPO_URL&quot;`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">if [ -z &quot;$var&quot; ]; then result=&quot;[]&quot;; fi</span>  
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">trufflehog --regex --rules secrets_config.json --entropy=False &quot;$APP_REPO_URL&quot;</span> 
   <span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-secrets-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build completed on `date`</span>
 </pre></div>
 

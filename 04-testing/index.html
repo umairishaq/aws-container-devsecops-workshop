@@ -480,6 +480,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#stage-3-vulnerability-scanning-stage" title="Stage 3: Vulnerability Scanning Stage" class="md-nav__link">
+    Stage 3: Vulnerability Scanning Stage
+  </a>
+  
+</li>
+      
       
       
       
@@ -589,6 +596,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#stage-3-vulnerability-scanning-stage" title="Stage 3: Vulnerability Scanning Stage" class="md-nav__link">
+    Stage 3: Vulnerability Scanning Stage
+  </a>
+  
+</li>
+      
       
       
       
@@ -645,7 +659,7 @@
 <li>Within your Cloud9 IDE expand your <strong>sample application</strong> on the left side.</li>
 <li>Open the <strong>Dockerfile</strong>.</li>
 <li>Add a name to the Label line.</li>
-<li>Push your commit and create a Pull Request.</li>
+<li>Push your commit.</li>
 </ol>
 <div class="codehilite"><pre><span></span>    cd /home/ec2-user/environment/sample-application
     git add Dockerfile
@@ -681,7 +695,7 @@
 </li>
 <li>
 <p><strong>DL3026</strong>: Use only an allowed registry in the FROM image</p>
-<p><strong>Fix</strong>: Add <code>- dockerhub.io</code> under <strong>trustedRegistries</strong> (for testing purposes)</p>
+<p><strong>Fix</strong>: Add <code>- docker.io</code> under <strong>trustedRegistries</strong> (for testing purposes)</p>
 </li>
 <li>
 <p>Commit your configuration changes:</p>
@@ -738,6 +752,7 @@ git push -u origin development
 <li>Modify build spec to only scan a max depth of 1 commit (Removing secrets from previous commits and revoking any credentials are best practices but are not in scope due to time constraints.)</li>
 <li>Commit your changes</li>
 </ol>
+<h2 id="stage-3-vulnerability-scanning-stage">Stage 3: Vulnerability Scanning Stage</h2>
 <hr />
 <p>Congratulations!  You've completed the <strong>Integrating security into your container pipeline</strong> workshop. You can proceed to the next module to clean up the resources in your account.</p>
                 
