@@ -747,8 +747,22 @@ git push -u origin development
 </div>
 </li>
 <li>
-<p>Remove the secret from the file.</p>
+<p>Update your trufflehog configuration to only scan 1 commit deep.</p>
 </li>
+</ol>
+<p>Change this command:</p>
+<div class="codehilite"><pre><span></span>- trufflehog --regex --rules secrets_config.json --entropy=False &quot;$APP_REPO_URL&quot;
+</pre></div>
+
+
+<p>To this:</p>
+<div class="codehilite"><pre><span></span>- trufflehog --regex --rules secrets_config.json --entropy=False --max_depth 1 &quot;$APP_REPO_URL&quot;
+</pre></div>
+
+
+<ol>
+<li>Remove the secret from the file.</li>
+<li></li>
 <li>Modify build spec to only scan a max depth of 1 commit (Removing secrets from previous commits and revoking any credentials are best practices but are not in scope due to time constraints.)</li>
 <li>Commit your changes</li>
 </ol>
