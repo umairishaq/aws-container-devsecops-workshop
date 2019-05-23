@@ -719,7 +719,7 @@ git push -u origin master
 </li>
 <li>
 <p><strong>DL3002</strong>: Last USER should not be root</p>
-<p><strong>Fix</strong>: Add <code>RUN groupadd -r sasquatch &amp;&amp; useradd -r -g sasquatch sasquatch</code></p>
+<p><strong>Fix</strong>: Add <code>RUN addgroup -S sasquatch</code> and <code>RUN adduser -S sasquatch -G sasquatch</code></p>
 <p><strong>Fix</strong>: Replace <code>USER root</code> with <code>USER sasquatch</code></p>
 </li>
 <li>
