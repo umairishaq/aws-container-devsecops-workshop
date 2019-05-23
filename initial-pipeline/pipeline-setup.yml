@@ -589,6 +589,7 @@ Resources:
           import json
 
           codecommit_client = boto3.client('codecommit')
+          ssm = boto3.client('ssm')
           scproject = os.environ['CODEBUILDSCPROJECT']
 
           def handler(event, context):
@@ -694,6 +695,7 @@ Resources:
           import json
 
           codecommit_client = boto3.client('codecommit')
+          ssm = boto3.client('ssm')
           vcproject = os.environ['CODEBUILDVCPROJECT']
 
           def handler(event, context):

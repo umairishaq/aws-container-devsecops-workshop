@@ -119,7 +119,20 @@ Based on the feedback you received in the Pull request you can see that secrets 
     
     !!! question "How could you improve the feedback loop to remove this step?"
 
+2. Update your trufflehog configuration to only scan 1 commit deep.
+
+Change this command:
+```
+- trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
+```
+To this:
+```
+- trufflehog --regex --rules secrets_config.json --entropy=False --max_depth 1 "$APP_REPO_URL"
+```
+
+
 2. Remove the secret from the file.
+3. 
 3. Modify build spec to only scan a max depth of 1 commit (Removing secrets from previous commits and revoking any credentials are best practices but are not in scope due to time constraints.)
 3. Commit your changes
 
