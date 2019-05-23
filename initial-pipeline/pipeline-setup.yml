@@ -759,7 +759,7 @@ Resources:
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBVCEventRule.Arn
   
-  ### Feedback Loop - Merge PR, Build and Push Image
+  ### Feedback Loop - Publish Image
 
   CBPUEventRule:
     Type: "AWS::Events::Rule"
@@ -851,6 +851,22 @@ Resources:
               beforeCommitId = source_commit['Parameter']['Value'],
               afterCommitId = destination_commit['Parameter']['Value'],
               content = content
+            )
+
+            # Merge Pull Request
+            codecommit_client.merge_pull_request_by_fast_forward(
+              pullRequestId=pull_request_id['Parameter']['Value'],
+              repositoryName=repository_name['Parameter']['Value']
+            )
+
+            # Delete pipeline parameters
+            ssm.delete_parameters(
+              Names=[
+                  'prid',
+                  'repo',
+                  'sourceCommit',
+                  'destinationCommit'
+              ]
             )
       Runtime: "python2.7"
       Timeout: "35"

@@ -93,7 +93,7 @@ The next two issues can be fixed by modifying the Dockerfile.
 
 3. **DL3002**: Last USER should not be root
 
-    **Fix**: Add `RUN groupadd -r sasquatch && useradd -r -g sasquatch sasquatch`
+    **Fix**: Add `RUN addgroup -S sasquatch` and `RUN adduser -S sasquatch -G sasquatch`
     
     **Fix**: Replace `USER root` with `USER sasquatch`
 
