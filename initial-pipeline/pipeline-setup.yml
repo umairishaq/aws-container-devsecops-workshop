@@ -764,7 +764,7 @@ Resources:
   CBPUEventRule:
     Type: "AWS::Events::Rule"
     Properties:
-      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-publish'  ] ]
       Description: "Triggers when builds fail/pass in CodeBuild for the Build and Push Stage."
       EventPattern:
         source:
@@ -776,22 +776,22 @@ Resources:
             - "FAILED"
             - "SUCCEEDED"
           project-name:
-            - !Ref CodeBuildPushProject
+            - !Ref CodeBuildPublishProject
       State: "ENABLED"
       Targets:
         - Arn: !GetAtt LambdaCBPU.Arn
-          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-publish'  ] ]
 
   LambdaCBPU: 
     Type: "AWS::Lambda::Function"
     Properties: 
-      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
-      Description: "Adds a comment to the pull request regarding the success or failure of the push codebuild project."
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-publish'  ] ]
+      Description: "Adds a comment to the pull request regarding the success or failure of the publish codebuild project."
       Handler: "index.handler"
       Environment:
         Variables:
           PREFIX: !Ref ResourceName
-          CODEBUILDVCPROJECT: !Ref CodeBuildPushProject
+          CODEBUILDVCPROJECT: !Ref CodeBuildPublishProject
       Role: !GetAtt 'LambdaPRCommentRole.Arn'
       Code:
         ZipFile: |
@@ -831,7 +831,7 @@ Resources:
             if event['detail']['project-name'] in [puproject]:
               errors = '## Image Build and Push\n'
               if event['detail']['build-status'] == 'SUCCEEDED':
-                errors = errors + 'Image has successfully been built and pushed to the AWS ECR repository.  The Pull Request has been merged and closed.'
+                errors = errors + 'Image has successfully been published to the AWS ECR repository.  The Pull Request has been merged and closed.'
               else:
                 errors = errors + 'Image has failed to build.  Please review the logs'
               for phase in event['detail']['additional-information']['phases']:
@@ -875,7 +875,7 @@ Resources:
   PermissionForEventsToInvokeLambdaCBPU:
     Type: "AWS::Lambda::Permission"
     Properties:
-      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-push'  ] ]
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-publish'  ] ]
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBPUEventRule.Arn
@@ -1014,7 +1014,7 @@ Resources:
               RunOrder: 1
         - Name: 'VulnAnalysis-Dockerbuild'
           Actions:
-            - Name: BuildPushAndScan
+            - Name: VulnerabilityScan
               ActionTypeId:
                   Category: Build
                   Owner: AWS
@@ -1030,7 +1030,7 @@ Resources:
                   ProjectName: !Ref CodeBuildVulnProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
-        - Name: 'PushImage'
+        - Name: 'PublishImage'
           Actions:
             - Name: Build
               ActionTypeId:
@@ -1045,7 +1045,7 @@ Resources:
                 - Name: "AppSource"
                 - Name: "ConfigSource"
               Configuration:
-                  ProjectName: !Ref CodeBuildPushProject
+                  ProjectName: !Ref CodeBuildPublishProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
 
@@ -1202,9 +1202,9 @@ Resources:
         Type: CODEPIPELINE
         BuildSpec: buildspec_vuln.yml
       
-  #### CodeBuild Project - Build and Push Image ####
+  #### CodeBuild Project - Publish Image ####
 
-  CodeBuildPushProject:
+  CodeBuildPublishProject:
     Type: AWS::CodeBuild::Project
     Properties:
       Artifacts:
@@ -1220,7 +1220,7 @@ Resources:
           - Name: IMAGE_REPO_NAME
             Type: PLAINTEXT
             Value: !Join [ '-', [ !Ref ResourceName, 'sample'  ] ]
-      Name: !Join [ '-', [ !Ref ResourceName, 'build', 'push'  ] ]
+      Name: !Join [ '-', [ !Ref ResourceName, 'publish'  ] ]
       ServiceRole: !GetAtt 'CodeBuildRole.Arn'
       Source: 
         Type: CODEPIPELINE

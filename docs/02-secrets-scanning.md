@@ -44,7 +44,7 @@ When using trufflehog you can optionally specify a configuration file that conta
 
 1.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.json**.
 
-3.  Paste the YAML below and save the file.
+3.  Paste the JSON below and save the file.
 
 ```json
 {

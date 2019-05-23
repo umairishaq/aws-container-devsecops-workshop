@@ -22,7 +22,7 @@ Now that you have integrated multiple types of security testing into your pipeli
 6. **Dockerfile Linting Stage**: The stage pulls in the artifacts from S3 and uses Hadolint (build spec file and configuration file pulled in from S3) to lint the Dockerfile to ensure it adheres to best practices.
 7.  **Secrets Scanning Stage**: The stage runs high signal regex checks directly against the CodeCommit Repository (*container-devsecops-wksp-app - development branch*)
 8.  **Vulnerability Scanning Stage**: The stage builds the container image, pushes it to ECR, and triggers an Anchore vulnerability assessment against the image.  If the scan results include any vulnerabilites that meet or exceed the threshold the build fails.  If the vulnerabilites are lower than the threshold the CodeBuild project will invoke a Lambda function with the scan results as the payload and the Lambda function will push the vulnerabilites into AWS Security Hub for future triaging since the risk for those have been accepted.
-9.  **Image Push**: The last stage builds the image using the destination commit hash as the tag and pushes it to AWS ECR.
+9.  **Publish Imaeg**: The last stage builds the image using the destination commit hash as the tag and publishes it to AWS ECR.
 10. **CodeBuild Triggers**: If any CodeBuild Project fails a CloudWatch Event Rule is triggered.
 11. **Triggers Lambda Function**: The Lambda Function is setup as a target for the CloudWatch Event Rule and is invoked after the CloudWatch Event Rule is triggered.
 12. **Adds Feedback to Pull Request**:  The Lambda Function takes the results from each stage and CodeBuild project and posts a comment back to the Pull Requst.  This gives the developers fast feedback so they're able to fix any issues that are identified through the pipeline.
@@ -117,11 +117,15 @@ Based on the feedback you received in the Pull request you can see that secrets 
 
 1. Click on **Logs** in the comment or view the CodeBuild Project history to identify the secret and the file it is located in.
     
-    !!! question "How could you improve the feedback loop to remove this step?"
+    !!! question "How could you improve the feedback loop to make it easier for the developer?"
+
+2. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.yml**.
 
 2. Update your trufflehog configuration to only scan 1 commit deep.
 
 Change this command:
+
+
 ```
 - trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
 ```
