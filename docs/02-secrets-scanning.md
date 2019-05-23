@@ -32,12 +32,9 @@ phases:
     commands:
     - echo Build started on `date`
     - echo Scanning with truffleHog...          
-    - result=`trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"`
-    - if [ -z "$var" ]; then result="[]"; fi  
+    - trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL" 
   post_build:
     commands:
-    - echo $result
-    - aws ssm put-parameter --name "codebuild-secrets-results" --type "String" --value "$result" --overwrite
     - echo Build completed on `date`
 ```
 

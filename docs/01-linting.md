@@ -41,7 +41,7 @@ phases:
         commands:
         - echo $result
         - aws ssm put-parameter --name "codebuild-dockerfile-results" --type "String" --value "$result" --overwrite
-    - echo Build completed on `date`
+        - echo Build completed on `date`
 ```
 
 ## Add the Hadolint configuration

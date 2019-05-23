@@ -34,7 +34,7 @@ Now you can test your pipeline to see how your Pull Requests result with an imag
 1.	Within your Cloud9 IDE expand your **sample application** on the left side.
 2.  Open the **Dockerfile**.
 3.  Add a name to the Label line.
-4.  Push your commit and create a Pull Request.
+4.  Push your commit.
 
 ```
     cd /home/ec2-user/environment/sample-application
@@ -72,7 +72,7 @@ In the feedback you should see multiple issues that were identified by the Docke
 
 3.  **DL3026**: Use only an allowed registry in the FROM image
 
-    **Fix**: Add `- dockerhub.io` under **trustedRegistries** (for testing purposes)
+    **Fix**: Add `- docker.io` under **trustedRegistries** (for testing purposes)
 
 4.  Commit your configuration changes:
 
@@ -122,6 +122,8 @@ Based on the feedback you received in the Pull request you can see that secrets 
 2. Remove the secret from the file.
 3. Modify build spec to only scan a max depth of 1 commit (Removing secrets from previous commits and revoking any credentials are best practices but are not in scope due to time constraints.)
 3. Commit your changes
+
+## Stage 3: Vulnerability Scanning Stage
 
 ---
 
