@@ -1,28 +1,53 @@
-# Cleaup
+# Module 5: Cleanup
 
-Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.
+In order to prevent charges to your account we recommend cleaning up the infrastructure that was created. If you plan to keep things running so you can examine the workshop a bit more please remember to do the cleanup when you are done. It is very easy to leave things running in an AWS account, forgot about it, and then accrue charges.
 
-* **Level**: Intermediate
-* **Duration**: 2 - 3 hours
-* **<a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a>**: Prevent
-* **<a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a>**: Preventative
-* **<a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href>**: AWS Account, Admin IAM User
+!!! info "You will need to manually delete some resources before you delete the CloudFormation stacks so please do the following steps in order."
 
-## Scenario
+## Retrieve your AWS Account #
 
+1.  Open your Cloud9 IDE
+2.  Retrieve and copy your AWS Account #
 
+```
+aws sts get-caller-identity
+```
 
-## Architecture
+## Delete the artifact S3 bucket
 
+* Delete all objects in the bucket (Replace <Account#>):
+```
+aws s3 rm s3://container-devsecops-wksp-<ACCOUNT#>-us-east-2-artifacts --recursive
+```
+* Delete bucket (Replace <Account #>):
+```
+aws s3api delete-bucket --bucket container-devsecops-wksp-<ACCOUNT#>-us-east-2-artifacts
+```
 
+## Delete the AWS CloudWatch Log Groups
 
+```
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-dockerfile
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-initial-commit
+```
 
+## Delete the AWS ECR repositories
 
-## Presentation deck
+```
+aws ecr delete-repository --repository-name container-devsecops-wksp-sample
+aws ecr delete-repository --repository-name container-devsecops-wksp-anchore
+```
 
+## Delete CloudFormation templates
 
-## Region
+* Delete the pipeline stack:
+```
+aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+```
 
-
-## Modules
+* Delete the Anchore service:
+```
+aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+```
 

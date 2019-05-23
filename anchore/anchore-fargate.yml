@@ -4,10 +4,21 @@ Description: >
   This AWS CloudFormation Template creates a Fargate
   application for Anchore Open sources.
 
+Parameters:
+  
+  ResourceName:
+    Type: String
+    Default: container-devsecops-wksp
+    AllowedValues: 
+      - container-devsecops-wksp
+    Description: Prefix of Resources created for this workshop.
+
 Resources:
 
   AnchoreRepository:
     Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Join [ '-', [ !Ref ResourceName, 'anchore'  ] ]
 
   AnchoreCodeBuildRole: 
     Type: AWS::IAM::Role

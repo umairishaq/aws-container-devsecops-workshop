@@ -2,80 +2,57 @@
 
 **Time**: 15 minutes
 
-Next, you need to setup a stage for identifying secrets throughout your code.  For this stage you'll be leveraging <a href="https://github.com/dxa4481/truffleHog" target="_blank">trufflehog</a>, a popular open source project for finding secrets accidentally committed in repositories.  It essentially searches through git repositories for secrets, digging deep into commit history and branches.  It identifies secrets by running entropy checks as well as high signal regex checks. 
-
-## View your CodeBuild Project
-
-The CodeBuild project for secrets scanning has already been created but hasn't been properly configured.  
-
-1.  Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-secrets/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project
+The last stage you will add will be for identifying vulnerabilities in your contaiiner image.  For this stage you'll be using <a href="https://anchore.com/opensource/" target="_blank">Anchore</a>, a popular open source container compliance platform.  This service can do a number of different validations but you will be primarily using it for checking your image for any Common Vulnerabilities and Exposures (CVE).
 
 ## Create the Build Spec file
 
 1.  Click on your Cloud9 IDE tab.
 
-2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_secrets.yml**.
+2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_vuln.yml**.
 
-3.  Paste the YAML below and save the file.
+3.  Review the YAML code below, paste it in the file, and save.
 
 ```yaml
 version: 0.2
 
-phases:
-  pre_build:
+phases: 
+  pre_build: 
     commands:
-    - echo Setting CodeCommit Credentials
-    - git config --global credential.helper '!aws codecommit credential-helper $@'
-    - git config --global credential.UseHttpPath true
-    - echo Copying secrets_config.json to the application directory
-    - cp secrets_config.json $CODEBUILD_SRC_DIR_AppSource/secrets_config.json
-    - echo Switching to the application directory
-    - echo Installing pip and truffleHog
-    - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py 
-    - python get-pip.py 
-    - pip install truffleHog
-  build:
+      - apt-get update && apt-get install -y python-dev jq
+      - docker pull anchore/engine-cli:v0.3.4
+      - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py  
+      - python get-pip.py
+      - pip install awscli
+      - $(aws ecr get-login --no-include-email)
+      - ANCHORE_CMD="docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli:v0.3.4 anchore-cli"
+      - $ANCHORE_CMD registry add $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com awsauto awsauto --registry-type=awsecr || return 0
+  build: 
     commands:
-    - echo Build started on `date`
-    - echo Scanning with truffleHog...          
-    - result=`trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"`
-    - if [ -z "$var" ]; then result="[]"; fi  
+      - IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME
+      - docker build $CODEBUILD_SRC_DIR_AppSource -t $IMAGE
+      - docker push $IMAGE
   post_build:
     commands:
-    - echo $result
-    - aws ssm put-parameter --name "codebuild-secrets-results" --type "String" --value "$result" --overwrite
-    - echo Build completed on `date`
+      - $ANCHORE_CMD image add $IMAGE
+      - while [ $($ANCHORE_CMD --json image get $IMAGE | jq -r '.[0].analysis_status') != "analyzed" ]; do sleep 1; done
+      - $ANCHORE_CMD --json image vuln $IMAGE os > scan_results.json
+      - jq -c --arg image $IMAGE --arg arn $IMAGE_ARN '. + {image_id:$image, image_arn:$arn}' scan_results.json >> tmp.json
+      - mv tmp.json scan_results.json
+      - aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile
+      - if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN '.vulnerabilities[] | (.severity==$threshold)' | grep -q true; then echo "Vulnerabilties Found" && exit 1; fi
 ```
 
-## Add the trufflehog regex configuration
+## Commit all configuration changes
 
-When using trufflehog you can optionally specify a configuration file that contains custom regex checks.
+Since you've made changes to a number of files in the configuration repo, you need to commit those changes to ensure your pipeline is pulling in the right files.
 
-1.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.json**.
-
-3.  Paste the YAML below and save the file.
-
-```json
-{
-    "Slack Token": "(xox[p|b|o|a]-[0-9]{12}-[0-9]{12}-[0-9]{12}-[a-z0-9]{32})",
-    "RSA private key": "-----BEGIN RSA PRIVATE KEY-----",
-    "SSH (OPENSSH) private key": "-----BEGIN OPENSSH PRIVATE KEY-----",
-    "SSH (DSA) private key": "-----BEGIN DSA PRIVATE KEY-----",
-    "SSH (EC) private key": "-----BEGIN EC PRIVATE KEY-----",
-    "PGP private key block": "-----BEGIN PGP PRIVATE KEY BLOCK-----",
-    "Facebook Oauth": "[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*['|\"][0-9a-f]{32}['|\"]",
-    "Twitter Oauth": "[t|T][w|W][i|I][t|T][t|T][e|E][r|R].*['|\"][0-9a-zA-Z]{35,44}['|\"]",
-    "GitHub": "[g|G][i|I][t|T][h|H][u|U][b|B].*['|\"][0-9a-zA-Z]{35,40}['|\"]",
-    "Google Oauth": "(\"client_secret\":\"[a-zA-Z0-9-_]{24}\")",
-    "AWS API Key": "AKIA[0-9A-Z]{16}",
-    "Heroku API Key": "[h|H][e|E][r|R][o|O][k|K][u|U].*[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}",
-    "Generic Secret": "[s|S][e|E][c|C][r|R][e|E][t|T].*['|\"][0-9a-zA-Z]{32,45}['|\"]",
-    "Generic API Key": "[a|A][p|P][i|I][_]?[k|K][e|E][y|Y].*['|\"][0-9a-zA-Z]{32,45}['|\"]",
-    "Slack Webhook": "https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}",
-    "Google (GCP) Service-account": "\"type\": \"service_account\"",
-    "Twilio API Key": "SK[a-z0-9]{32}",
-    "Password in URL": "[a-zA-Z]{3,10}://[^/\\s:@]{3,20}:[^/\\s:@]{3,20}@.{1,100}[\"'\\s]"
-}
 ```
+cd /home/ec2-user/environment/container-devsecops-wksp-config
+git add .
+git commit -m "Updated Build Spec files and configurations."
+git push -u origin master
+```
+
+---
 
 After you have successfully configured the secrets scanning stage, you can proceed to the next module.

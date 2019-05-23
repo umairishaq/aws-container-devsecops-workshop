@@ -589,7 +589,6 @@ Resources:
           import json
 
           codecommit_client = boto3.client('codecommit')
-          ssm = boto3.client('ssm')
           scproject = os.environ['CODEBUILDSCPROJECT']
 
           def handler(event, context):
@@ -614,16 +613,12 @@ Resources:
               Name='destinationCommit'
             )
 
-            build_results = ssm.get_parameter(
-              Name='codebuild-secrets-results'
-            )
-
             s3_prefix = 's3-{0}'.format(event['region']) if event['region'] != 'us-east-1' else 's3'
             if event['detail']['project-name'] in [scproject]:
-              build_results = build_results['Parameter']['Value']
+              
               # Add Errors
               errors = '## Static Analysis - Secrets Scanning  (using truffleHog)\n'
-              if build_results == '[]':
+              if event['detail']['build-status'] == 'SUCCEEDED':
                 errors = errors + 'No secrets found!'
               else:
                 errors = errors + 'Secrets found! Please review the logs and remove any sensitive data.'
@@ -644,10 +639,6 @@ Resources:
               beforeCommitId = source_commit['Parameter']['Value'],
               afterCommitId = destination_commit['Parameter']['Value'],
               content = content
-            )
-
-            ssm.delete_parameter(
-              Name='codebuild-secrets-results'
             )
       Runtime: "python2.7"
       Timeout: "35"
@@ -703,7 +694,6 @@ Resources:
           import json
 
           codecommit_client = boto3.client('codecommit')
-          ssm = boto3.client('ssm')
           vcproject = os.environ['CODEBUILDVCPROJECT']
 
           def handler(event, context):
@@ -728,20 +718,15 @@ Resources:
               Name='destinationCommit'
             )
 
-            build_results = ssm.get_parameter(
-              Name='codebuild-secrets-results'
-            )
-
             s3_prefix = 's3-{0}'.format(event['region']) if event['region'] != 'us-east-1' else 's3'
             sec_hub = 'https://%s.console.aws.amazon.com/securityhub/' % event['region'] 
             if event['detail']['project-name'] in [vcproject]:
-              build_results = build_results['Parameter']['Value']
               # Add Errors
               errors = '## Static Analysis - Vulnerability Scanning  (using Anchore)\n'
-              if build_results == '[]':
-                errors = errors + 'No critical or high findings!  Please manage all other vulnerabilities in [Security Hub](%s).' % sec_hub
+              if event['detail']['build-status'] == 'SUCCEEDED':
+                errors = errors + 'No vulnerabilities that meet or exceed the threshold!  Please manage all other vulnerabilities in [Security Hub](%s).' % sec_hub
               else:
-                errors = errors + 'Critical or high findings found! Please review the logs and fix the vulnerabilities.'
+                errors = errors + 'Findings found! Please review the logs and fix the vulnerabilities.'
               for phase in event['detail']['additional-information']['phases']:
                 if phase.get('phase-status') == 'FAILED':
                     badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/failing.svg'.format(s3_prefix, event['region'])
@@ -760,10 +745,6 @@ Resources:
               afterCommitId = destination_commit['Parameter']['Value'],
               content = content
             )
-
-            #ssm.delete_parameter(
-            #  Name='codebuild-secrets-results'
-            #)
       Runtime: "python2.7"
       Timeout: "35"
       MemorySize: 128

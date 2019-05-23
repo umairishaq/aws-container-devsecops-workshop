@@ -141,7 +141,7 @@ def handler(event, context):
             codecommit.create_branch(
                 repositoryName=repo,
                 branchName=masterbranch,
-                commitId=commit2['commitId']
+                commitId=commita['commitId']
             )
 
             codecommit.update_default_branch(

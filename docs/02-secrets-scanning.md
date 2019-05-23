@@ -1,14 +1,8 @@
-# Module 3 <small>Add a secrets scanning stage</small>
+# Module 2 <small>Add a secrets scanning stage</small>
 
 **Time**: 15 minutes
 
 Next, you need to setup a stage for identifying secrets throughout your code.  For this stage you'll be leveraging <a href="https://github.com/dxa4481/truffleHog" target="_blank">trufflehog</a>, a popular open source project for finding secrets accidentally committed in repositories.  It essentially searches through git repositories for secrets, digging deep into commit history and branches.  It identifies secrets by running entropy checks as well as high signal regex checks. 
-
-## View your CodeBuild Project
-
-The CodeBuild project for secrets scanning has already been created but hasn't been properly configured.  
-
-1.  Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-secrets/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project
 
 ## Create the Build Spec file
 
@@ -16,7 +10,7 @@ The CodeBuild project for secrets scanning has already been created but hasn't b
 
 2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_secrets.yml**.
 
-3.  Paste the YAML below and save the file.
+3.  Review the YAML code below, paste it in the file, and save.
 
 ```yaml
 version: 0.2

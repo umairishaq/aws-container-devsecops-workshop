@@ -1,4 +1,4 @@
-# Module 2 <small>Add a Dockerfile linting stage</small>
+# Module 1 <small>Add a Dockerfile linting stage</small>
 
 **Time**: 15 minutes
 
@@ -6,7 +6,7 @@ Now that you have your initial pipeline setup, it is time to start integrating s
 
 ## View your CodeBuild Project
 
-For each AWS CodePipeline stage you'll be using <a href="https://github.com/hadolint/hadolint" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  
+For each AWS CodePipeline stage you'll be using <a href="https://aws.amazon.com/codebuild/" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  
 
 1.  Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-dockerfile/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project
 
@@ -18,29 +18,29 @@ Each CodeBuild project contains a build specification (build spec) file, which i
 
 2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_dockerfile.yml**.
 
-3.  Paste the YAML below and save the file.
+3.  Review the YAML code below, paste it in the file, and save it.
 
 ```yaml
 version: 0.2
 
 phases:
-pre_build:
-    commands:
-    - echo Copying hadolint.yml to the application directory
-    - cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml
-    - echo Switching to the application directory
-    - cd $CODEBUILD_SRC_DIR_AppSource
-    - echo Pulling the hadolint docker image
-    - docker pull hadolint/hadolint:v1.16.2
-build:
-    commands:
-    - echo Build started on `date`
-    - echo Scanning with Hadolint...          
-    - result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - < Dockerfile`
-post_build:
-    commands:
-    - echo $result
-    - aws ssm put-parameter --name "codebuild-dockerfile-results" --type "String" --value "$result" --overwrite
+    pre_build:
+        commands:
+        - echo Copying hadolint.yml to the application directory
+        - cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml
+        - echo Switching to the application directory
+        - cd $CODEBUILD_SRC_DIR_AppSource
+        - echo Pulling the hadolint docker image
+        - docker pull hadolint/hadolint:v1.16.2
+    build:
+        commands:
+        - echo Build started on `date`
+        - echo Scanning with Hadolint...          
+        - result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - < Dockerfile`
+    post_build:
+        commands:
+        - echo $result
+        - aws ssm put-parameter --name "codebuild-dockerfile-results" --type "String" --value "$result" --overwrite
     - echo Build completed on `date`
 ```
 

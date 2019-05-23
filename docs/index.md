@@ -1,6 +1,6 @@
 # Overview
 
-In this workshop, you will learn how to leverage AWS development tools and open-source projects to integrate automated security testing into a CI/CD pipeline. Learn about a variety of patterns for integrating security testing and security-centric release control into AWS CodePipeline. Additionally, learn how to add feedback loops and fix common security vulnerabilities in your container-based application.
+In this workshop, you will learn how to leverage AWS development tools and open-source projects to integrate automated security testing into a CI/CD pipeline. You will learn about a variety of patterns for integrating security-centric release control into AWS CodePipeline. Additionally, you will learn how to add feedback loops and fix common security vulnerabilities in your container-based applications.
 
 * **Level**: Advanced
 * **Duration**: 2 - 3 hours
@@ -12,13 +12,14 @@ In this workshop, you will learn how to leverage AWS development tools and open-
 
 ## Scenario
 
-Your company has just kicked off a new DevSecOps initiative in an effort to improve the security of critical applications by embedding security in every part of the software development lifecycle.  You are part of a DevOps team tasked with integrating security testing into a rudimentary pipeline for building and releasing container images.  Your initial tasks include adding in Dockerfile linting, secrets scanning, and vulnerability scanning.  The decision has been made to evaluate and make use of open source projects with the possibility of moving to a commercial offering based on how well the requirements are met. 
+Your company has just kicked off a new DevSecOps initiative in an effort to improve the security of critical applications by embedding security in every part of the software development lifecycle.  You are part of a DevOps team tasked with integrating security testing into a rudimentary pipeline for building and releasing container images.  Your initial tasks include adding Dockerfile linting, secrets scanning, and vulnerability scanning.  The decision has been made to evaluate and make use of open source projects with the possibility of moving to a commercial offering based on how well the requirements are met. 
 
 ## Architecture
 
-For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD pipeline as shown below.  It will include stages with in your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and Lambda Functions to create feedback loops for each stage of security testing you create.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure delivery.
+For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD pipeline as shown below.  It will include stages within your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including an integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and AWS Lambda Functions to create feedback loops for each stage of security testing.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure deliveries.
 
-![Architecture](./images/diagram-basic-arch.png "Workload Architecture")
+![Architecture](./images/diagram-basic-arch.png "Pipeline Architecture")
+
 ## Presentation deck
 
 [Workshop Presentation Deck](./container-devsecops-presentation.pdf)
@@ -27,12 +28,6 @@ For this workshop you will start with a basic CI/CD pipeline that is triggered o
 
 Please use the **us-east-2** (Ohio) region for this workshop.
 
-## Modules
+---
 
-This workshop is broken up into the four modules below: 
-
-1. [Environment Setup](./01-env-setup.md)
-2. [Dockerfile Linting](./02-linting.md) 
-3. [Secrets Scanning](./03-secrets-scanning.md) 
-4. [Vulnerability Scanning](./04-vuln-scanning.md)
-5. [Review and Discussion](./05-review.md)
+This workshop is broken up into five modules.  Please click the bottom right button to proceed to the environment setup.
