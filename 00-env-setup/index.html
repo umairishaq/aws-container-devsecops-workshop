@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#module-1-environment-setup" tabindex="1" class="md-skip">
+      <a href="#module-0-environment-setup" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -580,11 +580,14 @@
                   <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/00-env-setup.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="module-1-environment-setup">Module 1 <small>Environment Setup</small></h1>
+                <h1 id="module-0-environment-setup">Module 0 <small>Environment Setup</small></h1>
 <p><strong>Time</strong>: 15 minutes</p>
-<p>In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating the pipeline with later on in this workshop.  This module requires you to run two different <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.</p>
+<p>In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating into the pipeline later on in this workshop.  This module requires you to run two different <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates, which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.</p>
 <h2 id="deploy-the-anchore-service">Deploy the Anchore service</h2>
-<p>The first CloudFormation you run will create the Anchore vulnerability scanning service.  Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/anchore/anchore-fargate.yml" target="_blank">here</a href>.</p>
+<p>The first CloudFormation you run will create the Anchore vulnerability scanning service.  </p>
+<div class="admonition info">
+<p class="admonition-title">Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/anchore/anchore-fargate.yml" target="_blank">here</a href>.</p>
+</div>
 <table>
 <thead>
 <tr>
@@ -613,12 +616,17 @@
 <p>Finally, acknowledge that the template will create IAM roles and CAPABILITY_AUTO_EXPAND and click <strong>Create</strong>.</p>
 </li>
 </ol>
+<details class="question"><summary>What is CAPABILITY_AUTO_EXPAND?</summary><p>Some templates contain macros. Macros perform custom processing on templates; this can include simple actions like find-and-replace operations, all the way to extensive transformations of entire templates. Because of this, users typically create a change set from the processed template, so that they can review the changes resulting from the macros before actually creating the stack. If your stack template contains one or more macros, and you choose to create a stack directly from the processed template, without first reviewing the resulting changes in a change set, you must acknowledge this capability.</p>
+</details>
 <p>This will bring you back to the CloudFormation console. You can refresh the page to see the stack starting to create.</p>
 <div class="admonition warning">
 <p class="admonition-title">Before moving on, make sure the stack is in a <strong>CREATE_COMPLETE</strong> status.</p>
 </div>
 <h2 id="deploy-your-pipeline">Deploy your pipeline</h2>
-<p>The second CloudFormation you run will create the initial pipeline.  Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/initial-pipeline/pipeline-setup.yml" target="_blank">here</a href>.</p>
+<p>The second CloudFormation you run will create the initial pipeline.  </p>
+<div class="admonition info">
+<p class="admonition-title">Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/initial-pipeline/pipeline-setup.yml" target="_blank">here</a href>.</p>
+</div>
 <table>
 <thead>
 <tr>
@@ -682,9 +690,8 @@ git clone https://git-codecommit.us-east-2.amazonaws.com/v1/repos/container-devs
 </pre></div>
 
 
-<div class="admonition info">
-<p class="admonition-title">To make life easier on yourself, always keep your IDE tab open and use a different tab for all other activities.</p>
-</div>
+<details class="question"><summary>What is aws codecommit credential-helper?</summary><p>The credential-helper utility is not designed to be called directly from the AWS CLI. Instead it is intended to be used as a parameter with the git config command to set up your local computer. It enables Git to use HTTPS and a cryptographically signed version of your IAM user credentials or Amazon EC2 instance role whenever Git needs to authenticate with AWS to interact with CodeCommit repositories.</p>
+</details>
 <h2 id="enable-aws-security-hub">Enable AWS Security Hub</h2>
 <p>You will be using AWS Security Hub to manage your container image vulnerabilities.</p>
 <ol>

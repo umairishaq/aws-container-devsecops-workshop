@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#cleaup" tabindex="1" class="md-skip">
+      <a href="#module-4-pipeline-testing" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -439,36 +439,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#pipeline-architecture" title="Pipeline Architecture" class="md-nav__link">
+    Pipeline Architecture
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#make-a-commit" title="Make a commit" class="md-nav__link">
+    Make a commit
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#create-a-pull-request" title="Create a Pull Request" class="md-nav__link">
+    Create a Pull Request
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#view-the-feedback-loop" title="View the feedback loop" class="md-nav__link">
+    View the feedback loop
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#stage-1-fix-dockerfile-linting-issues" title="Stage 1: Fix Dockerfile linting issues" class="md-nav__link">
+    Stage 1: Fix Dockerfile linting issues
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-2-remove-secrets" title="Stage 2: Remove secrets" class="md-nav__link">
+    Stage 2: Remove secrets
   </a>
   
 </li>
@@ -541,36 +548,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#pipeline-architecture" title="Pipeline Architecture" class="md-nav__link">
+    Pipeline Architecture
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#make-a-commit" title="Make a commit" class="md-nav__link">
+    Make a commit
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#create-a-pull-request" title="Create a Pull Request" class="md-nav__link">
+    Create a Pull Request
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#view-the-feedback-loop" title="View the feedback loop" class="md-nav__link">
+    View the feedback loop
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#stage-1-fix-dockerfile-linting-issues" title="Stage 1: Fix Dockerfile linting issues" class="md-nav__link">
+    Stage 1: Fix Dockerfile linting issues
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stage-2-remove-secrets" title="Stage 2: Remove secrets" class="md-nav__link">
+    Stage 2: Remove secrets
   </a>
   
 </li>
@@ -594,20 +608,138 @@
                   <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/04-testing.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="cleaup">Cleaup</h1>
-<p>Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.</p>
-<ul>
-<li><strong>Level</strong>: Intermediate</li>
-<li><strong>Duration</strong>: 2 - 3 hours</li>
-<li><strong><a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a></strong>: Prevent</li>
-<li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative</li>
-<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
+                <h1 id="module-4-pipeline-testing">Module 4 <small>Pipeline Testing</small></h1>
+<p><strong>Time</strong>: 30 minutes</p>
+<p>Now that you have integrated multiple types of security testing into your pipeline you can test it to ensure your stages are effective in properly evaluating the security of your container-based applications.  While going through each stage you will fix any misconfiguration or vulnerability so that your sample application is able to successfully passes through each stage and is pushed to AWS ECR.</p>
+<h2 id="pipeline-architecture">Pipeline Architecture</h2>
+<p><img alt="Architecture" src="../images/04-final-arch.png" title="Pipeline Architecture" /></p>
+<ol>
+<li><strong>Commit</strong>: Developer makes a commit to the <em>Development</em> branch.</li>
+<li><strong>Pull Request</strong>: Developer makes a Pull Request<ul>
+<li>Source Branch: <em>Developement</em></li>
+<li>Destination Branch: <em>Master</em></li>
 </ul>
-<h2 id="scenario">Scenario</h2>
-<h2 id="architecture">Architecture</h2>
-<h2 id="presentation-deck">Presentation deck</h2>
-<h2 id="region">Region</h2>
-<h2 id="modules">Modules</h2>
+</li>
+<li><strong>Triggers Rule</strong>: A CloudWatch Event Rule is triggered based on the following events:<ul>
+<li><em>pullRequestSourceBranchUpdated</em></li>
+<li><em>pullRequestCreated</em></li>
+</ul>
+</li>
+<li><strong>Starts CodePipeline</strong>: The AWS CodePipeline is setup as a target for the CloudWatch Event Rule and it is started after the CloudWatch Event Rule is triggered</li>
+<li><strong>Pull Request Stage</strong>: The stage pulls in these sources and stores them as artifacts in S3;<ul>
+<li>CodeCommit repository: <em>container-devsecops-wksp-app (development branch)</em></li>
+<li>CodeCommit repository: <em>container-devsecops-wksp-config (master branch)</em></li>
+</ul>
+</li>
+<li><strong>Dockerfile Linting Stage</strong>: The stage pulls in the artifacts from S3 and uses Hadolint (build spec file and configuration file pulled in from S3) to lint the Dockerfile to ensure it adheres to best practices.</li>
+<li><strong>Secrets Scanning Stage</strong>: The stage runs high signal regex checks directly against the CodeCommit Repository (<em>container-devsecops-wksp-app - development branch</em>)</li>
+<li><strong>Vulnerability Scanning Stage</strong>: The stage builds the container image, pushes it to ECR, and triggers an Anchore vulnerability assessment against the image.  If the scan results include any vulnerabilites that meet or exceed the threshold the build fails.  If the vulnerabilites are lower than the threshold the CodeBuild project will invoke a Lambda function with the scan results as the payload and the Lambda function will push the vulnerabilites into AWS Security Hub for future triaging since the risk for those have been accepted.</li>
+<li><strong>Image Push</strong>: The last stage builds the image using the destination commit hash as the tag and pushes it to AWS ECR.</li>
+<li><strong>CodeBuild Triggers</strong>: If any CodeBuild Project fails a CloudWatch Event Rule is triggered.</li>
+<li><strong>Triggers Lambda Function</strong>: The Lambda Function is setup as a target for the CloudWatch Event Rule and is invoked after the CloudWatch Event Rule is triggered.</li>
+<li><strong>Adds Feedback to Pull Request</strong>:  The Lambda Function takes the results from each stage and CodeBuild project and posts a comment back to the Pull Requst.  This gives the developers fast feedback so they're able to fix any issues that are identified through the pipeline.</li>
+</ol>
+<h2 id="make-a-commit">Make a commit</h2>
+<p>Now you can test your pipeline to see how your Pull Requests result with an image being built and pushed to AWS ECR. First, make a commit to the <em>development branch</em> of your sample application</p>
+<ol>
+<li>Within your Cloud9 IDE expand your <strong>sample application</strong> on the left side.</li>
+<li>Open the <strong>Dockerfile</strong>.</li>
+<li>Add a name to the Label line.</li>
+<li>Push your commit and create a Pull Request.</li>
+</ol>
+<div class="codehilite"><pre><span></span>    cd /home/ec2-user/environment/sample-application
+    git add Dockerfile
+    git commit -m &quot;Modified Maintainer in Dockerfile&quot;
+    git push -u origin development
+</pre></div>
+
+
+<h2 id="create-a-pull-request">Create a Pull Request</h2>
+<div class="codehilite"><pre><span></span>aws codecommit create-pull-request \
+    --title &quot;Updated Maintainer&quot; \
+    --description &quot;Please review these changes.&quot; \
+    --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
+</pre></div>
+
+
+<p>Go to your <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view the progress and result.</p>
+<h2 id="view-the-feedback-loop">View the feedback loop</h2>
+<p>Each time a stage is run the results of the CodeBuild Project are posted back to the Pull Request to act as a feedback loop for developers.</p>
+<ol>
+<li>Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a></li>
+<li>Click on the latest Pull Request.</li>
+<li>Click the <strong>Activity</strong> tab to view the feedback.</li>
+</ol>
+<h2 id="stage-1-fix-dockerfile-linting-issues">Stage 1: Fix Dockerfile linting issues</h2>
+<p>In the feedback you should see multiple issues that were identified by the Dockerfile linting stage.  The first issue can be fixed by modifying the hadolint configuration.</p>
+<ol>
+<li>
+<p>Click on your Cloud9 IDE tab.</p>
+</li>
+<li>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>hadolint.yml</strong>.</p>
+</li>
+<li>
+<p><strong>DL3026</strong>: Use only an allowed registry in the FROM image</p>
+<p><strong>Fix</strong>: Add <code>- dockerhub.io</code> under <strong>trustedRegistries</strong> (for testing purposes)</p>
+</li>
+<li>
+<p>Commit your configuration changes:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/container-devsecops-wksp-config
+git add .
+git commit -m &quot;Added a trusted registry to hadolint configuration.&quot;
+git push -u origin master
+</pre></div>
+
+
+<p>The next two issues can be fixed by modifying the Dockerfile.</p>
+<ol>
+<li>
+<p>In the left file tree, expand the <strong>sample-application</strong> folder and open <strong>Dockerfile</strong>.</p>
+</li>
+<li>
+<p><strong>DL3007</strong>: Using latest is prone to errors if the image will ever update. Pin the version explicitly to a release tag</p>
+<p><strong>Fix</strong>: Replace <code>FROM python:latest</code> with <code>FROM python:alpine3.7</code></p>
+</li>
+<li>
+<p><strong>DL3002</strong>: Last USER should not be root</p>
+<p><strong>Fix</strong>: Add <code>RUN groupadd -r sasquatch &amp;&amp; useradd -r -g sasquatch sasquatch</code></p>
+<p><strong>Fix</strong>: Replace <code>USER root</code> with <code>USER sasquatch</code></p>
+</li>
+<li>
+<p>Commit your application source code changes:</p>
+</li>
+</ol>
+<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/sample-application
+git add Dockerfile
+git commit -m &quot;Fixed Dockerfile linting issues.&quot;
+git push -u origin development
+</pre></div>
+
+
+<p><strong>View the Pull Request Feedback</strong>
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
+2. Click on the latest Pull Request.
+3. Click the <strong>Activity</strong> tab to view the feedback.</p>
+<h2 id="stage-2-remove-secrets">Stage 2: Remove secrets</h2>
+<p>Based on the feedback you received in the Pull request you can see that secrets were identified in your code.  </p>
+<ol>
+<li>
+<p>Click on <strong>Logs</strong> in the comment or view the CodeBuild Project history to identify the secret and the file it is located in.</p>
+<div class="admonition question">
+<p class="admonition-title">How could you improve the feedback loop to remove this step?</p>
+</div>
+</li>
+<li>
+<p>Remove the secret from the file.</p>
+</li>
+<li>Modify build spec to only scan a max depth of 1 commit (Removing secrets from previous commits and revoking any credentials are best practices but are not in scope due to time constraints.)</li>
+<li>Commit your changes</li>
+</ol>
+<hr />
+<p>Congratulations!  You've completed the <strong>Integrating security into your container pipeline</strong> workshop. You can proceed to the next module to clean up the resources in your account.</p>
                 
                   
                 

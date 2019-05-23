@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#module-3-add-a-secrets-scanning-stage" tabindex="1" class="md-skip">
+      <a href="#module-2-add-a-secrets-scanning-stage" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -415,13 +415,6 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
-    View your CodeBuild Project
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
     Create the Build Spec file
   </a>
@@ -527,13 +520,6 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
-    View your CodeBuild Project
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
     Create the Build Spec file
   </a>
@@ -566,14 +552,9 @@
                   <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/02-secrets-scanning.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="module-3-add-a-secrets-scanning-stage">Module 3 <small>Add a secrets scanning stage</small></h1>
+                <h1 id="module-2-add-a-secrets-scanning-stage">Module 2 <small>Add a secrets scanning stage</small></h1>
 <p><strong>Time</strong>: 15 minutes</p>
 <p>Next, you need to setup a stage for identifying secrets throughout your code.  For this stage you'll be leveraging <a href="https://github.com/dxa4481/truffleHog" target="_blank">trufflehog</a>, a popular open source project for finding secrets accidentally committed in repositories.  It essentially searches through git repositories for secrets, digging deep into commit history and branches.  It identifies secrets by running entropy checks as well as high signal regex checks. </p>
-<h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
-<p>The CodeBuild project for secrets scanning has already been created but hasn't been properly configured.  </p>
-<ol>
-<li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-secrets/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
-</ol>
 <h2 id="create-the-build-spec-file">Create the Build Spec file</h2>
 <ol>
 <li>
@@ -583,7 +564,7 @@
 <p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_secrets.yml</strong>.</p>
 </li>
 <li>
-<p>Paste the YAML below and save the file.</p>
+<p>Review the YAML code below, paste it in the file, and save.</p>
 </li>
 </ol>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>

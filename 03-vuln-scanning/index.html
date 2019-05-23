@@ -427,13 +427,6 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
-    View your CodeBuild Project
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
     Create the Build Spec file
   </a>
@@ -441,8 +434,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-the-trufflehog-regex-configuration" title="Add the trufflehog regex configuration" class="md-nav__link">
-    Add the trufflehog regex configuration
+  <a href="#commit-all-configuration-changes" title="Commit all configuration changes" class="md-nav__link">
+    Commit all configuration changes
   </a>
   
 </li>
@@ -527,13 +520,6 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#view-your-codebuild-project" title="View your CodeBuild Project" class="md-nav__link">
-    View your CodeBuild Project
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#create-the-build-spec-file" title="Create the Build Spec file" class="md-nav__link">
     Create the Build Spec file
   </a>
@@ -541,8 +527,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#add-the-trufflehog-regex-configuration" title="Add the trufflehog regex configuration" class="md-nav__link">
-    Add the trufflehog regex configuration
+  <a href="#commit-all-configuration-changes" title="Commit all configuration changes" class="md-nav__link">
+    Commit all configuration changes
   </a>
   
 </li>
@@ -568,86 +554,59 @@
                 
                 <h1 id="module-4-add-a-vulnerability-scanning-stage">Module 4 <small>Add a vulnerability scanning stage</small></h1>
 <p><strong>Time</strong>: 15 minutes</p>
-<p>Next, you need to setup a stage for identifying secrets throughout your code.  For this stage you'll be leveraging <a href="https://github.com/dxa4481/truffleHog" target="_blank">trufflehog</a>, a popular open source project for finding secrets accidentally committed in repositories.  It essentially searches through git repositories for secrets, digging deep into commit history and branches.  It identifies secrets by running entropy checks as well as high signal regex checks. </p>
-<h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
-<p>The CodeBuild project for secrets scanning has already been created but hasn't been properly configured.  </p>
-<ol>
-<li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-secrets/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
-</ol>
+<p>The last stage you will add will be for identifying vulnerabilities in your contaiiner image.  For this stage you'll be using <a href="https://anchore.com/opensource/" target="_blank">Anchore</a>, a popular open source container compliance platform.  This service can do a number of different validations but you will be primarily using it for checking your image for any Common Vulnerabilities and Exposures (CVE).</p>
 <h2 id="create-the-build-spec-file">Create the Build Spec file</h2>
 <ol>
 <li>
 <p>Click on your Cloud9 IDE tab.</p>
 </li>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_secrets.yml</strong>.</p>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_vuln.yml</strong>.</p>
 </li>
 <li>
-<p>Paste the YAML below and save the file.</p>
+<p>Review the YAML code below, paste it in the file, and save.</p>
 </li>
 </ol>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
 
-<span class="l l-Scalar l-Scalar-Plain">phases</span><span class="p p-Indicator">:</span>
-  <span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
+<span class="l l-Scalar l-Scalar-Plain">phases</span><span class="p p-Indicator">:</span> 
+  <span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span> 
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Setting CodeCommit Credentials</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.helper &#39;!aws codecommit credential-helper $@&#39;</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">git config --global credential.UseHttpPath true</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying secrets_config.json to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp secrets_config.json $CODEBUILD_SRC_DIR_AppSource/secrets_config.json</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Switching to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Installing pip and truffleHog</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span> 
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python get-pip.py</span> 
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install truffleHog</span>
-  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">apt-get update &amp;&amp; apt-get install -y python-dev jq</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker pull anchore/engine-cli:v0.3.4</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span>  
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">python get-pip.py</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">pip install awscli</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$(aws ecr get-login --no-include-email)</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">ANCHORE_CMD=&quot;docker run -e ANCHORE_CLI_URL=$ANCHORE_CLI_URL -e ANCHORE_CLI_USER=$ANCHORE_CLI_USER -e ANCHORE_CLI_PASS=$ANCHORE_CLI_PASS anchore/engine-cli:v0.3.4 anchore-cli&quot;</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$ANCHORE_CMD registry add $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com awsauto awsauto --registry-type=awsecr || return 0</span>
+  <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span> 
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with truffleHog...</span>          
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`trufflehog --regex --rules secrets_config.json --entropy=False &quot;$APP_REPO_URL&quot;`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">if [ -z &quot;$var&quot; ]; then result=&quot;[]&quot;; fi</span>  
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">IMAGE=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker build $CODEBUILD_SRC_DIR_AppSource -t $IMAGE</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker push $IMAGE</span>
   <span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
     <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-secrets-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build completed on `date`</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$ANCHORE_CMD image add $IMAGE</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">while [ $($ANCHORE_CMD --json image get $IMAGE | jq -r &#39;.[0].analysis_status&#39;) != &quot;analyzed&quot; ]; do sleep 1; done</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">$ANCHORE_CMD --json image vuln $IMAGE os &gt; scan_results.json</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">jq -c --arg image $IMAGE --arg arn $IMAGE_ARN &#39;. + {image_id:$image, image_arn:$arn}&#39; scan_results.json &gt;&gt; tmp.json</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">mv tmp.json scan_results.json</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile</span>
+      <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN &#39;.vulnerabilities[] | (.severity==$threshold)&#39; | grep -q true; then echo &quot;Vulnerabilties Found&quot; &amp;&amp; exit 1; fi</span>
 </pre></div>
 
 
-<h2 id="add-the-trufflehog-regex-configuration">Add the trufflehog regex configuration</h2>
-<p>When using trufflehog you can optionally specify a configuration file that contains custom regex checks.</p>
-<ol>
-<li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>secrets_config.json</strong>.</p>
-</li>
-<li>
-<p>Paste the YAML below and save the file.</p>
-</li>
-</ol>
-<div class="codehilite"><pre><span></span><span class="p">{</span>
-    <span class="nt">&quot;Slack Token&quot;</span><span class="p">:</span> <span class="s2">&quot;(xox[p|b|o|a]-[0-9]{12}-[0-9]{12}-[0-9]{12}-[a-z0-9]{32})&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;RSA private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN RSA PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;SSH (OPENSSH) private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN OPENSSH PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;SSH (DSA) private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN DSA PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;SSH (EC) private key&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN EC PRIVATE KEY-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;PGP private key block&quot;</span><span class="p">:</span> <span class="s2">&quot;-----BEGIN PGP PRIVATE KEY BLOCK-----&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Facebook Oauth&quot;</span><span class="p">:</span> <span class="s2">&quot;[f|F][a|A][c|C][e|E][b|B][o|O][o|O][k|K].*[&#39;|\&quot;][0-9a-f]{32}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Twitter Oauth&quot;</span><span class="p">:</span> <span class="s2">&quot;[t|T][w|W][i|I][t|T][t|T][e|E][r|R].*[&#39;|\&quot;][0-9a-zA-Z]{35,44}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;GitHub&quot;</span><span class="p">:</span> <span class="s2">&quot;[g|G][i|I][t|T][h|H][u|U][b|B].*[&#39;|\&quot;][0-9a-zA-Z]{35,40}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Google Oauth&quot;</span><span class="p">:</span> <span class="s2">&quot;(\&quot;client_secret\&quot;:\&quot;[a-zA-Z0-9-_]{24}\&quot;)&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;AWS API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;AKIA[0-9A-Z]{16}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Heroku API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;[h|H][e|E][r|R][o|O][k|K][u|U].*[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Generic Secret&quot;</span><span class="p">:</span> <span class="s2">&quot;[s|S][e|E][c|C][r|R][e|E][t|T].*[&#39;|\&quot;][0-9a-zA-Z]{32,45}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Generic API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;[a|A][p|P][i|I][_]?[k|K][e|E][y|Y].*[&#39;|\&quot;][0-9a-zA-Z]{32,45}[&#39;|\&quot;]&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Slack Webhook&quot;</span><span class="p">:</span> <span class="s2">&quot;https://hooks.slack.com/services/T[a-zA-Z0-9_]{8}/B[a-zA-Z0-9_]{8}/[a-zA-Z0-9_]{24}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Google (GCP) Service-account&quot;</span><span class="p">:</span> <span class="s2">&quot;\&quot;type\&quot;: \&quot;service_account\&quot;&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Twilio API Key&quot;</span><span class="p">:</span> <span class="s2">&quot;SK[a-z0-9]{32}&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;Password in URL&quot;</span><span class="p">:</span> <span class="s2">&quot;[a-zA-Z]{3,10}://[^/\\s:@]{3,20}:[^/\\s:@]{3,20}@.{1,100}[\&quot;&#39;\\s]&quot;</span>
-<span class="p">}</span>
+<h2 id="commit-all-configuration-changes">Commit all configuration changes</h2>
+<p>Since you've made changes to a number of files in the configuration repo, you need to commit those changes to ensure your pipeline is pulling in the right files.</p>
+<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/container-devsecops-wksp-config
+git add .
+git commit -m &quot;Updated Build Spec files and configurations.&quot;
+git push -u origin master
 </pre></div>
 
 
+<hr />
 <p>After you have successfully configured the secrets scanning stage, you can proceed to the next module.</p>
                 
                   

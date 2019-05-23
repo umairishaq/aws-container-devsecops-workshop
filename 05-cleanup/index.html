@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#cleaup" tabindex="1" class="md-skip">
+      <a href="#module-5-cleanup" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -451,36 +451,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#retrieve-your-aws-account" title="Retrieve your AWS Account" class="md-nav__link">
+    Retrieve your AWS Account
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#delete-the-artifact-s3-bucket" title="Delete the artifact S3 bucket" class="md-nav__link">
+    Delete the artifact S3 bucket
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#delete-the-aws-cloudwatch-log-groups" title="Delete the AWS CloudWatch Log Groups" class="md-nav__link">
+    Delete the AWS CloudWatch Log Groups
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#delete-the-aws-ecr-repositories" title="Delete the AWS ECR repositories" class="md-nav__link">
+    Delete the AWS ECR repositories
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#delete-cloudformation-templates" title="Delete CloudFormation templates" class="md-nav__link">
+    Delete CloudFormation templates
   </a>
   
 </li>
@@ -541,36 +541,36 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#scenario" title="Scenario" class="md-nav__link">
-    Scenario
+  <a href="#retrieve-your-aws-account" title="Retrieve your AWS Account" class="md-nav__link">
+    Retrieve your AWS Account
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#architecture" title="Architecture" class="md-nav__link">
-    Architecture
+  <a href="#delete-the-artifact-s3-bucket" title="Delete the artifact S3 bucket" class="md-nav__link">
+    Delete the artifact S3 bucket
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#presentation-deck" title="Presentation deck" class="md-nav__link">
-    Presentation deck
+  <a href="#delete-the-aws-cloudwatch-log-groups" title="Delete the AWS CloudWatch Log Groups" class="md-nav__link">
+    Delete the AWS CloudWatch Log Groups
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#region" title="Region" class="md-nav__link">
-    Region
+  <a href="#delete-the-aws-ecr-repositories" title="Delete the AWS ECR repositories" class="md-nav__link">
+    Delete the AWS ECR repositories
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
+  <a href="#delete-cloudformation-templates" title="Delete CloudFormation templates" class="md-nav__link">
+    Delete CloudFormation templates
   </a>
   
 </li>
@@ -594,20 +594,61 @@
                   <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/05-cleanup.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="cleaup">Cleaup</h1>
-<p>Attendees will learn about the security considerations around building container images and then apply those learnings by embedding security testing into a CI/CD pipeline that's used for building, shipping, and deploying a container based application. They will get hands-on experience integrating security testing such as static analysis of Dockerfiles and application code, vulnerability assessments of images, and signing of images using a variety of open source projects. At the end of the workshop they'll have a fully automated CI/CD pipeline with embedded security testing that they can use to deploy an application.</p>
+                <h1 id="module-5-cleanup">Module 5: Cleanup</h1>
+<p>In order to prevent charges to your account we recommend cleaning up the infrastructure that was created. If you plan to keep things running so you can examine the workshop a bit more please remember to do the cleanup when you are done. It is very easy to leave things running in an AWS account, forgot about it, and then accrue charges.</p>
+<div class="admonition info">
+<p class="admonition-title">You will need to manually delete some resources before you delete the CloudFormation stacks so please do the following steps in order.</p>
+</div>
+<h2 id="retrieve-your-aws-account">Retrieve your AWS Account</h2>
+<ol>
+<li>Open your Cloud9 IDE</li>
+<li>Retrieve and copy your AWS Account #</li>
+</ol>
+<div class="codehilite"><pre><span></span>aws sts get-caller-identity
+</pre></div>
+
+
+<h2 id="delete-the-artifact-s3-bucket">Delete the artifact S3 bucket</h2>
 <ul>
-<li><strong>Level</strong>: Intermediate</li>
-<li><strong>Duration</strong>: 2 - 3 hours</li>
-<li><strong><a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a></strong>: Prevent</li>
-<li><strong><a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a></strong>: Preventative</li>
-<li><strong><a href="https://awssecworkshops.com/getting-started/" target="_blank">Prerequisites</a href></strong>: AWS Account, Admin IAM User</li>
+<li>Delete all objects in the bucket (Replace <Account#>):</li>
 </ul>
-<h2 id="scenario">Scenario</h2>
-<h2 id="architecture">Architecture</h2>
-<h2 id="presentation-deck">Presentation deck</h2>
-<h2 id="region">Region</h2>
-<h2 id="modules">Modules</h2>
+<div class="codehilite"><pre><span></span>aws s3 rm s3://container-devsecops-wksp-&lt;ACCOUNT#&gt;-us-east-2-artifacts --recursive
+</pre></div>
+
+
+<ul>
+<li>Delete bucket (Replace <Account #>):</li>
+</ul>
+<div class="codehilite"><pre><span></span>aws s3api delete-bucket --bucket container-devsecops-wksp-&lt;ACCOUNT#&gt;-us-east-2-artifacts
+</pre></div>
+
+
+<h2 id="delete-the-aws-cloudwatch-log-groups">Delete the AWS CloudWatch Log Groups</h2>
+<div class="codehilite"><pre><span></span>aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-dockerfile
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-initial-commit
+</pre></div>
+
+
+<h2 id="delete-the-aws-ecr-repositories">Delete the AWS ECR repositories</h2>
+<div class="codehilite"><pre><span></span>aws ecr delete-repository --repository-name container-devsecops-wksp-sample
+aws ecr delete-repository --repository-name container-devsecops-wksp-anchore
+</pre></div>
+
+
+<h2 id="delete-cloudformation-templates">Delete CloudFormation templates</h2>
+<ul>
+<li>Delete the pipeline stack:</li>
+</ul>
+<div class="codehilite"><pre><span></span>aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+</pre></div>
+
+
+<ul>
+<li>Delete the Anchore service:</li>
+</ul>
+<div class="codehilite"><pre><span></span>aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+</pre></div>
                 
                   
                 

@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#module-2-add-a-dockerfile-linting-stage" tabindex="1" class="md-skip">
+      <a href="#module-1-add-a-dockerfile-linting-stage" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -566,11 +566,11 @@
                   <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/edit/master/docs/01-linting.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="module-2-add-a-dockerfile-linting-stage">Module 2 <small>Add a Dockerfile linting stage</small></h1>
+                <h1 id="module-1-add-a-dockerfile-linting-stage">Module 1 <small>Add a Dockerfile linting stage</small></h1>
 <p><strong>Time</strong>: 15 minutes</p>
 <p>Now that you have your initial pipeline setup, it is time to start integrating security testing.  The first stage you'll add is for doing linting of Dockerfiles to help you build best practice Docker images.  For linting you'll be leveraging <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, which is a popular open source project for linting Dockerfiles and validating inline bash. The linter parses the Dockerfile into an AST and performs rules on top of the AST.  The rules aren't all security specific but they have good coverage across best practices.</p>
 <h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
-<p>For each AWS CodePipeline stage you'll be using <a href="https://github.com/hadolint/hadolint" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  </p>
+<p>For each AWS CodePipeline stage you'll be using <a href="https://aws.amazon.com/codebuild/" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  </p>
 <ol>
 <li>Click <a href="https://us-east-2.console.aws.amazon.com/codesuite/codebuild/projects/container-devsecops-wksp-build-dockerfile/details?region=us-east-2" target="_blank">here</a> to view your CodeBuild project</li>
 </ol>
@@ -584,29 +584,29 @@
 <p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_dockerfile.yml</strong>.</p>
 </li>
 <li>
-<p>Paste the YAML below and save the file.</p>
+<p>Review the YAML code below, paste it in the file, and save it.</p>
 </li>
 </ol>
 <div class="codehilite"><pre><span></span><span class="l l-Scalar l-Scalar-Plain">version</span><span class="p p-Indicator">:</span> <span class="l l-Scalar l-Scalar-Plain">0.2</span>
 
 <span class="l l-Scalar l-Scalar-Plain">phases</span><span class="p p-Indicator">:</span>
-<span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying hadolint.yml to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Switching to the application directory</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd $CODEBUILD_SRC_DIR_AppSource</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Pulling the hadolint docker image</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker pull hadolint/hadolint:v1.16.2</span>
-<span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with Hadolint...</span>          
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - &lt; Dockerfile`</span>
-<span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
-    <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
-    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-dockerfile-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
+    <span class="l l-Scalar l-Scalar-Plain">pre_build</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Copying hadolint.yml to the application directory</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cp hadolint.yml $CODEBUILD_SRC_DIR_AppSource/hadolint.yml</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Switching to the application directory</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">cd $CODEBUILD_SRC_DIR_AppSource</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Pulling the hadolint docker image</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">docker pull hadolint/hadolint:v1.16.2</span>
+    <span class="l l-Scalar l-Scalar-Plain">build</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build started on `date`</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Scanning with Hadolint...</span>          
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">result=`docker run --rm -i -v ${PWD}/hadolint.yml:/.hadolint.yaml hadolint/hadolint:v1.16.2 hadolint -f json - &lt; Dockerfile`</span>
+    <span class="l l-Scalar l-Scalar-Plain">post_build</span><span class="p p-Indicator">:</span>
+        <span class="l l-Scalar l-Scalar-Plain">commands</span><span class="p p-Indicator">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo $result</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">aws ssm put-parameter --name &quot;codebuild-dockerfile-results&quot; --type &quot;String&quot; --value &quot;$result&quot; --overwrite</span>
     <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">echo Build completed on `date`</span>
 </pre></div>
 

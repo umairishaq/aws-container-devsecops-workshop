@@ -406,13 +406,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
-  </a>
-  
-</li>
-      
       
       
       
@@ -568,13 +561,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#modules" title="Modules" class="md-nav__link">
-    Modules
-  </a>
-  
-</li>
-      
       
       
       
@@ -595,7 +581,7 @@
                 
                 
                 <h1 id="overview">Overview</h1>
-<p>In this workshop, you will learn how to leverage AWS development tools and open-source projects to integrate automated security testing into a CI/CD pipeline. Learn about a variety of patterns for integrating security testing and security-centric release control into AWS CodePipeline. Additionally, learn how to add feedback loops and fix common security vulnerabilities in your container-based application.</p>
+<p>In this workshop, you will learn how to leverage AWS development tools and open-source projects to integrate automated security testing into a CI/CD pipeline. You will learn about a variety of patterns for integrating security-centric release control into AWS CodePipeline. Additionally, you will learn how to add feedback loops and fix common security vulnerabilities in your container-based applications.</p>
 <ul>
 <li><strong>Level</strong>: Advanced</li>
 <li><strong>Duration</strong>: 2 - 3 hours</li>
@@ -606,23 +592,16 @@
 <li><strong>Open Source Projects</strong>: <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, <a href="https://github.com/dxa4481/truffleHog" target="_blank">Trufflehog</a>, and <a href="https://anchore.com/opensource/" target="_blank">Anchore</a></li>
 </ul>
 <h2 id="scenario">Scenario</h2>
-<p>Your company has just kicked off a new DevSecOps initiative in an effort to improve the security of critical applications by embedding security in every part of the software development lifecycle.  You are part of a DevOps team tasked with integrating security testing into a rudimentary pipeline for building and releasing container images.  Your initial tasks include adding in Dockerfile linting, secrets scanning, and vulnerability scanning.  The decision has been made to evaluate and make use of open source projects with the possibility of moving to a commercial offering based on how well the requirements are met. </p>
+<p>Your company has just kicked off a new DevSecOps initiative in an effort to improve the security of critical applications by embedding security in every part of the software development lifecycle.  You are part of a DevOps team tasked with integrating security testing into a rudimentary pipeline for building and releasing container images.  Your initial tasks include adding Dockerfile linting, secrets scanning, and vulnerability scanning.  The decision has been made to evaluate and make use of open source projects with the possibility of moving to a commercial offering based on how well the requirements are met. </p>
 <h2 id="architecture">Architecture</h2>
-<p>For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD pipeline as shown below.  It will include stages with in your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and Lambda Functions to create feedback loops for each stage of security testing you create.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure delivery.</p>
-<p><img alt="Architecture" src="images/diagram-basic-arch.png" title="Workload Architecture" /></p>
+<p>For this workshop you will start with a basic CI/CD pipeline that is triggered on Pull Requests and builds and pushes a container image to an Amazon ECR repository.  As you work through the tasks in your latest sprint you'll end up with the CI/CD pipeline as shown below.  It will include stages within your AWS CodePipeline for linting Dockerfiles, scanning for secrets, and scanning for vulnerabilities including an integration with AWS Security Hub.  In addition you will be using a combination of Amazon CloudWatch Event Rules and AWS Lambda Functions to create feedback loops for each stage of security testing.  This will allow your developers to quickly fix and iterate on their code which will lead to faster and more secure deliveries.</p>
+<p><img alt="Architecture" src="images/diagram-basic-arch.png" title="Pipeline Architecture" /></p>
 <h2 id="presentation-deck">Presentation deck</h2>
 <p><a href="container-devsecops-presentation.pdf">Workshop Presentation Deck</a></p>
 <h2 id="region">Region</h2>
 <p>Please use the <strong>us-east-2</strong> (Ohio) region for this workshop.</p>
-<h2 id="modules">Modules</h2>
-<p>This workshop is broken up into the four modules below: </p>
-<ol>
-<li><a href="./01-env-setup.md">Environment Setup</a></li>
-<li><a href="./02-linting.md">Dockerfile Linting</a> </li>
-<li><a href="./03-secrets-scanning.md">Secrets Scanning</a> </li>
-<li><a href="./04-vuln-scanning.md">Vulnerability Scanning</a></li>
-<li><a href="./05-review.md">Review and Discussion</a></li>
-</ol>
+<hr />
+<p>This workshop is broken up into five modules.  Please click the bottom right button to proceed to the environment setup.</p>
                 
                   
                 
