@@ -300,9 +300,6 @@ Resources:
       Targets:
         - Arn: !GetAtt LambdaPR.Arn
           Id: !Join [ '-', [ !Ref ResourceName, 'pr'  ] ]
-        - Arn: !Join [ ':', [ 'arn:aws:codepipeline', !Ref "AWS::Region", !Ref "AWS::AccountId", !Ref CodePipeline  ] ]
-          Id: !Join [ '-', [ !Ref ResourceName, 'pr', 'codepipeline'  ] ]
-          RoleArn: !GetAtt PREventRuleRole.Arn
 
   LambdaPRCommentRole: 
     Type: AWS::IAM::Role
@@ -337,6 +334,7 @@ Resources:
                 Action:
                   - codecommit:*
                   - codebuild:*
+                  - codepipeline:StartPipelineExecution
                   - ssm:DescribeParameters
                   - ssm:GetParameter
                   - ssm:GetParameters
@@ -359,9 +357,14 @@ Resources:
           from __future__ import print_function
           import datetime
           import boto3
+          import os
 
           codecommit_client = boto3.client('codecommit')
           ssm = boto3.client('ssm')
+          codepipeline = boto3.client('codepipeline')
+
+          # Pipeline Name
+          pipeline = '%s-pipeline' % os.environ['PREFIX']
 
           def handler(event, context):
             # Log event
@@ -416,6 +419,10 @@ Resources:
                 beforeCommitId = source_commit,
                 afterCommitId = destination_commit,
                 content = '**Build started at {}.  Starting security testing.**'.format(datetime.datetime.utcnow().time())
+              )
+
+              codepipeline.start_pipeline_execution(
+                name=pipeline,
               )
             
       Runtime: "python2.7"
@@ -963,6 +970,7 @@ Resources:
               Configuration:
                 BranchName: "development"
                 RepositoryName: !Join [ '-', [ !Ref ResourceName, 'app'  ] ]
+                PollForSourceChanges: false
               RunOrder: 1
             - Name: ConfigSource
               ActionTypeId:
@@ -975,6 +983,7 @@ Resources:
               Configuration:
                 BranchName: "master"
                 RepositoryName: !Join [ '-', [ !Ref ResourceName, 'config'  ] ]
+                PollForSourceChanges: false
               RunOrder: 1
         - Name: 'StaticAnalysis-DockerfileConfiguration'
           Actions:

@@ -62,17 +62,24 @@ Each time a stage is run the results of the CodeBuild Project are posted back to
 2. Click on the latest Pull Request.
 3. Click the **Activity** tab to view the feedback.
 
-## Stage 1: Fix Dockerfile linting issues
+## Stage 1: Fix the Dockerfile linting defects
 
-In the feedback you should see multiple issues that were identified by the Dockerfile linting stage.  The first issue can be fixed by modifying the hadolint configuration.
+In the feedback you should see multiple defects that were identified by the Dockerfile linting stage.  The first defect can be fixed by modifying the hadolint configuration.
 
 1. Click on your Cloud9 IDE tab.
 
 2. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **hadolint.yml**.
 
-3.  **DL3026**: Use only an allowed registry in the FROM image
+3. Fix the defect:
 
-    **Fix**: Add `- docker.io` under **trustedRegistries** (for testing purposes)
+    !!! info "**DL3026**: Use only an allowed registry in the FROM image"
+        **Description**:  Using externally provided images can result in the same types of risks that external software traditionally has, such as introducing malware, leaking data, or including components with vulnerabilities. To prevent the use of externally provided images you should only pull images from trusted registries.
+
+        **Fix**: Add `- docker.io` under ***trustedRegistries***.  
+        
+        **Explanation**:  Since the image is pulling from Dockerhub we can include it on the list so that the build is able to pass.  Adding Dockerhub is purely for testing purposes, in reality you would whitelist trusted registries that you host yourself or registries hosted by trusted 3rd parties.
+
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.5</a>
 
 4.  Commit your configuration changes:
 
@@ -83,21 +90,37 @@ git commit -m "Added a trusted registry to hadolint configuration."
 git push -u origin master
 ```
 
-The next two issues can be fixed by modifying the Dockerfile.
+The next two defects can be fixed by modifying the Dockerfile.
 
 1.  In the left file tree, expand the **sample-application** folder and open **Dockerfile**.
 
-2. **DL3007**: Using latest is prone to errors if the image will ever update. Pin the version explicitly to a release tag
+2. Fix the defects:
 
-    **Fix**: Replace `FROM python:latest` with `FROM python:alpine3.7`
+    !!! info "**DL3002**: Last USER should not be root."
+        **Description**: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. 
 
-3. **DL3002**: Last USER should not be root
+        **Fix**: Pin the version explicitly to a release tag.  Add the following to the Dockerfile:
 
-    **Fix**: Add `RUN addgroup -S sasquatch` and `RUN adduser -S sasquatch -G sasquatch`
-    
-    **Fix**: Replace `USER root` with `USER sasquatch`
+        `RUN addgroup -S sasquatch`
 
-4.  Commit your application source code changes:
+        `RUN adduser -S sasquatch -G sasquatch`
+
+        Next, replace `USER root` with `USER sasquatch`
+
+        **Explanation**: By creating a user in your Dockerfile, you are making it not only secure by default but also easier to keep secure.
+
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a>
+
+    !!! info "**DL3007**: Using latest is prone to errors if the image will ever update."
+        **Description**: Latest is just a tag you add to an image and is no way dynamic.  It can be overwritten and prove difficult to understand what version of the software is installed.  Using the latest tag can effect the availability of your application and you should look at using a more explicit tag. 
+
+        **Fix**: Pin the version explicitly to a release tag.  
+
+        Replace `FROM python:latest` with `FROM python:alpine3.7`
+
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a>
+
+3.  Commit your application source code changes:
 
 ```
 cd /home/ec2-user/environment/sample-application
@@ -107,6 +130,9 @@ git push -u origin development
 ```
 
 **View the Pull Request Feedback**
+
+Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.
+
 1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
 2. Click on the latest Pull Request.
 3. Click the **Activity** tab to view the feedback.
@@ -119,12 +145,15 @@ Based on the feedback you received in the Pull request you can see that secrets 
     
     !!! question "How could you improve the feedback loop to make it easier for the developer?"
 
-2. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.yml**.
+**Modify trufflehog configuration**
+
+Currently your trufflehog configuration is scanning through all of your commits to identify secrets. Since you'll be removing any current secrets you can modify the configuration to only scan new commits to speed up the build.
+
+1. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.yml**.
 
 2. Update your trufflehog configuration to only scan 1 commit deep.
 
 Change this command:
-
 
 ```
 - trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
@@ -133,6 +162,18 @@ To this:
 ```
 - trufflehog --regex --rules secrets_config.json --entropy=False --max_depth 1 "$APP_REPO_URL"
 ```
+
+!!! info "The second line adds "--max-depth 1" which limits the scan depth."
+
+3.  Commit your configuration changes:
+
+```
+cd /home/ec2-user/environment/container-devsecops-wksp-config
+git add .
+git commit -m "Added a trusted registry to hadolint configuration."
+git push -u origin master
+```
+** Remove secrets**
 
 
 2. Remove the secret from the file.
