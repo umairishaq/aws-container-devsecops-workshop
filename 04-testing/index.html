@@ -467,22 +467,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-1-fix-the-dockerfile-linting-defects" title="Stage 1: Fix the Dockerfile linting defects" class="md-nav__link">
-    Stage 1: Fix the Dockerfile linting defects
+  <a href="#fix-the-dockerfile-linting-defects" title="Fix the Dockerfile linting defects" class="md-nav__link">
+    Fix the Dockerfile linting defects
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-2-remove-secrets" title="Stage 2: Remove secrets" class="md-nav__link">
-    Stage 2: Remove secrets
+  <a href="#remove-secrets" title="Remove secrets" class="md-nav__link">
+    Remove secrets
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-3-vulnerability-scanning-stage" title="Stage 3: Vulnerability Scanning Stage" class="md-nav__link">
-    Stage 3: Vulnerability Scanning Stage
+  <a href="#view-vulnerabilities" title="View vulnerabilities" class="md-nav__link">
+    View vulnerabilities
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#view-image" title="View Image" class="md-nav__link">
+    View Image
   </a>
   
 </li>
@@ -583,22 +590,29 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-1-fix-the-dockerfile-linting-defects" title="Stage 1: Fix the Dockerfile linting defects" class="md-nav__link">
-    Stage 1: Fix the Dockerfile linting defects
+  <a href="#fix-the-dockerfile-linting-defects" title="Fix the Dockerfile linting defects" class="md-nav__link">
+    Fix the Dockerfile linting defects
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-2-remove-secrets" title="Stage 2: Remove secrets" class="md-nav__link">
-    Stage 2: Remove secrets
+  <a href="#remove-secrets" title="Remove secrets" class="md-nav__link">
+    Remove secrets
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#stage-3-vulnerability-scanning-stage" title="Stage 3: Vulnerability Scanning Stage" class="md-nav__link">
-    Stage 3: Vulnerability Scanning Stage
+  <a href="#view-vulnerabilities" title="View vulnerabilities" class="md-nav__link">
+    View vulnerabilities
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#view-image" title="View Image" class="md-nav__link">
+    View Image
   </a>
   
 </li>
@@ -626,7 +640,7 @@
 <p><strong>Time</strong>: 30 minutes</p>
 <p>Now that you have integrated multiple types of security testing into your pipeline you can test it to ensure your stages are effective in properly evaluating the security of your container-based applications.  While going through each stage you will fix any misconfiguration or vulnerability so that your sample application is able to successfully passes through each stage and is pushed to AWS ECR.</p>
 <h2 id="pipeline-architecture">Pipeline Architecture</h2>
-<p><img alt="Architecture" src="../images/04-final-arch.png" title="Pipeline Architecture" /></p>
+<p><img alt="Architecture" src="../images/04-arch.png" title="Pipeline Architecture" /></p>
 <ol>
 <li><strong>Commit</strong>: Developer makes a commit to the <em>Development</em> branch.</li>
 <li><strong>Pull Request</strong>: Developer makes a Pull Request<ul>
@@ -639,8 +653,14 @@
 <li><em>pullRequestCreated</em></li>
 </ul>
 </li>
-<li><strong>Starts CodePipeline</strong>: The AWS CodePipeline is setup as a target for the CloudWatch Event Rule and it is started after the CloudWatch Event Rule is triggered</li>
-<li><strong>Pull Request Stage</strong>: The stage pulls in these sources and stores them as artifacts in S3;<ul>
+<li><strong>Invokes Function</strong>: The AWS Lambda Function is setup as a target for the CloudWatch Event Rule and it is invoked after the CloudWatch Event Rule is triggered</li>
+<li>
+<p><strong>Posts comment</strong>: The Lambda Function posts a comment to the Pull Request stating that the security testing is starting.</p>
+<p><strong>Starts Pipeline</strong>:  The Lambda Function starts the CodePipeline.</p>
+</li>
+<li>
+<p><strong>Pull Request Stage</strong>: The stage pulls in these sources and stores them as artifacts in S3;</p>
+<ul>
 <li>CodeCommit repository: <em>container-devsecops-wksp-app (development branch)</em></li>
 <li>CodeCommit repository: <em>container-devsecops-wksp-config (master branch)</em></li>
 </ul>
@@ -684,7 +704,7 @@
 <li>Click on the latest Pull Request.</li>
 <li>Click the <strong>Activity</strong> tab to view the feedback.</li>
 </ol>
-<h2 id="stage-1-fix-the-dockerfile-linting-defects">Stage 1: Fix the Dockerfile linting defects</h2>
+<h2 id="fix-the-dockerfile-linting-defects">Fix the Dockerfile linting defects</h2>
 <p>In the feedback you should see multiple defects that were identified by the Dockerfile linting stage.  The first defect can be fixed by modifying the hadolint configuration.</p>
 <ol>
 <li>
@@ -755,7 +775,7 @@ git push -u origin development
 <li>Click on the latest Pull Request.</li>
 <li>Click the <strong>Activity</strong> tab to view the feedback.</li>
 </ol>
-<h2 id="stage-2-remove-secrets">Stage 2: Remove secrets</h2>
+<h2 id="remove-secrets">Remove secrets</h2>
 <p>Based on the feedback you received in the Pull request you can see that secrets were identified in your code.  </p>
 <ol>
 <li>
@@ -847,9 +867,32 @@ git push -u origin development
 <li>Click on the latest Pull Request.</li>
 <li>Click the <strong>Activity</strong> tab to view the feedback.</li>
 </ol>
-<h2 id="stage-3-vulnerability-scanning-stage">Stage 3: Vulnerability Scanning Stage</h2>
+<h2 id="view-vulnerabilities">View vulnerabilities</h2>
+<p>In the feedback you should see information regarding any vulnerabilities that were found in the image.  When you went through the environment setup you specified a vulnerability threshold of <strong>"High"</strong>, which means that the build will fail if an image contains any High or Critical vulnerabilities. Specifying a threshold allows you to put in a place a risk tolerance for different severities of vulnerabilities. This allows your developers to continue to move quickly with low risk vulnerabilities that can be triaged and fixed later on.  In the current setup, all vulnerabilities below the threshold will be pushed to AWS Security Hub. </p>
+<p>Since the build passed the vulnerability analysis stage we can assume that any low or medium finding was pushed to Security Hub.  </p>
+<ol>
+<li>
+<p>Click on the <strong>Security Hub</strong> link in the Pull Request feedback.</p>
+</li>
+<li>
+<p>Click <strong>Findings</strong> in the left navigation</p>
+</li>
+<li>
+<p>Click the search field and select a fileter of <strong>Product Name</strong> EQUALS <strong>Default</strong>.</p>
+</li>
+</ol>
+<p>The resulting findings are all of the vulnerabilities found in the image.  </p>
+<h2 id="view-image">View Image</h2>
+<p>The last stage of the pipeline builds the image, publishes it to AWS ECR, and then merges athe Pull Request.  You'll see in the feedback that a message is posted regarding the outcome of this stage and you'll notice that the Pull Request has been merged.</p>
+<ol>
+<li>Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a></li>
+<li>Click on the latest Pull Request.</li>
+<li>Click the <strong>Activity</strong> tab to view the feedback.</li>
+<li>Click the <strong>AWS ECR repository</strong> link.</li>
+</ol>
+<p>Following tagging best practices, your image is tagged with the Git commit hash of your application.</p>
 <hr />
-<p>Congratulations!  You've completed the <strong>Integrating security into your container pipeline</strong> workshop. You can proceed to the next module to clean up the resources in your account.</p>
+<p>Congratulations!  You've completed the <strong>Integrating security into your container pipeline</strong> workshop. You now have a CI/CD pipeline for securely building and publishing your container-based applications. You can proceed to the next module to clean up the resources in your account.</p>
                 
                   
                 
