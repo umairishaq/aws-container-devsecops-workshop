@@ -700,7 +700,7 @@
 <p><strong>Description</strong>:  Using externally provided images can result in the same types of risks that external software traditionally has, such as introducing malware, leaking data, or including components with vulnerabilities. To prevent the use of externally provided images you should only pull images from trusted registries.</p>
 <p><strong>Fix</strong>: Add <code>- docker.io</code> under <strong><em>trustedRegistries</em></strong>.  </p>
 <p><strong>Explanation</strong>:  Since the image is pulling from Dockerhub we can include it on the list so that the build is able to pass.  Adding Dockerhub is purely for testing purposes, in reality you would whitelist trusted registries that you host yourself or registries hosted by trusted 3rd parties.</p>
-<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.5</a></p>
+<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.5</a></p>
 </div>
 </li>
 <li>
@@ -729,14 +729,14 @@ git push -u origin master
 <p><code>RUN adduser -S sasquatch -G sasquatch</code></p>
 <p>Next, replace <code>USER root</code> with <code>USER sasquatch</code></p>
 <p><strong>Explanation</strong>: By creating a user in your Dockerfile, you are making it not only secure by default but also easier to keep secure.</p>
-<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a></p>
+<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a></p>
 </div>
 <div class="admonition info">
 <p class="admonition-title"><strong>DL3007</strong>: Using latest is prone to errors if the image will ever update.</p>
 <p><strong>Description</strong>: Latest is just a tag you add to an image and is no way dynamic.  It can be overwritten and prove difficult to understand what version of the software is installed.  Using the latest tag can effect the availability of your application and you should look at using a more explicit tag. </p>
 <p><strong>Fix</strong>: Pin the version explicitly to a release tag.  </p>
 <p>Replace <code>FROM python:latest</code> with <code>FROM python:alpine3.7</code></p>
-<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a></p>
+<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a></p>
 </div>
 </li>
 </ol>
@@ -799,7 +799,7 @@ git push -u origin master
 </ol>
 <p>Commit your application source code changes:</p>
 <div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/sample-application
-git add app/index.py
+git add .
 git commit -m &quot;Removed access key.&quot;
 git push -u origin development
 </pre></div>
@@ -838,7 +838,7 @@ git push -u origin development
 <p><strong>Description</strong>: Many applications require secrets to enable communication with other serivces or backend components.  When an application is packaged into an image, these secrets can be embedded directly into the image.  This creates a security risk in which anyone with access to the image can easily obtain the secrets.</p>
 <p><strong>Fix</strong>: Remove secrets from source code and leverage a secure solution for managing secrets like <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a> or <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html" target="_blank">AWS Systems Manager Parameter Store</a>.</p>
 <p>**Explanation: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.</p>
-<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.4</a></p>
+<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.4</a></p>
 </div>
 <p><strong>View the Pull Request Feedback</strong></p>
 <p>Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.</p>
