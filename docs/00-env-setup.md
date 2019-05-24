@@ -88,4 +88,10 @@ You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/co
 
 ---
 
+## Pipeline Architecture
+
+Below is the current architecture of your pipeline.
+
+![Architecture](./images/00-arch.png "Pipeline Architecture")
+
 After you have successfully setup your environment, you can proceed to the next module.

@@ -835,7 +835,7 @@ Resources:
             if event['detail']['project-name'] in [puproject]:
               errors = '## Image Build and Push\n'
               if event['detail']['build-status'] == 'SUCCEEDED':
-                errors = errors + 'Image has successfully been published to the AWS ECR repository.  The Pull Request has been merged and closed.'
+                errors = errors + 'Image has successfully been published to the [AWS ECR repository](https://us-east-2.console.aws.amazon.com/ecr/repositories/container-devsecops-wksp-sample/).  The Pull Request has been merged and closed.'
               else:
                 errors = errors + 'Image has failed to build.  Please review the logs'
               for phase in event['detail']['additional-information']['phases']:

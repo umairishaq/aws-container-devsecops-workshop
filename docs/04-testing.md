@@ -6,7 +6,7 @@ Now that you have integrated multiple types of security testing into your pipeli
 
 ## Pipeline Architecture
 
-![Architecture](./images/04-final-arch.png "Pipeline Architecture")
+![Architecture](./images/04-arch.png "Pipeline Architecture")
 
 1. **Commit**: Developer makes a commit to the *Development* branch.
 2. **Pull Request**: Developer makes a Pull Request
@@ -15,17 +15,21 @@ Now that you have integrated multiple types of security testing into your pipeli
 3. **Triggers Rule**: A CloudWatch Event Rule is triggered based on the following events:
     * *pullRequestSourceBranchUpdated*
     * *pullRequestCreated*
-4. **Starts CodePipeline**: The AWS CodePipeline is setup as a target for the CloudWatch Event Rule and it is started after the CloudWatch Event Rule is triggered
-5. **Pull Request Stage**: The stage pulls in these sources and stores them as artifacts in S3;
+4. **Invokes Function**: The AWS Lambda Function is setup as a target for the CloudWatch Event Rule and it is invoked after the CloudWatch Event Rule is triggered
+5. **Posts comment**: The Lambda Function posts a comment to the Pull Request stating that the security testing is starting.
+
+    **Starts Pipeline**:  The Lambda Function starts the CodePipeline.
+
+6. **Pull Request Stage**: The stage pulls in these sources and stores them as artifacts in S3;
     *  CodeCommit repository: *container-devsecops-wksp-app (development branch)*
     *  CodeCommit repository: *container-devsecops-wksp-config (master branch)*
-6. **Dockerfile Linting Stage**: The stage pulls in the artifacts from S3 and uses Hadolint (build spec file and configuration file pulled in from S3) to lint the Dockerfile to ensure it adheres to best practices.
-7.  **Secrets Scanning Stage**: The stage runs high signal regex checks directly against the CodeCommit Repository (*container-devsecops-wksp-app - development branch*)
-8.  **Vulnerability Scanning Stage**: The stage builds the container image, pushes it to ECR, and triggers an Anchore vulnerability assessment against the image.  If the scan results include any vulnerabilites that meet or exceed the threshold the build fails.  If the vulnerabilites are lower than the threshold the CodeBuild project will invoke a Lambda function with the scan results as the payload and the Lambda function will push the vulnerabilites into AWS Security Hub for future triaging since the risk for those have been accepted.
-9.  **Publish Imaeg**: The last stage builds the image using the destination commit hash as the tag and publishes it to AWS ECR.
-10. **CodeBuild Triggers**: If any CodeBuild Project fails a CloudWatch Event Rule is triggered.
-11. **Triggers Lambda Function**: The Lambda Function is setup as a target for the CloudWatch Event Rule and is invoked after the CloudWatch Event Rule is triggered.
-12. **Adds Feedback to Pull Request**:  The Lambda Function takes the results from each stage and CodeBuild project and posts a comment back to the Pull Requst.  This gives the developers fast feedback so they're able to fix any issues that are identified through the pipeline.
+7. **Dockerfile Linting Stage**: The stage pulls in the artifacts from S3 and uses Hadolint (build spec file and configuration file pulled in from S3) to lint the Dockerfile to ensure it adheres to best practices.
+8.  **Secrets Scanning Stage**: The stage runs high signal regex checks directly against the CodeCommit Repository (*container-devsecops-wksp-app - development branch*)
+9.  **Vulnerability Scanning Stage**: The stage builds the container image, pushes it to ECR, and triggers an Anchore vulnerability assessment against the image.  If the scan results include any vulnerabilites that meet or exceed the threshold the build fails.  If the vulnerabilites are lower than the threshold the CodeBuild project will invoke a Lambda function with the scan results as the payload and the Lambda function will push the vulnerabilites into AWS Security Hub for future triaging since the risk for those have been accepted.
+10.  **Publish Imaeg**: The last stage builds the image using the destination commit hash as the tag and publishes it to AWS ECR.
+11. **CodeBuild Triggers**: If any CodeBuild Project fails a CloudWatch Event Rule is triggered.
+12. **Triggers Lambda Function**: The Lambda Function is setup as a target for the CloudWatch Event Rule and is invoked after the CloudWatch Event Rule is triggered.
+13. **Adds Feedback to Pull Request**:  The Lambda Function takes the results from each stage and CodeBuild project and posts a comment back to the Pull Requst.  This gives the developers fast feedback so they're able to fix any issues that are identified through the pipeline.
 
 ## Make a commit
 
@@ -62,7 +66,7 @@ Each time a stage is run the results of the CodeBuild Project are posted back to
 2. Click on the latest Pull Request.
 3. Click the **Activity** tab to view the feedback.
 
-## Stage 1: Fix the Dockerfile linting defects
+## Fix the Dockerfile linting defects
 
 In the feedback you should see multiple defects that were identified by the Dockerfile linting stage.  The first defect can be fixed by modifying the hadolint configuration.
 
@@ -137,7 +141,7 @@ Updating the Pull Request branch automatically triggers the pipeline again.  You
 2. Click on the latest Pull Request.
 3. Click the **Activity** tab to view the feedback.
 
-## Stage 2: Remove secrets
+## Remove secrets
 
 Based on the feedback you received in the Pull request you can see that secrets were identified in your code.  
 
@@ -232,8 +236,31 @@ Updating the Pull Request branch automatically triggers the pipeline again.  You
 3. Click the **Activity** tab to view the feedback.
 
 
-## Stage 3: Vulnerability Scanning Stage
+## View vulnerabilities
+
+In the feedback you should see information regarding any vulnerabilities that were found in the image.  When you went through the environment setup you specified a vulnerability threshold of **"High"**, which means that the build will fail if an image contains any High or Critical vulnerabilities. Specifying a threshold allows you to put in a place a risk tolerance for different severities of vulnerabilities. This allows your developers to continue to move quickly with low risk vulnerabilities that can be triaged and fixed later on.  In the current setup, all vulnerabilities below the threshold will be pushed to AWS Security Hub. 
+
+Since the build passed the vulnerability analysis stage we can assume that any low or medium finding was pushed to Security Hub.  
+
+1.  Click on the **Security Hub** link in the Pull Request feedback.
+
+2.  Click **Findings** in the left navigation
+
+3.  Click the search field and select a fileter of **Product Name** EQUALS **Default**.
+
+The resulting findings are all of the vulnerabilities found in the image.  
+
+## View Image
+
+The last stage of the pipeline builds the image, publishes it to AWS ECR, and then merges athe Pull Request.  You'll see in the feedback that a message is posted regarding the outcome of this stage and you'll notice that the Pull Request has been merged.
+
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
+2. Click on the latest Pull Request.
+3. Click the **Activity** tab to view the feedback.
+4. Click the **AWS ECR repository** link.
+
+Following tagging best practices, your image is tagged with the Git commit hash of your application.
 
 ---
 
-Congratulations!  You've completed the **Integrating security into your container pipeline** workshop. You can proceed to the next module to clean up the resources in your account.
+Congratulations!  You've completed the **Integrating security into your container pipeline** workshop. You now have a CI/CD pipeline for securely building and publishing your container-based applications. You can proceed to the next module to clean up the resources in your account.

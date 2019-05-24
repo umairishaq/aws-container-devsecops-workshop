@@ -64,4 +64,10 @@ trustedRegistries:
 ```
 ---
 
+## Pipeline Architecture
+
+Below is the current architecture of your pipeline.
+
+![Architecture](./images/01-arch.png "Pipeline Architecture")
+
 After you have successfully configured the Dockerfile linting stage, you can proceed to the next module.

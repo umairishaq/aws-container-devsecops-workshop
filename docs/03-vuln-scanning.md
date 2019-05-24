@@ -55,4 +55,10 @@ git push -u origin master
 
 ---
 
+## Pipeline Architecture
+
+Below is the current architecture of your pipeline.
+
+![Architecture](./images/03-arch.png "Pipeline Architecture")
+
 After you have successfully configured the secrets scanning stage, you can proceed to the next module.
