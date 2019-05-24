@@ -120,7 +120,7 @@ The next two defects can be fixed by modifying the Dockerfile.
 
         **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a>
 
-3.  Commit your application source code changes:
+Commit your application source code changes:
 
 ```
 cd /home/ec2-user/environment/sample-application
@@ -155,9 +155,9 @@ Currently your trufflehog configuration is scanning through all of your commits 
 
 Change this command:
 
-```
-- trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
-```
+
+\- trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
+
 To this:
 ```
 - trufflehog --regex --rules secrets_config.json --entropy=False --max_depth 1 "$APP_REPO_URL"
@@ -165,21 +165,72 @@ To this:
 
 !!! info "The second line adds "--max-depth 1" which limits the scan depth."
 
-3.  Commit your configuration changes:
+Commit your configuration changes:
 
 ```
 cd /home/ec2-user/environment/container-devsecops-wksp-config
 git add .
-git commit -m "Added a trusted registry to hadolint configuration."
+git commit -m "Modifed max-depth in trufflehog command."
 git push -u origin master
 ```
 ** Remove secrets**
 
 
 2. Remove the secret from the file.
-3. 
-3. Modify build spec to only scan a max depth of 1 commit (Removing secrets from previous commits and revoking any credentials are best practices but are not in scope due to time constraints.)
-3. Commit your changes
+
+Commit your application source code changes:
+
+```
+cd /home/ec2-user/environment/sample-application
+git add app/index.py
+git commit -m "Removed access key."
+git push -u origin development
+```
+
+**View the Pull Request Feedback**
+
+Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.
+
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
+2. Click on the latest Pull Request.
+3. Click the **Activity** tab to view the feedback.
+
+You'll notice that your pipeline is still failing on the secrets stage.  If you look at the commit that's being scanned you'll see that the access key still exists in that commit because it is part of the diff. Make one more commit and you'll see that your build passes the secret scanning stage successfully.
+
+1. In the left file tree, expand the **sample-application** folder and open **Dockerfile**.
+
+2. Change the Label to the following:
+
+```
+LABEL maintainer="Sasquatch" version="1.0"
+```
+
+Commit your application source code changes:
+
+```
+cd /home/ec2-user/environment/sample-application
+git add Dockerfile
+git commit -m "Added version Label."
+git push -u origin development
+```
+
+!!! info "Secrets in source code"
+    **Description**: Many applications require secrets to enable communication with other serivces or backend components.  When an application is packaged into an image, these secrets can be embedded directly into the image.  This creates a security risk in which anyone with access to the image can easily obtain the secrets.
+
+    **Fix**: Remove secrets from source code and leverage a secure solution for managing secrets like <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a> or <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html" target="_blank">AWS Systems Manager Parameter Store</a>.
+
+    **Explanation: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.
+
+    **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.4</a>
+
+**View the Pull Request Feedback**
+
+Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.
+
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
+2. Click on the latest Pull Request.
+3. Click the **Activity** tab to view the feedback.
+
 
 ## Stage 3: Vulnerability Scanning Stage
 

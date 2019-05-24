@@ -731,7 +731,7 @@ Resources:
             sec_hub = 'https://%s.console.aws.amazon.com/securityhub/' % event['region'] 
             if event['detail']['project-name'] in [vcproject]:
               # Add Errors
-              errors = '## Static Analysis - Vulnerability Scanning  (using Anchore)\n'
+              errors = '## Vulnerability Scanning (using Anchore)\n'
               if event['detail']['build-status'] == 'SUCCEEDED':
                 errors = errors + 'No vulnerabilities that meet or exceed the threshold!  Please manage all other vulnerabilities in [Security Hub](%s).' % sec_hub
               else:
@@ -798,7 +798,7 @@ Resources:
       Environment:
         Variables:
           PREFIX: !Ref ResourceName
-          CODEBUILDVCPROJECT: !Ref CodeBuildPublishProject
+          CODEBUILDPUPROJECT: !Ref CodeBuildPublishProject
       Role: !GetAtt 'LambdaPRCommentRole.Arn'
       Code:
         ZipFile: |
@@ -809,7 +809,7 @@ Resources:
 
           codecommit_client = boto3.client('codecommit')
           ssm = boto3.client('ssm')
-          puproject = os.environ['CodeBuildPushProject']
+          puproject = os.environ['CODEBUILDPUPROJECT']
 
           def handler(event, context):
 
