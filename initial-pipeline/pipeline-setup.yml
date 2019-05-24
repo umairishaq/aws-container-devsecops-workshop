@@ -15,10 +15,7 @@ Parameters:
     Type: String
     Default: High
     AllowedValues: 
-      - Low
-      - Medium
       - High
-      - Critical
     Description: Threshold to fail the pipeline if app image has vulnerabilities
 
 Metadata: 
@@ -1021,7 +1018,7 @@ Resources:
                   ProjectName: !Ref CodeBuildSecretsProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
-        - Name: 'VulnAnalysis-Dockerbuild'
+        - Name: 'VulnerabilityAnalysis'
           Actions:
             - Name: VulnerabilityScan
               ActionTypeId:

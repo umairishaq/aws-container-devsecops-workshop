@@ -595,7 +595,7 @@ Resources:
               if 'vulnerabilities' in event:
 
                   # product arn format arn:aws:securityhub:us-west-2:123456789012:product/123456789012/default
-                  product_arn = "arn:aws:securityhub:{0}:{1}:product/{2}/default".format(
+                  product_arn = "arn:aws:securityhub:{0}:{1}:product/{2}/anchore".format(
                       region,
                       account_id,
                       account_id

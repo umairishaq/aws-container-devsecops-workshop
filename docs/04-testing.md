@@ -79,7 +79,7 @@ In the feedback you should see multiple defects that were identified by the Dock
         
         **Explanation**:  Since the image is pulling from Dockerhub we can include it on the list so that the build is able to pass.  Adding Dockerhub is purely for testing purposes, in reality you would whitelist trusted registries that you host yourself or registries hosted by trusted 3rd parties.
 
-        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.5</a>
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.5</a>
 
 4.  Commit your configuration changes:
 
@@ -109,7 +109,7 @@ The next two defects can be fixed by modifying the Dockerfile.
 
         **Explanation**: By creating a user in your Dockerfile, you are making it not only secure by default but also easier to keep secure.
 
-        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a>
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a>
 
     !!! info "**DL3007**: Using latest is prone to errors if the image will ever update."
         **Description**: Latest is just a tag you add to an image and is no way dynamic.  It can be overwritten and prove difficult to understand what version of the software is installed.  Using the latest tag can effect the availability of your application and you should look at using a more explicit tag. 
@@ -118,7 +118,7 @@ The next two defects can be fixed by modifying the Dockerfile.
 
         Replace `FROM python:latest` with `FROM python:alpine3.7`
 
-        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.2</a>
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a>
 
 Commit your application source code changes:
 
@@ -182,7 +182,7 @@ Commit your application source code changes:
 
 ```
 cd /home/ec2-user/environment/sample-application
-git add app/index.py
+git add .
 git commit -m "Removed access key."
 git push -u origin development
 ```
@@ -221,7 +221,7 @@ git push -u origin development
 
     **Explanation: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.
 
-    **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST 800-190: Application Container Security Guide - 3.1.4</a>
+    **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.4</a>
 
 **View the Pull Request Feedback**
 
