@@ -8,7 +8,7 @@ The last stage you will add will be for identifying vulnerabilities in your cont
 
 1.  Click on your Cloud9 IDE tab.
 
-2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_vuln.yml**.
+2.  In the left file tree, expand the **configurations** folder and open **buildspec_vuln.yml**.
 
 3.  Review the YAML code below, paste it in the file, and save.
 
@@ -47,7 +47,7 @@ phases:
 Since you've made changes to a number of files in the configuration repo, you need to commit those changes to ensure your pipeline is pulling in the right files.
 
 ```
-cd /home/ec2-user/environment/container-devsecops-wksp-config
+cd /home/ec2-user/environment/configurations
 git add .
 git commit -m "Updated Build Spec files and configurations."
 git push -u origin master

@@ -30,44 +30,43 @@ US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?r
 
 This will bring you back to the CloudFormation console. You can refresh the page to see the stack starting to create.
 
-!!! warning "Before moving on, make sure the stack is in a **CREATE_COMPLETE** status."
-
-## Deploy your pipeline
-
-The second CloudFormation you run will create the initial pipeline.  
-
-!!! info "Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/initial-pipeline/pipeline-setup.yml" target="_blank">here</a href>."
-
-Region| Deploy
-------|-----
-US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp-pipeline-stack&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml" target="_blank">![Deploy Module 1 in us-west-2](./images/deploy-to-aws.png)</a>
-
-1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.
-
-2. The **Specify an Amazon S3 template URL** is already selected and the template URL is automatically added.  Click **Next**.
-
-3. On the **Specify Details** click **Next**. 
-	
-4. On the **Options** click **Next** \(leave everything on this page as the default\).
-
-5. Finally, on the **Review** section acknowledge that the template will create IAM roles and click **Create**.
-
-This will bring you back to the CloudFormation console. You can refresh the page to see the stack starting to create. 
-
-!!! warning "Before moving on, make sure the stack is in a **CREATE_COMPLETE** status."
+!!! warning "Before moving on, make sure the stack is in a **CREATE_COMPLETE** status.  This stack takes ~8 minutes."
 
 ## Browse to your Cloud9 IDE
 
 You will be doing the majority of the workshop using the <a href="https://aws.amazon.com/cli/" target="_blank">AWS Command Line Interface (CLI)</a> within <a href="https://aws.amazon.com/cloud9/" target="_blank">AWS Cloud9</a>, a cloud-based integrated development environment (IDE) that lets you write, run, and debug your code with just a browser.
 
 1.	Open the <a href="https://us-east-2.console.aws.amazon.com/cloud9/home?region=us-east-2" target="_blank">AWS Cloud9 console</a> (us-east-2)
-2.	Click **Open IDE** in the **container-devsecops-wksp-ide** environment.  This will take you to your IDE in a new tab.  Always keep this tab open  
-3.  Setup your git credentials and clone the repo that contains all the configurations for your pipeline:
+2.	Click **Open IDE** in the **container-devsecops-wksp-ide** environment.  This will take you to your IDE in a new tab.  Always keep this tab open 
+
+## Deploy your pipeline
+
+The second CloudFormation you run will create the initial pipeline.
+
+!!! info "Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/initial-pipeline/pipeline-setup.yml" target="_blank">here</a href>."
+
+1.  Within your IDE, run the following command:
+
+```
+aws cloudformation create-stack --stack-name container-dso-wksp-pipeline-stack --template-url fhttps://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml --capabilities CAPABILITY_NAMED_IAM
+```
+
+Go to the <a href="https://console.aws.amazon.com/cloudformation/home" target="_blank">CloudFormation console</a> and wait for the stack to complete.
+
+!!! warning "Before moving on, make sure the stack is in a **CREATE_COMPLETE** status.  This stack takes ~3 minutes."
+
+## Clone repositories
+
+
+1.  Go back to your Cloud9 IDE
+
+2.  Setup your git credentials and clone the repo that contains all the configurations for your pipeline:
 
 ```
 git config --global credential.helper '!aws codecommit credential-helper $@'
 git config --global credential.UseHttpPath true
-git clone https://git-codecommit.us-east-2.amazonaws.com/v1/repos/container-devsecops-wksp-config
+git clone https://git-codecommit.us-east-2.amazonaws.com/v1/repos/container-devsecops-wksp-config configurations
+git clone https://git-codecommit.us-east-2.amazonaws.com/v1/repos/container-devsecops-wksp-app sample-application
 ```
 
 ??? question "What is aws codecommit credential-helper?"

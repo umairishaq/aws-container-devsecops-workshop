@@ -8,7 +8,7 @@ Next, you need to setup a stage for identifying secrets throughout your code.  F
 
 1.  Click on your Cloud9 IDE tab.
 
-2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_secrets.yml**.
+2.  In the left file tree, expand the **configurations** folder and open **buildspec_secrets.yml**.
 
 3.  Review the YAML code below, paste it in the file, and save.
 
@@ -42,7 +42,7 @@ phases:
 
 When using trufflehog you can optionally specify a configuration file that contains custom regex checks.
 
-1.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.json**.
+1.  In the left file tree, expand the **configurations** folder and open **secrets_config.json**.
 
 3.  Paste the JSON below and save the file.
 

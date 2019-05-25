@@ -72,11 +72,13 @@ In the feedback you should see multiple defects that were identified by the Dock
 
 1. Click on your Cloud9 IDE tab.
 
-2. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **hadolint.yml**.
+2. In the left file tree, expand the **configurations** folder and open **hadolint.yml**.
 
 3. Fix the defect:
 
-    !!! info "**DL3026**: Use only an allowed registry in the FROM image"
+    !!! info "Use of untrusted images"
+        **DL3026**: Use only an allowed registry in the FROM image
+
         **Description**:  Using externally provided images can result in the same types of risks that external software traditionally has, such as introducing malware, leaking data, or including components with vulnerabilities. To prevent the use of externally provided images you should only pull images from trusted registries.
 
         **Fix**: Add `- docker.io` under ***trustedRegistries***.  
@@ -88,7 +90,7 @@ In the feedback you should see multiple defects that were identified by the Dock
 4.  Commit your configuration changes:
 
 ```
-cd /home/ec2-user/environment/container-devsecops-wksp-config
+cd /home/ec2-user/environment/configurations
 git add .
 git commit -m "Added a trusted registry to hadolint configuration."
 git push -u origin master
@@ -100,7 +102,9 @@ The next two defects can be fixed by modifying the Dockerfile.
 
 2. Fix the defects:
 
-    !!! info "**DL3002**: Last USER should not be root."
+    !!! info "Image configuration defects"
+        **DL3002**: Last USER should not be root.
+
         **Description**: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. 
 
         **Fix**: Change USER to a non privileged user.  Add the following to the Dockerfile:
@@ -115,7 +119,9 @@ The next two defects can be fixed by modifying the Dockerfile.
 
         **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a>
 
-    !!! info "**DL3007**: Using latest is prone to errors if the image will ever update."
+    !!! info "Image configuration defects"
+        **DL3007**: Using latest is prone to errors if the image will ever update.
+        
         **Description**: Latest is just a tag you add to an image and is no way dynamic.  It can be overwritten and prove difficult to understand what version of the software is installed.  Using the latest tag can effect the availability of your application and you should look at using a more explicit tag. 
 
         **Fix**: Pin the version explicitly to a release tag.  
@@ -155,7 +161,7 @@ Based on the feedback you received in the Pull request you can see that secrets 
 
 Currently your trufflehog configuration is scanning through all of your commits to identify secrets. Since you'll be removing any current secrets you can modify the configuration to only scan new commits to speed up the build.
 
-1. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_secrets.yml**.
+1. In the left file tree, expand the **configurations** folder and open **buildspec_secrets.yml**.
 
 2. Update your trufflehog configuration to only scan 1 commit deep.
 
@@ -174,7 +180,7 @@ To this:
 Commit your configuration changes:
 
 ```
-cd /home/ec2-user/environment/container-devsecops-wksp-config
+cd /home/ec2-user/environment/configurations
 git add .
 git commit -m "Modifed max-depth in trufflehog command."
 git push -u origin master
@@ -215,12 +221,12 @@ git commit -m "Added version Label."
 git push -u origin development
 ```
 
-!!! info "Secrets in source code"
+!!! info "Embedded clear text secrets"
     **Description**: Many applications require secrets to enable communication with other serivces or backend components.  When an application is packaged into an image, these secrets can be embedded directly into the image.  This creates a security risk in which anyone with access to the image can easily obtain the secrets.
 
     **Fix**: Remove secrets from source code and leverage a secure solution for managing secrets like <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a> or <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html" target="_blank">AWS Systems Manager Parameter Store</a>.
 
-    **Explanation: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.
+    **Explanation**: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.
 
     **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.4</a>
 
@@ -245,7 +251,14 @@ Since the build passed the vulnerability analysis stage we can assume that any l
 
 3.  Click the search field and select a fileter of **Product Name** EQUALS **Default**.
 
-The resulting findings are all of the vulnerabilities found in the image.  
+The resulting findings are all of the vulnerabilities found in the image.
+
+!!! info "Image vulnerabilities"
+    **Description**: Images are static archive files that include all of the components used to run an application.  Components within an image may be missing critical security updates or be outdated which can lead to exploitation and unauthorized system access.
+
+    **Fix**: Containers should be looked at as immutable and as such shouldn't be patched directly. Instead the vulernabilities should be fixed upstream in the source code and configuration of the image and then the image should be rebuilt and published.  This ensures that all new containers instantiated from the image don't include the vulnerabilities. 
+
+    **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.1</a>
 
 ## View Image
 

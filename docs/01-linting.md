@@ -16,7 +16,7 @@ Each CodeBuild project contains a build specification (build spec) file, which i
 
 1.  Click on your Cloud9 IDE tab.
 
-2.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_dockerfile.yml**.
+2.  In the left file tree, expand the **configurations** folder and open **buildspec_dockerfile.yml**.
 
 3.  Review the YAML code below, paste it in the file, and save it.
 
@@ -50,7 +50,7 @@ When using Hadolint you can optionally specify a configuration file to ignore ce
 
 !!! info "You can view all the current rules by scrolling down on the <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a> github project "
 
-1.  In the left file tree, expand the **container-devsecops-wksp-config** folder and open **hadolint.yml**.
+1.  In the left file tree, expand the **configurations** folder and open **hadolint.yml**.
 
 3.  Paste the YAML below and save the file.
 

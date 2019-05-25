@@ -1,8 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
-Description: >
-  This AWS CloudFormation Template creates a Fargate
-  application for Anchore Open sources.
+Description: This AWS CloudFormation Template configures an Anchore service that is used for the Container DevSecOps workshop. 
 
 Parameters:
   
@@ -15,6 +13,16 @@ Parameters:
 
 Resources:
 
+  ### Cloud9 IDE
+  Cloud9IDE:
+    Type: AWS::Cloud9::EnvironmentEC2
+    Properties:
+      Description: This is the IDE you will be using to complete the Container DevSecOps workshop.
+      InstanceType: t2.small
+      Name: !Join [ '-', [ !Ref ResourceName, 'ide'  ] ]
+      SubnetId: !GetAtt AnchoreVpcStack.Outputs.PublicSubnet1
+
+  ### Anchore ECR Repository
   AnchoreRepository:
     Type: AWS::ECR::Repository
     Properties: 
@@ -138,6 +146,7 @@ Resources:
   CodeBuildStarterLambda:
     Type: AWS::Lambda::Function
     Properties:
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild', 'starter'  ] ]
       Role: !GetAtt CodeBuildStarterLambdaRole.Arn
       Runtime: python3.7
       Handler: index.handler
@@ -206,7 +215,7 @@ Resources:
     Properties:
       Parameters:
         EnvironmentName: DevSecOps
-      TemplateURL: https://s3.amazonaws.com/codebuild-cloudformation-templates-public/vpc_cloudformation_template.yml
+      TemplateURL: https://s3.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-vpc.yml
 
   dbPassword:
     Type: AWS::SecretsManager::Secret
@@ -266,6 +275,7 @@ Resources:
   TaskLoggingLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
+      LogGroupName: !Join [ '', [ '/aws/ecs/task',!Ref ResourceName, '-anchore-engine'  ] ]
       RetentionInDays: 365
     DeletionPolicy: Retain
 
@@ -555,6 +565,7 @@ Resources:
     Properties:
       Layers:
         - !Ref Boto3LambdaLayer
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'sendfindings', 'securityhub'  ] ]
       Description: Sends payload with vulnerabilities findings to Security Hub
       Handler: index.lambda_handler
       Role: !GetAtt SendFindingsLambdaRole.Arn
@@ -617,8 +628,8 @@ Resources:
                                   str(i)),
                               'ProductArn': product_arn,
                               'ProductFields': {
-                                "ProviderName": "Anchore",
-                                "ProviderVersion": "v0.3.4",
+                                'ProviderName': 'Anchore',
+                                'ProviderVersion': 'v0.3.4',
                               },
                               'GeneratorId': uuid,
                               'AwsAccountId': account_id,
