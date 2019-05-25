@@ -744,7 +744,7 @@ git push -u origin master
 <div class="admonition info">
 <p class="admonition-title"><strong>DL3002</strong>: Last USER should not be root.</p>
 <p><strong>Description</strong>: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. </p>
-<p><strong>Fix</strong>: Pin the version explicitly to a release tag.  Add the following to the Dockerfile:</p>
+<p><strong>Fix</strong>: Change USER to a non privileged user.  Add the following to the Dockerfile:</p>
 <p><code>RUN addgroup -S sasquatch</code></p>
 <p><code>RUN adduser -S sasquatch -G sasquatch</code></p>
 <p>Next, replace <code>USER root</code> with <code>USER sasquatch</code></p>
@@ -784,12 +784,15 @@ git push -u origin development
 <p class="admonition-title">How could you improve the feedback loop to make it easier for the developer?</p>
 </div>
 </li>
+<li>
+<p>Remove the secret from the file.</p>
+</li>
 </ol>
 <p><strong>Modify trufflehog configuration</strong></p>
 <p>Currently your trufflehog configuration is scanning through all of your commits to identify secrets. Since you'll be removing any current secrets you can modify the configuration to only scan new commits to speed up the build.</p>
 <ol>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>secrets_config.yml</strong>.</p>
+<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_secrets.yml</strong>.</p>
 </li>
 <li>
 <p>Update your trufflehog configuration to only scan 1 commit deep.</p>
@@ -813,11 +816,7 @@ git push -u origin master
 </pre></div>
 
 
-<p><strong> Remove secrets</strong></p>
-<ol>
-<li>Remove the secret from the file.</li>
-</ol>
-<p>Commit your application source code changes:</p>
+<p>Commit your application changes:</p>
 <div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/sample-application
 git add .
 git commit -m &quot;Removed access key.&quot;

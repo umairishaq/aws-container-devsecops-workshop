@@ -432,66 +432,9 @@
       
     
     
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        Module 5: Cleanup
-      </label>
-    
     <a href="./" title="Module 5: Cleanup" class="md-nav__link md-nav__link--active">
       Module 5: Cleanup
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#retrieve-your-aws-account" title="Retrieve your AWS Account" class="md-nav__link">
-    Retrieve your AWS Account
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-the-artifact-s3-bucket" title="Delete the artifact S3 bucket" class="md-nav__link">
-    Delete the artifact S3 bucket
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-the-aws-cloudwatch-log-groups" title="Delete the AWS CloudWatch Log Groups" class="md-nav__link">
-    Delete the AWS CloudWatch Log Groups
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-the-aws-ecr-repositories" title="Delete the AWS ECR repositories" class="md-nav__link">
-    Delete the AWS ECR repositories
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-cloudformation-templates" title="Delete CloudFormation templates" class="md-nav__link">
-    Delete CloudFormation templates
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
-</nav>
     
   </li>
 
@@ -537,50 +480,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">Table of contents</label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#retrieve-your-aws-account" title="Retrieve your AWS Account" class="md-nav__link">
-    Retrieve your AWS Account
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-the-artifact-s3-bucket" title="Delete the artifact S3 bucket" class="md-nav__link">
-    Delete the artifact S3 bucket
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-the-aws-cloudwatch-log-groups" title="Delete the AWS CloudWatch Log Groups" class="md-nav__link">
-    Delete the AWS CloudWatch Log Groups
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-the-aws-ecr-repositories" title="Delete the AWS ECR repositories" class="md-nav__link">
-    Delete the AWS ECR repositories
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#delete-cloudformation-templates" title="Delete CloudFormation templates" class="md-nav__link">
-    Delete CloudFormation templates
-  </a>
-  
-</li>
-      
-      
-      
-      
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -599,55 +498,38 @@
 <div class="admonition info">
 <p class="admonition-title">You will need to manually delete some resources before you delete the CloudFormation stacks so please do the following steps in order.</p>
 </div>
-<h2 id="retrieve-your-aws-account">Retrieve your AWS Account</h2>
 <ol>
 <li>Open your Cloud9 IDE</li>
-<li>Retrieve and copy your AWS Account #</li>
+<li>Run the following:</li>
 </ol>
-<div class="codehilite"><pre><span></span>aws sts get-caller-identity
-</pre></div>
+<div class="codehilite"><pre><span></span># Get Account #
+account=`aws sts get-caller-identity --query [Account] --output text
 
+# Delete S3 Bucket
+aws s3 rm s3://container-devsecops-wksp-$account-us-east-2-artifacts --recursive
+aws s3api delete-bucket --bucket container-devsecops-wksp-$account-us-east-2-artifacts
 
-<h2 id="delete-the-artifact-s3-bucket">Delete the artifact S3 bucket</h2>
-<ul>
-<li>Delete all objects in the bucket (Replace <Account#>):</li>
-</ul>
-<div class="codehilite"><pre><span></span>aws s3 rm s3://container-devsecops-wksp-&lt;ACCOUNT#&gt;-us-east-2-artifacts --recursive
-</pre></div>
-
-
-<ul>
-<li>Delete bucket (Replace <Account #>):</li>
-</ul>
-<div class="codehilite"><pre><span></span>aws s3api delete-bucket --bucket container-devsecops-wksp-&lt;ACCOUNT#&gt;-us-east-2-artifacts
-</pre></div>
-
-
-<h2 id="delete-the-aws-cloudwatch-log-groups">Delete the AWS CloudWatch Log Groups</h2>
-<div class="codehilite"><pre><span></span>aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-dockerfile
-aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
+# Delete Logs
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-dockerfile
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-secrets
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-scan-image
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-publish
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-initial-commit
-</pre></div>
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-pr
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-secrets
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-vulnerability
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-publish
 
+# Delete ECR Repositories
+aws ecr delete-repository --repository-name container-devsecops-wksp-sample --force
+aws ecr delete-repository --repository-name container-devsecops-wksp-anchore --force
 
-<h2 id="delete-the-aws-ecr-repositories">Delete the AWS ECR repositories</h2>
-<div class="codehilite"><pre><span></span>aws ecr delete-repository --repository-name container-devsecops-wksp-sample
-aws ecr delete-repository --repository-name container-devsecops-wksp-anchore
-</pre></div>
+# Delete CloudFormation Stacks
+aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+aws cloudformation delete-stack --stack-name container-dso-wksp-anchore-stack
 
-
-<h2 id="delete-cloudformation-templates">Delete CloudFormation templates</h2>
-<ul>
-<li>Delete the pipeline stack:</li>
-</ul>
-<div class="codehilite"><pre><span></span>aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
-</pre></div>
-
-
-<ul>
-<li>Delete the Anchore service:</li>
-</ul>
-<div class="codehilite"><pre><span></span>aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+echo &#39;Completed cleanup.&#39;
 </pre></div>
                 
                   
