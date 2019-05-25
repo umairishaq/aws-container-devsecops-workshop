@@ -575,7 +575,7 @@
 <p>Click on your Cloud9 IDE tab.</p>
 </li>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_vuln.yml</strong>.</p>
+<p>In the left file tree, expand the <strong>configurations</strong> folder and open <strong>buildspec_vuln.yml</strong>.</p>
 </li>
 <li>
 <p>Review the YAML code below, paste it in the file, and save.</p>
@@ -613,7 +613,7 @@
 
 <h2 id="commit-all-configuration-changes">Commit all configuration changes</h2>
 <p>Since you've made changes to a number of files in the configuration repo, you need to commit those changes to ensure your pipeline is pulling in the right files.</p>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/container-devsecops-wksp-config
+<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/configurations
 git add .
 git commit -m &quot;Updated Build Spec files and configurations.&quot;
 git push -u origin master

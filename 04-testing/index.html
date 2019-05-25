@@ -711,12 +711,13 @@
 <p>Click on your Cloud9 IDE tab.</p>
 </li>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>hadolint.yml</strong>.</p>
+<p>In the left file tree, expand the <strong>configurations</strong> folder and open <strong>hadolint.yml</strong>.</p>
 </li>
 <li>
 <p>Fix the defect:</p>
 <div class="admonition info">
-<p class="admonition-title"><strong>DL3026</strong>: Use only an allowed registry in the FROM image</p>
+<p class="admonition-title">Use of untrusted images</p>
+<p><strong>DL3026</strong>: Use only an allowed registry in the FROM image</p>
 <p><strong>Description</strong>:  Using externally provided images can result in the same types of risks that external software traditionally has, such as introducing malware, leaking data, or including components with vulnerabilities. To prevent the use of externally provided images you should only pull images from trusted registries.</p>
 <p><strong>Fix</strong>: Add <code>- docker.io</code> under <strong><em>trustedRegistries</em></strong>.  </p>
 <p><strong>Explanation</strong>:  Since the image is pulling from Dockerhub we can include it on the list so that the build is able to pass.  Adding Dockerhub is purely for testing purposes, in reality you would whitelist trusted registries that you host yourself or registries hosted by trusted 3rd parties.</p>
@@ -727,7 +728,7 @@
 <p>Commit your configuration changes:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/container-devsecops-wksp-config
+<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/configurations
 git add .
 git commit -m &quot;Added a trusted registry to hadolint configuration.&quot;
 git push -u origin master
@@ -742,7 +743,8 @@ git push -u origin master
 <li>
 <p>Fix the defects:</p>
 <div class="admonition info">
-<p class="admonition-title"><strong>DL3002</strong>: Last USER should not be root.</p>
+<p class="admonition-title">Image configuration defects</p>
+<p><strong>DL3002</strong>: Last USER should not be root.</p>
 <p><strong>Description</strong>: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. </p>
 <p><strong>Fix</strong>: Change USER to a non privileged user.  Add the following to the Dockerfile:</p>
 <p><code>RUN addgroup -S sasquatch</code></p>
@@ -752,7 +754,8 @@ git push -u origin master
 <p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a></p>
 </div>
 <div class="admonition info">
-<p class="admonition-title"><strong>DL3007</strong>: Using latest is prone to errors if the image will ever update.</p>
+<p class="admonition-title">Image configuration defects</p>
+<p><strong>DL3007</strong>: Using latest is prone to errors if the image will ever update.</p>
 <p><strong>Description</strong>: Latest is just a tag you add to an image and is no way dynamic.  It can be overwritten and prove difficult to understand what version of the software is installed.  Using the latest tag can effect the availability of your application and you should look at using a more explicit tag. </p>
 <p><strong>Fix</strong>: Pin the version explicitly to a release tag.  </p>
 <p>Replace <code>FROM python:latest</code> with <code>FROM python:alpine3.7</code></p>
@@ -792,7 +795,7 @@ git push -u origin development
 <p>Currently your trufflehog configuration is scanning through all of your commits to identify secrets. Since you'll be removing any current secrets you can modify the configuration to only scan new commits to speed up the build.</p>
 <ol>
 <li>
-<p>In the left file tree, expand the <strong>container-devsecops-wksp-config</strong> folder and open <strong>buildspec_secrets.yml</strong>.</p>
+<p>In the left file tree, expand the <strong>configurations</strong> folder and open <strong>buildspec_secrets.yml</strong>.</p>
 </li>
 <li>
 <p>Update your trufflehog configuration to only scan 1 commit deep.</p>
@@ -809,7 +812,7 @@ git push -u origin development
 <p class="admonition-title">The second line adds "--max-depth 1" which limits the scan depth.</p>
 </div>
 <p>Commit your configuration changes:</p>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/container-devsecops-wksp-config
+<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/configurations
 git add .
 git commit -m &quot;Modifed max-depth in trufflehog command.&quot;
 git push -u origin master
@@ -853,10 +856,10 @@ git push -u origin development
 
 
 <div class="admonition info">
-<p class="admonition-title">Secrets in source code</p>
+<p class="admonition-title">Embedded clear text secrets</p>
 <p><strong>Description</strong>: Many applications require secrets to enable communication with other serivces or backend components.  When an application is packaged into an image, these secrets can be embedded directly into the image.  This creates a security risk in which anyone with access to the image can easily obtain the secrets.</p>
 <p><strong>Fix</strong>: Remove secrets from source code and leverage a secure solution for managing secrets like <a href="https://aws.amazon.com/secrets-manager/" target="_blank">AWS Secrets Manager</a> or <a href="https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-parameter-store.html" target="_blank">AWS Systems Manager Parameter Store</a>.</p>
-<p>**Explanation: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.</p>
+<p><strong>Explanation</strong>: Best practice is to the remove secrets from all previous commits and rotate any credential found but due to time constraints you removed the secret and modified the scanning tool to only scan new commits.</p>
 <p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.4</a></p>
 </div>
 <p><strong>View the Pull Request Feedback</strong></p>
@@ -880,7 +883,13 @@ git push -u origin development
 <p>Click the search field and select a fileter of <strong>Product Name</strong> EQUALS <strong>Default</strong>.</p>
 </li>
 </ol>
-<p>The resulting findings are all of the vulnerabilities found in the image.  </p>
+<p>The resulting findings are all of the vulnerabilities found in the image.</p>
+<div class="admonition info">
+<p class="admonition-title">Image vulnerabilities</p>
+<p><strong>Description</strong>: Images are static archive files that include all of the components used to run an application.  Components within an image may be missing critical security updates or be outdated which can lead to exploitation and unauthorized system access.</p>
+<p><strong>Fix</strong>: Containers should be looked at as immutable and as such shouldn't be patched directly. Instead the vulernabilities should be fixed upstream in the source code and configuration of the image and then the image should be rebuilt and published.  This ensures that all new containers instantiated from the image don't include the vulnerabilities. </p>
+<p><strong>Reference</strong>: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.1</a></p>
+</div>
 <h2 id="view-image">View Image</h2>
 <p>The last stage of the pipeline builds the image, publishes it to AWS ECR, and then merges athe Pull Request.  You'll see in the feedback that a message is posted regarding the outcome of this stage and you'll notice that the Pull Request has been merged.</p>
 <ol>

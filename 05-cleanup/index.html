@@ -503,23 +503,23 @@
 <li>Run the following:</li>
 </ol>
 <div class="codehilite"><pre><span></span># Get Account #
-account=`aws sts get-caller-identity --query [Account] --output text
+account=`aws sts get-caller-identity --query [Account] --output text`
 
 # Delete S3 Bucket
 aws s3 rm s3://container-devsecops-wksp-$account-us-east-2-artifacts --recursive
 aws s3api delete-bucket --bucket container-devsecops-wksp-$account-us-east-2-artifacts
-
-# Delete Logs
 aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-dockerfile
 aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-secrets
 aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-scan-image
 aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-publish
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-anchore-build
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-initial-commit
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-pr
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-secrets
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-vulnerability
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-publish
+aws logs delete-log-group --log-group-name /aws/ecs/taskcontainer-devsecops-wksp-anchore-engine
 
 # Delete ECR Repositories
 aws ecr delete-repository --repository-name container-devsecops-wksp-sample --force
