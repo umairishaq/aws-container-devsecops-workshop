@@ -4,50 +4,37 @@ In order to prevent charges to your account we recommend cleaning up the infrast
 
 !!! info "You will need to manually delete some resources before you delete the CloudFormation stacks so please do the following steps in order."
 
-## Retrieve your AWS Account #
-
 1.  Open your Cloud9 IDE
-2.  Retrieve and copy your AWS Account #
+2.  Run the following:
 
 ```
-aws sts get-caller-identity
-```
+# Get Account #
+account=`aws sts get-caller-identity --query [Account] --output text
 
-## Delete the artifact S3 bucket
+# Delete S3 Bucket
+aws s3 rm s3://container-devsecops-wksp-$account-us-east-2-artifacts --recursive
+aws s3api delete-bucket --bucket container-devsecops-wksp-$account-us-east-2-artifacts
 
-* Delete all objects in the bucket (Replace <Account#>):
-```
-aws s3 rm s3://container-devsecops-wksp-<ACCOUNT#>-us-east-2-artifacts --recursive
-```
-* Delete bucket (Replace <Account #>):
-```
-aws s3api delete-bucket --bucket container-devsecops-wksp-<ACCOUNT#>-us-east-2-artifacts
-```
-
-## Delete the AWS CloudWatch Log Groups
-
-```
+# Delete Logs
 aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-dockerfile
-aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-build-secrets
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-scan-image
+aws logs delete-log-group --log-group-name /aws/codebuild/container-devsecops-wksp-publish
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-initial-commit
-```
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-pr
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-dockerfile
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-secrets
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-vulnerability
+aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-publish
 
-## Delete the AWS ECR repositories
+# Delete ECR Repositories
+aws ecr delete-repository --repository-name container-devsecops-wksp-sample --force
+aws ecr delete-repository --repository-name container-devsecops-wksp-anchore --force
 
-```
-aws ecr delete-repository --repository-name container-devsecops-wksp-sample
-aws ecr delete-repository --repository-name container-devsecops-wksp-anchore
-```
-
-## Delete CloudFormation templates
-
-* Delete the pipeline stack:
-```
+# Delete CloudFormation Stacks
 aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
-```
+aws cloudformation delete-stack --stack-name container-dso-wksp-anchore-stack
 
-* Delete the Anchore service:
-```
-aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
-```
+echo 'Completed cleanup.'
 
+```

@@ -103,7 +103,7 @@ The next two defects can be fixed by modifying the Dockerfile.
     !!! info "**DL3002**: Last USER should not be root."
         **Description**: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. 
 
-        **Fix**: Pin the version explicitly to a release tag.  Add the following to the Dockerfile:
+        **Fix**: Change USER to a non privileged user.  Add the following to the Dockerfile:
 
         `RUN addgroup -S sasquatch`
 
@@ -149,11 +149,13 @@ Based on the feedback you received in the Pull request you can see that secrets 
     
     !!! question "How could you improve the feedback loop to make it easier for the developer?"
 
+2. Remove the secret from the file.
+
 **Modify trufflehog configuration**
 
 Currently your trufflehog configuration is scanning through all of your commits to identify secrets. Since you'll be removing any current secrets you can modify the configuration to only scan new commits to speed up the build.
 
-1. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **secrets_config.yml**.
+1. In the left file tree, expand the **container-devsecops-wksp-config** folder and open **buildspec_secrets.yml**.
 
 2. Update your trufflehog configuration to only scan 1 commit deep.
 
@@ -177,12 +179,7 @@ git add .
 git commit -m "Modifed max-depth in trufflehog command."
 git push -u origin master
 ```
-** Remove secrets**
-
-
-2. Remove the secret from the file.
-
-Commit your application source code changes:
+Commit your application changes:
 
 ```
 cd /home/ec2-user/environment/sample-application

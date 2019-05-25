@@ -78,6 +78,7 @@ Resources:
             Value: !Sub
               - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}
               - { Repo: !Ref AnchoreRepository}
+      Name: !Join [ '-', [ !Ref ResourceName, 'anchore', 'build'  ] ]
       ServiceRole: !GetAtt AnchoreCodeBuildRole.Arn
       Source: 
         Type: S3
@@ -595,7 +596,7 @@ Resources:
               if 'vulnerabilities' in event:
 
                   # product arn format arn:aws:securityhub:us-west-2:123456789012:product/123456789012/default
-                  product_arn = "arn:aws:securityhub:{0}:{1}:product/{2}/anchore".format(
+                  product_arn = "arn:aws:securityhub:{0}:{1}:product/{2}/default".format(
                       region,
                       account_id,
                       account_id
@@ -615,6 +616,10 @@ Resources:
                                   vuln['vuln'],
                                   str(i)),
                               'ProductArn': product_arn,
+                              'ProductFields': {
+                                "ProviderName": "Anchore",
+                                "ProviderVersion": "v0.3.4",
+                              },
                               'GeneratorId': uuid,
                               'AwsAccountId': account_id,
                               'Types': [

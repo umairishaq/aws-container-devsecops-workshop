@@ -14,13 +14,15 @@ Region| Deploy
 ------|-----
 US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp-anchore-stack&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-fargate.yml" target="_blank">![Deploy Module 1 in us-west-2](./images/deploy-to-aws.png)</a>
 
-1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.  
+1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.
 
-2. On the **Specify Details** click **Next**. 
+2. The **Specify an Amazon S3 template URL** is already selected and the template URL is automatically added.  Click **Next**.
+
+3. On the **Specify Details** click **Next**. 
 	
-3. Once you have entered your parameters click **Next**, then **Next** again \(leave everything on this page at the default\).
+4. On the **Options** click **Next** \(leave everything on this page as the default\).
 
-4. Finally, acknowledge that the template will create IAM roles and CAPABILITY_AUTO_EXPAND and click **Create**.
+5. Finally, on the **Review** section acknowledge that the template will create IAM roles and CAPABILITY_AUTO_EXPAND and click **Create**.
 
 ??? question "What is CAPABILITY_AUTO_EXPAND?"
     Some templates contain macros. Macros perform custom processing on templates; this can include simple actions like find-and-replace operations, all the way to extensive transformations of entire templates. Because of this, users typically create a change set from the processed template, so that they can review the changes resulting from the macros before actually creating the stack. If your stack template contains one or more macros, and you choose to create a stack directly from the processed template, without first reviewing the resulting changes in a change set, you must acknowledge this capability.
@@ -40,18 +42,15 @@ Region| Deploy
 ------|-----
 US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp-pipeline-stack&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml" target="_blank">![Deploy Module 1 in us-west-2](./images/deploy-to-aws.png)</a>
 
-1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.  
+1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.
 
-2. On the **Specify Details** section enter the necessary parameters as shown below. 
+2. The **Specify an Amazon S3 template URL** is already selected and the template URL is automatically added.  Click **Next**.
 
-	| Parameter | Value  |
-	|---|---|
-	| Stack name | container-devsecops-wksp  |
-	| Fail When | Select a threshold  |
+3. On the **Specify Details** click **Next**. 
 	
-3. Once you have entered your parameters click **Next**, then **Next** again \(leave everything on this page at the default\).
+4. On the **Options** click **Next** \(leave everything on this page as the default\).
 
-4. Finally, acknowledge that the template will create IAM roles and click **Create**.
+5. Finally, on the **Review** section acknowledge that the template will create IAM roles and click **Create**.
 
 This will bring you back to the CloudFormation console. You can refresh the page to see the stack starting to create. 
 
@@ -84,13 +83,11 @@ You will be using AWS Security Hub to manage your container image vulnerabilitie
 aws securityhub enable-security-hub
 ```
 
-You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your current pipeline.  All the stages are there but they have not been properly configured.
-
 ---
 
 ## Pipeline Architecture
 
-Below is the current architecture of your pipeline.
+You can browse to <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view your current pipeline.  All the stages are there but they have not been properly configured.  Below is the current architecture of your pipeline.
 
 ![Architecture](./images/00-arch.png "Pipeline Architecture")
 
