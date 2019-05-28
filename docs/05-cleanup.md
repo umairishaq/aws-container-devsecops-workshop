@@ -33,8 +33,13 @@ aws ecr delete-repository --repository-name container-devsecops-wksp-anchore --f
 
 # Delete CloudFormation Stacks
 aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
-aws cloudformation delete-stack --stack-name container-dso-wksp-anchore-stack
 
-echo 'Completed cleanup.'
+echo 'Completed with part 1 of the cleanup.'
+
+```
+Go to the <a href="https://console.aws.amazon.com/cloudformation/home" target="_blank">CloudFormation console</a> and wait for the stack the pipeline stack to finish deleting.  After which, you can run the following command to delete the remaining stack.
+
+```
+aws cloudformation delete-stack --stack-name container-dso-wksp-anchore-stack
 
 ```

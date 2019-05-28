@@ -1,4 +1,4 @@
-# Module 4 <small>Add a vulnerability scanning stage</small>
+# Module 3 <small>Add a vulnerability scanning stage</small>
 
 **Time**: 15 minutes
 
