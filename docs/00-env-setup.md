@@ -48,7 +48,7 @@ The second CloudFormation you run will create the initial pipeline.
 1.  Within your IDE, run the following command:
 
 ```
-aws cloudformation create-stack --stack-name container-dso-wksp-pipeline-stack --template-url fhttps://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-stack --stack-name container-dso-wksp-pipeline-stack --template-url https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml --capabilities CAPABILITY_NAMED_IAM
 ```
 
 Go to the <a href="https://console.aws.amazon.com/cloudformation/home" target="_blank">CloudFormation console</a> and wait for the stack to complete.
