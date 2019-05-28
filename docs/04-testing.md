@@ -2,7 +2,7 @@
 
 **Time**: 30 minutes
 
-Now that you have integrated multiple types of security testing into your pipeline you can test it to ensure your stages are effective in properly evaluating the security of your container-based applications.  While going through each stage you will fix any misconfiguration or vulnerability so that your sample application is able to successfully passes through each stage and is pushed to AWS ECR.
+Now that you have integrated multiple types of security testing into your pipeline you can test it to ensure your stages are effective in properly evaluating the security of your container-based applications.  While going through each stage you will fix any misconfiguration or vulnerability so that your sample application is able to successfully pass through each stage and is pushed to AWS ECR.
 
 ## Pipeline Architecture
 
@@ -249,7 +249,7 @@ Since the build passed the vulnerability analysis stage we can assume that any l
 
 2.  Click **Findings** in the left navigation
 
-3.  Click the search field and select a fileter of **Product Name** EQUALS **Default**.
+3.  Click the search field and select a filter of **Product Name** EQUALS **Default**.
 
 The resulting findings are all of the vulnerabilities found in the image.
 
