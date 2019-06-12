@@ -391,8 +391,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#deploy-the-anchore-service" title="Deploy the Anchore service" class="md-nav__link">
-    Deploy the Anchore service
+  <a href="#deploy-the-environment" title="Deploy the Environment" class="md-nav__link">
+    Deploy the Environment
   </a>
   
 </li>
@@ -400,13 +400,6 @@
         <li class="md-nav__item">
   <a href="#browse-to-your-cloud9-ide" title="Browse to your Cloud9 IDE" class="md-nav__link">
     Browse to your Cloud9 IDE
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deploy-your-pipeline" title="Deploy your pipeline" class="md-nav__link">
-    Deploy your pipeline
   </a>
   
 </li>
@@ -548,8 +541,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#deploy-the-anchore-service" title="Deploy the Anchore service" class="md-nav__link">
-    Deploy the Anchore service
+  <a href="#deploy-the-environment" title="Deploy the Environment" class="md-nav__link">
+    Deploy the Environment
   </a>
   
 </li>
@@ -557,13 +550,6 @@
         <li class="md-nav__item">
   <a href="#browse-to-your-cloud9-ide" title="Browse to your Cloud9 IDE" class="md-nav__link">
     Browse to your Cloud9 IDE
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deploy-your-pipeline" title="Deploy your pipeline" class="md-nav__link">
-    Deploy your pipeline
   </a>
   
 </li>
@@ -611,10 +597,10 @@
                 <h1 id="module-0-environment-setup">Module 0 <small>Environment Setup</small></h1>
 <p><strong>Time</strong>: 15 minutes</p>
 <p>In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating into the pipeline later on in this workshop.  This module requires you to run two different <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates, which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.</p>
-<h2 id="deploy-the-anchore-service">Deploy the Anchore service</h2>
-<p>The first CloudFormation you run will create the Anchore vulnerability scanning service.  </p>
+<h2 id="deploy-the-environment">Deploy the Environment</h2>
+<p>The CloudFormation template you run will create the Anchore vulnerability scanning service as well as the initial pipeline.  </p>
 <div class="admonition info">
-<p class="admonition-title">Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/anchore/anchore-fargate.yml" target="_blank">here</a href>.</p>
+<p class="admonition-title">Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/container-devsecops-workshop.yml" target="_blank">here</a href>.</p>
 </div>
 <table>
 <thead>
@@ -626,7 +612,7 @@
 <tbody>
 <tr>
 <td>US East 2 (Ohio)</td>
-<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp-anchore-stack&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-fargate.yml" target="_blank"><img alt="Deploy Module 1 in us-west-2" src="../images/deploy-to-aws.png" /></a></td>
+<td><a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/container-devsecops-workshop.yml" target="_blank"><img alt="Deploy Module 1 in us-east-2" src="../images/deploy-to-aws.png" /></a></td>
 </tr>
 </tbody>
 </table>
@@ -659,18 +645,6 @@
 <li>Open the <a href="https://us-east-2.console.aws.amazon.com/cloud9/home?region=us-east-2" target="_blank">AWS Cloud9 console</a> (us-east-2)</li>
 <li>Click <strong>Open IDE</strong> in the <strong>container-devsecops-wksp-ide</strong> environment.  This will take you to your IDE in a new tab.  Always keep this tab open </li>
 </ol>
-<h2 id="deploy-your-pipeline">Deploy your pipeline</h2>
-<p>The second CloudFormation you run will create the initial pipeline.</p>
-<div class="admonition info">
-<p class="admonition-title">Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/initial-pipeline/pipeline-setup.yml" target="_blank">here</a href>.</p>
-</div>
-<ol>
-<li>Within your IDE, run the following command:</li>
-</ol>
-<div class="codehilite"><pre><span></span>aws cloudformation create-stack --stack-name container-dso-wksp-pipeline-stack --template-url https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml --capabilities CAPABILITY_NAMED_IAM
-</pre></div>
-
-
 <p>Go to the <a href="https://console.aws.amazon.com/cloudformation/home" target="_blank">CloudFormation console</a> and wait for the stack to complete.</p>
 <div class="admonition warning">
 <p class="admonition-title">Before moving on, make sure the stack is in a <strong>CREATE_COMPLETE</strong> status.  This stack takes ~3 minutes.</p>
