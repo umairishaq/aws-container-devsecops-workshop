@@ -4,15 +4,15 @@
 
 In the first module you will be configuring the initial pipeline and setting up the Anchore service which you will be integrating into the pipeline later on in this workshop.  This module requires you to run two different <a href="https://aws.amazon.com/cloudformation/" target="_blank">AWS CloudFormation</a> templates, which will automate the creation of the pipeline and Anchore service.  You will then walk through each stage and manually configure the security testing.
 
-## Deploy the Anchore service
+## Deploy the Environment
 
-The first CloudFormation you run will create the Anchore vulnerability scanning service.  
+The CloudFormation template you run will create the Anchore vulnerability scanning service as well as the initial pipeline.  
 
-!!! info "Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/anchore/anchore-fargate.yml" target="_blank">here</a href>."
+!!! info "Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/container-devsecops-workshop.yml" target="_blank">here</a href>."
 
 Region| Deploy
 ------|-----
-US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp-anchore-stack&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-fargate.yml" target="_blank">![Deploy Module 1 in us-west-2](./images/deploy-to-aws.png)</a>
+US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/container-devsecops-workshop.yml" target="_blank">![Deploy Module 1 in us-east-2](./images/deploy-to-aws.png)</a>
 
 1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.
 
@@ -38,18 +38,6 @@ You will be doing the majority of the workshop using the <a href="https://aws.am
 
 1.	Open the <a href="https://us-east-2.console.aws.amazon.com/cloud9/home?region=us-east-2" target="_blank">AWS Cloud9 console</a> (us-east-2)
 2.	Click **Open IDE** in the **container-devsecops-wksp-ide** environment.  This will take you to your IDE in a new tab.  Always keep this tab open 
-
-## Deploy your pipeline
-
-The second CloudFormation you run will create the initial pipeline.
-
-!!! info "Before you deploy the CloudFormation template feel free to view it <a href="https://github.com/aws-samples/aws-container-devsecops-workshop/blob/master/initial-pipeline/pipeline-setup.yml" target="_blank">here</a href>."
-
-1.  Within your IDE, run the following command:
-
-```
-aws cloudformation create-stack --stack-name container-dso-wksp-pipeline-stack --template-url https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/pipeline-setup.yml --capabilities CAPABILITY_NAMED_IAM
-```
 
 Go to the <a href="https://console.aws.amazon.com/cloudformation/home" target="_blank">CloudFormation console</a> and wait for the stack to complete.
 

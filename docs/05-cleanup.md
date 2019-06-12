@@ -25,21 +25,14 @@ aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-secrets
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-vulnerability
 aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-codebuild-publish
-aws logs delete-log-group --log-group-name /aws/ecs/taskcontainer-devsecops-wksp-anchore-engine
 
 # Delete ECR Repositories
 aws ecr delete-repository --repository-name container-devsecops-wksp-sample --force
 aws ecr delete-repository --repository-name container-devsecops-wksp-anchore --force
 
 # Delete CloudFormation Stacks
-aws cloudformation delete-stack --stack-name container-dso-wksp-pipeline-stack
+aws cloudformation delete-stack --stack-name container-dso-wksp
 
-echo 'Completed with part 1 of the cleanup.'
-
-```
-Go to the <a href="https://console.aws.amazon.com/cloudformation/home" target="_blank">CloudFormation console</a> and wait for the stack the pipeline stack to finish deleting.  After which, you can run the following command to delete the remaining stack.
-
-```
-aws cloudformation delete-stack --stack-name container-dso-wksp-anchore-stack
+echo 'Completed cleanup.'
 
 ```

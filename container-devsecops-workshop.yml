@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: This AWS CloudFormation Template that configures the Container DevSecOps workshop. 
+
+
+Resources:
+
+  AnchoreVpcStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        EnvironmentName: container-devsecops-wksp
+      TemplateURL: https://s3.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-vpc.yml
+
+  AnchoreStack:
+    DependsOn: AnchoreVpcStack
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ResourceName: container-devsecops-wksp
+      TemplateURL: https://sa-security-specialist-workshops-us-east-2.s3.us-east-2.amazonaws.com/devsecops/containers/anchore-fargate.yml
+
+  InitialPipeline:
+    DependsOn: AnchoreStack
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      Parameters:
+        ResourceName: container-devsecops-wksp
+        FailWhen: High
+      TemplateURL: https://sa-security-specialist-workshops-us-east-2.s3.us-east-2.amazonaws.com/devsecops/containers/pipeline-setup.yml
+  
+
+Outputs: {}

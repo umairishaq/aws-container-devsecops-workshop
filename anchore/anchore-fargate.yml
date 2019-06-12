@@ -20,7 +20,7 @@ Resources:
       Description: This is the IDE you will be using to complete the Container DevSecOps workshop.
       InstanceType: t2.small
       Name: !Join [ '-', [ !Ref ResourceName, 'ide'  ] ]
-      SubnetId: !GetAtt AnchoreVpcStack.Outputs.PublicSubnet1
+      SubnetId: !ImportValue 'AnchoreVpcStack:PublicSubnet1'
 
   ### Anchore ECR Repository
   AnchoreRepository:
@@ -209,13 +209,6 @@ Resources:
                 print("Status code: " + response.reason)
             except Exception as e:
                 print("send(..) failed executing requests.put(..): " + str(e))
-
-  AnchoreVpcStack:
-    Type: AWS::CloudFormation::Stack
-    Properties:
-      Parameters:
-        EnvironmentName: DevSecOps
-      TemplateURL: https://s3.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/anchore-vpc.yml
 
   dbPassword:
     Type: AWS::SecretsManager::Secret
@@ -413,7 +406,7 @@ Resources:
           FromPort: 80
           IpProtocol: tcp
           ToPort: 80
-      VpcId: !GetAtt AnchoreVpcStack.Outputs.VPC
+      VpcId: !ImportValue 'AnchoreVpcStack:VpcID'
 
   LB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
@@ -427,7 +420,7 @@ Resources:
       Subnets: 
         !Split
           - ","
-          - !GetAtt AnchoreVpcStack.Outputs.PublicSubnets
+          - !ImportValue 'AnchoreVpcStack:PublicSubnets'
       Type: application
 
   AnchoreFargateServiceSecurityGroup:
@@ -439,7 +432,7 @@ Resources:
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       SecurityGroupIngress: []
-      VpcId: !GetAtt AnchoreVpcStack.Outputs.VPC
+      VpcId: !ImportValue 'AnchoreVpcStack:VpcID'
 
   LBSecurityGrouptoAnchoreFargateServiceSecurityGroup:
     Type: AWS::EC2::SecurityGroupEgress
@@ -471,7 +464,7 @@ Resources:
       TargetGroupAttributes: []
       Targets: []
       TargetType: ip
-      VpcId: !GetAtt AnchoreVpcStack.Outputs.VPC
+      VpcId: !ImportValue 'AnchoreVpcStack:VpcID'
 
   LBPublicListener:
     Type: AWS::ElasticLoadBalancingV2::Listener
@@ -509,7 +502,7 @@ Resources:
           Subnets:
             !Split
               - ","
-              - !GetAtt AnchoreVpcStack.Outputs.PrivateSubnets
+              - !ImportValue 'AnchoreVpcStack:PrivateSubnets'
     DependsOn:
       - LBPublicListener
   
