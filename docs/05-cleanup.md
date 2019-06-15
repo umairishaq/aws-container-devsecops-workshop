@@ -29,6 +29,7 @@ aws logs delete-log-group --log-group-name /aws/lambda/container-devsecops-wksp-
 # Delete ECR Repositories
 aws ecr delete-repository --repository-name container-devsecops-wksp-sample --force
 aws ecr delete-repository --repository-name container-devsecops-wksp-anchore --force
+aws ecr delete-repository --repository-name container-devsecops-wksp-scratch --force
 
 # Delete CloudFormation Stacks
 aws cloudformation delete-stack --stack-name container-dso-wksp

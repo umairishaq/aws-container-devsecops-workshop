@@ -660,7 +660,8 @@ Resources:
                               ],
                               'Remediation': {
                                   'Recommendation': {
-                                      'Text': vuln['fix']
+                                      'Text': 'Update {0} to version {1}'.format(vuln['package'],
+                                                                                  vuln['fix'])
                                   }
                               },
                               'UserDefinedFields': {

@@ -24,4 +24,4 @@ phases:
       - jq -c --arg image $IMAGE --arg arn $IMAGE_ARN '. + {image_id:$image, image_arn:$arn}' scan_results.json >> tmp.json
       - mv tmp.json scan_results.json
       - aws lambda invoke --function-name $FUNCTION_ARN --invocation-type RequestResponse --payload file://scan_results.json outfile
-      - if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN '.vulnerabilities[] | (.severity==$threshold)' | grep -q true; then echo "Vulnerabilties Found" && exit 1; fi
+      - if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN '.vulnerabilities[] | (.severity==$threshold)' | grep -q true; then echo "$FAIL_WHEN Vulnerabilties Found" && exit 1; fi

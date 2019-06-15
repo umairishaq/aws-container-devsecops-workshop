@@ -126,7 +126,7 @@ The next two defects can be fixed by modifying the Dockerfile.
 
         **Fix**: Pin the version explicitly to a release tag.  
 
-        Replace `FROM python:latest` with `FROM python:alpine3.7`
+        Replace `FROM python:latest` with `FROM python:3.7-alpine`
 
         **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.2</a>
 
@@ -238,27 +238,57 @@ Updating the Pull Request branch automatically triggers the pipeline again.  You
 2. Click on the latest Pull Request.
 3. Click the **Activity** tab to view the feedback.
 
-
 ## View vulnerabilities
 
-In the feedback you should see information regarding any vulnerabilities that were found in the image.  When you went through the environment setup you specified a vulnerability threshold of **"High"**, which means that the build will fail if an image contains any High or Critical vulnerabilities. Specifying a threshold allows you to put in a place a risk tolerance for different severities of vulnerabilities. This allows your developers to continue to move quickly with low risk vulnerabilities that can be triaged and fixed later on.  In the current setup, all vulnerabilities below the threshold will be pushed to AWS Security Hub. 
+In the feedback you should see information regarding any vulnerabilities that were found in the image.  When you went through the environment setup you specified a vulnerability threshold of **"High"**, which means that the build will fail if an image contains any High or Critical vulnerabilities. Specifying a threshold allows you to put in a place a risk tolerance for different severities of vulnerabilities. This allows your developers to continue to move quickly with low risk vulnerabilities that can be triaged and fixed later on.  In the current setup, all vulnerabilities below the threshold will be pushed to AWS Security Hub.
 
-Since the build passed the vulnerability analysis stage we can assume that any low or medium finding was pushed to Security Hub.  
+Since the build fails the vulnerability analysis stage we need to fix the issue with so that the image does not contain any **"High"** rated vulnerabilitiy.
 
 1.  Click on the **Security Hub** link in the Pull Request feedback.
 
 2.  Click **Findings** in the left navigation
 
-3.  Click the search field and select a filter of **Product Name** EQUALS **Default**.
+3.  Click the search field and select a filter of **Product Name** EQUALS **Default**. The resulting findings are all of the vulnerabilities found in the image.
 
-The resulting findings are all of the vulnerabilities found in the image.
+4. Click on the **HIGH** rated vulnerability and check the **Description** for the vulnerability reported. E.g.
 
-!!! info "Image vulnerabilities"
-    **Description**: Images are static archive files that include all of the components used to run an application.  Components within an image may be missing critical security updates or be outdated which can lead to exploitation and unauthorized system access.
+    ![vuln-description](assets/images/vuln-description.png)
 
-    **Fix**: Containers should be looked at as immutable and as such shouldn't be patched directly. Instead the vulernabilities should be fixed upstream in the source code and configuration of the image and then the image should be rebuilt and published.  This ensures that all new containers instantiated from the image don't include the vulnerabilities. 
+    Follow the URL in the [**Source URL**](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8457) to see additional information about the reported vulnerability.
 
-    **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.1</a>
+    See the recommended **Remediation**. E.g.
+
+    ![vuln-remediation](assets/images/vuln-remediation.png)
+
+!!!info "Image vulnerabilities"
+
+        **Description**: Images are static archive files that include all of the components used to run an application.  Components within an image may be missing critical security updates or be outdated which can lead to exploitation and unauthorized system access.
+
+        **Fix**: Containers should be looked at as immutable and as such shouldn't be patched directly. Instead the vulernabilities should be fixed upstream in the source code and configuration of the image and then the image should be rebuilt and published.  This ensures that all new containers instantiated from the image don't include the vulnerabilities.
+
+        Update the affected package in Dockerfile:
+        Following the recommended **Remediation** update the `sqlite` version to `3.28.0-r0` in the Dockerfile.
+
+        `RUN apk add --no-cache sqlite-libs=3.28.0-r0`
+
+        **Reference**: <a href="https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf" target="_blank">NIST SP 800-190: Application Container Security Guide - 3.1.1</a>
+
+Commit your application source code changes:
+
+```bash
+cd /home/ec2-user/environment/sample-application
+git add Dockerfile
+git commit -m "Update sqlite version to fix CVE-2019-8457"
+git push -u origin development
+```
+
+**View the Pull Request Feedback**
+
+Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.
+
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
+2. Click on the latest Pull Request.
+3. Click the **Activity** tab to view the feedback.
 
 ## View Image
 
