@@ -15,7 +15,10 @@ Parameters:
     Type: String
     Default: High
     AllowedValues: 
+      - Low
+      - Medium
       - High
+      - Critical
     Description: Threshold to fail the pipeline if app image has vulnerabilities
 
 Metadata: 
@@ -53,7 +56,7 @@ Resources:
     Properties: 
       RepositoryDescription: Sample application repository to support the container devsecops workshop.
       RepositoryName: !Join [ '-', [ !Ref ResourceName, 'app'  ] ]
-
+  
   ### Configuration Repository
   ConfigRepository: 
     Type: AWS::CodeCommit::Repository
@@ -126,6 +129,12 @@ Resources:
     Type: AWS::ECR::Repository
     Properties: 
       RepositoryName: !Join [ '-', [ !Ref ResourceName, 'sample'  ] ]
+
+  ### Scratch ECR repository
+  ScratchRepository:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Join [ '-', [ !Ref ResourceName, 'scratch'  ] ]
 
   ### Feedback Loop - Pull Request
   PREventRuleRole: 
@@ -1064,7 +1073,7 @@ Resources:
             Value: !Ref AWS::AccountId
           - Name: IMAGE_REPO_NAME
             Type: PLAINTEXT
-            Value: !Ref ECRRepository
+            Value: !Ref ScratchRepository
           - Name: IMAGE_ARN
             Type: PLAINTEXT
             Value: !GetAtt ECRRepository.Arn
