@@ -1,6 +1,6 @@
 # Module 2 <small>Add a secrets scanning stage</small>
 
-**Time**: 15 minutes
+**Time**: 10 minutes
 
 Next, you need to setup a stage for identifying secrets throughout your code.  For this stage you'll be leveraging <a href="https://github.com/dxa4481/truffleHog" target="_blank">trufflehog</a>, a popular open source project for finding secrets accidentally committed in repositories.  It essentially searches through git repositories for secrets, digging deep into commit history and branches.  It identifies secrets by running entropy checks as well as high signal regex checks. 
 

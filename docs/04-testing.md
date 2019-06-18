@@ -1,6 +1,6 @@
 # Module 4 <small>Pipeline Testing</small>
 
-**Time**: 30 minutes
+**Time**: 50 minutes
 
 Now that you have integrated multiple types of security testing into your pipeline you can test it to ensure your stages are effective in properly evaluating the security of your container-based applications.  While going through each stage you will fix any misconfiguration or vulnerability so that your sample application is able to successfully pass through each stage and is pushed to AWS ECR.
 
@@ -40,7 +40,7 @@ Now you can test your pipeline to see how your Pull Requests result with an imag
 3.  Add a name to the Label line.
 4.  Push your commit.
 
-```
+```bash
     cd /home/ec2-user/environment/sample-application
     git add Dockerfile
     git commit -m "Modified Maintainer in Dockerfile"
@@ -49,7 +49,7 @@ Now you can test your pipeline to see how your Pull Requests result with an imag
 
 ## Create a Pull Request
 
-```
+```bash
 aws codecommit create-pull-request \
     --title "Updated Maintainer" \
     --description "Please review these changes." \
@@ -89,7 +89,7 @@ In the feedback you should see multiple defects that were identified by the Dock
 
 4.  Commit your configuration changes:
 
-```
+```bash
 cd /home/ec2-user/environment/configurations
 git add .
 git commit -m "Added a trusted registry to hadolint configuration."
@@ -132,7 +132,7 @@ The next two defects can be fixed by modifying the Dockerfile.
 
 Commit your application source code changes:
 
-```
+```bash
 cd /home/ec2-user/environment/sample-application
 git add Dockerfile
 git commit -m "Fixed Dockerfile linting issues."
@@ -171,7 +171,7 @@ Change this command:
 \- trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
 
 To this:
-```
+```bash
 - trufflehog --regex --rules secrets_config.json --entropy=False --max_depth 1 "$APP_REPO_URL"
 ```
 
@@ -179,7 +179,7 @@ To this:
 
 Commit your configuration changes:
 
-```
+```bash
 cd /home/ec2-user/environment/configurations
 git add .
 git commit -m "Modifed max-depth in trufflehog command."
@@ -187,7 +187,7 @@ git push -u origin master
 ```
 Commit your application changes:
 
-```
+```bash
 cd /home/ec2-user/environment/sample-application
 git add .
 git commit -m "Removed access key."
@@ -208,13 +208,13 @@ You'll notice that your pipeline is still failing on the secrets stage.  If you 
 
 2. Change the Label to the following:
 
-```
+```bash
 LABEL maintainer="Sasquatch" version="1.0"
 ```
 
 Commit your application source code changes:
 
-```
+```bash
 cd /home/ec2-user/environment/sample-application
 git add Dockerfile
 git commit -m "Added version Label."
@@ -252,13 +252,13 @@ Since the build fails the vulnerability analysis stage we need to fix the issue 
 
 4. Click on the **HIGH** rated vulnerability and check the **Description** for the vulnerability reported. E.g.
 
-    ![vuln-description](assets/images/vuln-description.png)
+    ![vuln-description](images/04-vuln-description.png)
 
     Follow the URL in the [**Source URL**](http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8457) to see additional information about the reported vulnerability.
 
     See the recommended **Remediation**. E.g.
 
-    ![vuln-remediation](assets/images/vuln-remediation.png)
+    ![vuln-remediation](images/04-vuln-remediation.png)
 
 !!!info "Image vulnerabilities"
 
@@ -282,20 +282,19 @@ git commit -m "Update sqlite version to fix CVE-2019-8457"
 git push -u origin development
 ```
 
-**View the Pull Request Feedback**
+**View the CodePipeline**
 
-Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.
+Updating the Pull Request branch automatically triggers the pipeline again.  This time go to the pipeline to view your code progress through the security testing.
 
-1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
-2. Click on the latest Pull Request.
-3. Click the **Activity** tab to view the feedback.
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">CodePipeline console</a>
+2. Scroll down as your code progresses through each stage.
 
 ## View Image
 
 The last stage of the pipeline builds the image, publishes it to AWS ECR, and then merges athe Pull Request.  You'll see in the feedback that a message is posted regarding the outcome of this stage and you'll notice that the Pull Request has been merged.
 
-1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a>
-2. Click on the latest Pull Request.
+1. Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=Closed" target="_blank">CodeCommit console</a>
+2. Click on the latest Pull Request.  You may need to change the filter to "Closed Pull Requests" since the last stage publishes the image, merges the code, and closes the PR.
 3. Click the **Activity** tab to view the feedback.
 4. Click the **AWS ECR repository** link.
 

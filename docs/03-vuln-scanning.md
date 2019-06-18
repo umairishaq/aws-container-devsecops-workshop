@@ -1,6 +1,6 @@
 # Module 3 <small>Add a vulnerability scanning stage</small>
 
-**Time**: 15 minutes
+**Time**: 10 minutes
 
 The last stage you will add will be for identifying vulnerabilities in your container image.  For this stage you'll be using <a href="https://anchore.com/opensource/" target="_blank">Anchore</a>, a popular open source container compliance platform.  This service can do a number of different validations but you will be primarily using it for checking your image for any Common Vulnerabilities and Exposures (CVE).
 
