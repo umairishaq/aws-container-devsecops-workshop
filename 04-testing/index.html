@@ -637,7 +637,7 @@
                 
                 
                 <h1 id="module-4-pipeline-testing">Module 4 <small>Pipeline Testing</small></h1>
-<p><strong>Time</strong>: 30 minutes</p>
+<p><strong>Time</strong>: 50 minutes</p>
 <p>Now that you have integrated multiple types of security testing into your pipeline you can test it to ensure your stages are effective in properly evaluating the security of your container-based applications.  While going through each stage you will fix any misconfiguration or vulnerability so that your sample application is able to successfully pass through each stage and is pushed to AWS ECR.</p>
 <h2 id="pipeline-architecture">Pipeline Architecture</h2>
 <p><img alt="Architecture" src="../images/04-arch.png" title="Pipeline Architecture" /></p>
@@ -681,18 +681,18 @@
 <li>Add a name to the Label line.</li>
 <li>Push your commit.</li>
 </ol>
-<div class="codehilite"><pre><span></span>    cd /home/ec2-user/environment/sample-application
+<div class="codehilite"><pre><span></span>    <span class="nb">cd</span> /home/ec2-user/environment/sample-application
     git add Dockerfile
-    git commit -m &quot;Modified Maintainer in Dockerfile&quot;
+    git commit -m <span class="s2">&quot;Modified Maintainer in Dockerfile&quot;</span>
     git push -u origin development
 </pre></div>
 
 
 <h2 id="create-a-pull-request">Create a Pull Request</h2>
-<div class="codehilite"><pre><span></span>aws codecommit create-pull-request \
-    --title &quot;Updated Maintainer&quot; \
-    --description &quot;Please review these changes.&quot; \
-    --targets repositoryName=container-devsecops-wksp-app,sourceReference=development,destinationReference=master
+<div class="codehilite"><pre><span></span>aws codecommit create-pull-request <span class="se">\</span>
+    --title <span class="s2">&quot;Updated Maintainer&quot;</span> <span class="se">\</span>
+    --description <span class="s2">&quot;Please review these changes.&quot;</span> <span class="se">\</span>
+    --targets <span class="nv">repositoryName</span><span class="o">=</span>container-devsecops-wksp-app,sourceReference<span class="o">=</span>development,destinationReference<span class="o">=</span>master
 </pre></div>
 
 
@@ -728,9 +728,9 @@
 <p>Commit your configuration changes:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/configurations
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> /home/ec2-user/environment/configurations
 git add .
-git commit -m &quot;Added a trusted registry to hadolint configuration.&quot;
+git commit -m <span class="s2">&quot;Added a trusted registry to hadolint configuration.&quot;</span>
 git push -u origin master
 </pre></div>
 
@@ -764,9 +764,9 @@ git push -u origin master
 </li>
 </ol>
 <p>Commit your application source code changes:</p>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/sample-application
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> /home/ec2-user/environment/sample-application
 git add Dockerfile
-git commit -m &quot;Fixed Dockerfile linting issues.&quot;
+git commit -m <span class="s2">&quot;Fixed Dockerfile linting issues.&quot;</span>
 git push -u origin development
 </pre></div>
 
@@ -804,7 +804,7 @@ git push -u origin development
 <p>Change this command:</p>
 <p>- trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"</p>
 <p>To this:</p>
-<div class="codehilite"><pre><span></span>- trufflehog --regex --rules secrets_config.json --entropy=False --max_depth 1 &quot;$APP_REPO_URL&quot;
+<div class="codehilite"><pre><span></span>- trufflehog --regex --rules secrets_config.json --entropy<span class="o">=</span>False --max_depth <span class="m">1</span> <span class="s2">&quot;</span><span class="nv">$APP_REPO_URL</span><span class="s2">&quot;</span>
 </pre></div>
 
 
@@ -812,17 +812,17 @@ git push -u origin development
 <p class="admonition-title">The second line adds "--max-depth 1" which limits the scan depth.</p>
 </div>
 <p>Commit your configuration changes:</p>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/configurations
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> /home/ec2-user/environment/configurations
 git add .
-git commit -m &quot;Modifed max-depth in trufflehog command.&quot;
+git commit -m <span class="s2">&quot;Modifed max-depth in trufflehog command.&quot;</span>
 git push -u origin master
 </pre></div>
 
 
 <p>Commit your application changes:</p>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/sample-application
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> /home/ec2-user/environment/sample-application
 git add .
-git commit -m &quot;Removed access key.&quot;
+git commit -m <span class="s2">&quot;Removed access key.&quot;</span>
 git push -u origin development
 </pre></div>
 
@@ -843,14 +843,14 @@ git push -u origin development
 <p>Change the Label to the following:</p>
 </li>
 </ol>
-<div class="codehilite"><pre><span></span>LABEL maintainer=&quot;Sasquatch&quot; version=&quot;1.0&quot;
+<div class="codehilite"><pre><span></span>LABEL <span class="nv">maintainer</span><span class="o">=</span><span class="s2">&quot;Sasquatch&quot;</span> <span class="nv">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span>
 </pre></div>
 
 
 <p>Commit your application source code changes:</p>
-<div class="codehilite"><pre><span></span>cd /home/ec2-user/environment/sample-application
+<div class="codehilite"><pre><span></span><span class="nb">cd</span> /home/ec2-user/environment/sample-application
 git add Dockerfile
-git commit -m &quot;Added version Label.&quot;
+git commit -m <span class="s2">&quot;Added version Label.&quot;</span>
 git push -u origin development
 </pre></div>
 
@@ -884,10 +884,10 @@ git push -u origin development
 </li>
 <li>
 <p>Click on the <strong>HIGH</strong> rated vulnerability and check the <strong>Description</strong> for the vulnerability reported. E.g.</p>
-<p><img alt="vuln-description" src="../assets/images/vuln-description.png" /></p>
+<p><img alt="vuln-description" src="../images/04-vuln-description.png" /></p>
 <p>Follow the URL in the <a href="http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8457"><strong>Source URL</strong></a> to see additional information about the reported vulnerability.</p>
 <p>See the recommended <strong>Remediation</strong>. E.g.</p>
-<p><img alt="vuln-remediation" src="../assets/images/vuln-remediation.png" /></p>
+<p><img alt="vuln-remediation" src="../images/04-vuln-remediation.png" /></p>
 </li>
 </ol>
 <div class="admonition info">
@@ -907,18 +907,17 @@ git push -u origin development
 </pre></div>
 
 
-<p><strong>View the Pull Request Feedback</strong></p>
-<p>Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.</p>
+<p><strong>View the CodePipeline</strong></p>
+<p>Updating the Pull Request branch automatically triggers the pipeline again.  This time go to the pipeline to view your code progress through the security testing.</p>
 <ol>
-<li>Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a></li>
-<li>Click on the latest Pull Request.</li>
-<li>Click the <strong>Activity</strong> tab to view the feedback.</li>
+<li>Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">CodePipeline console</a></li>
+<li>Scroll down as your code progresses through each stage.</li>
 </ol>
 <h2 id="view-image">View Image</h2>
 <p>The last stage of the pipeline builds the image, publishes it to AWS ECR, and then merges athe Pull Request.  You'll see in the feedback that a message is posted regarding the outcome of this stage and you'll notice that the Pull Request has been merged.</p>
 <ol>
-<li>Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=OPEN" target="_blank">CodeCommit console</a></li>
-<li>Click on the latest Pull Request.</li>
+<li>Go to the <a href="https://us-east-2.console.aws.amazon.com/codesuite/codecommit/repositories/container-devsecops-wksp-app/pull-requests?region=us-east-2&status=Closed" target="_blank">CodeCommit console</a></li>
+<li>Click on the latest Pull Request.  You may need to change the filter to "Closed Pull Requests" since the last stage publishes the image, merges the code, and closes the PR.</li>
 <li>Click the <strong>Activity</strong> tab to view the feedback.</li>
 <li>Click the <strong>AWS ECR repository</strong> link.</li>
 </ol>

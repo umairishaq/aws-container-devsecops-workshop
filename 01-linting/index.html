@@ -581,7 +581,7 @@
                 
                 
                 <h1 id="module-1-add-a-dockerfile-linting-stage">Module 1 <small>Add a Dockerfile linting stage</small></h1>
-<p><strong>Time</strong>: 15 minutes</p>
+<p><strong>Time</strong>: 10 minutes</p>
 <p>Now that you have your initial pipeline setup, it is time to start integrating security testing.  The first stage you'll add is for doing linting of Dockerfiles to help you build best practice Docker images.  For linting you'll be leveraging <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, which is a popular open source project for linting Dockerfiles and validating inline bash. The linter parses the Dockerfile into an AST and performs rules on top of the AST.  The rules aren't all security specific but they have good coverage across best practices.</p>
 <h2 id="view-your-codebuild-project">View your CodeBuild Project</h2>
 <p>For each AWS CodePipeline stage you'll be using <a href="https://aws.amazon.com/codebuild/" target="_blank">AWS CodeBuild</a>, which is a continuous integration service that compiles source code, runs tests, and produces software packages that are ready to deploy.  The CodeBuild project for Dockerfile linting has already been created but hasn't been properly configured.  </p>
