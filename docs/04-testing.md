@@ -107,7 +107,7 @@ The next two defects can be fixed by modifying the Dockerfile.
 
         **Description**: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. 
 
-        **Fix**: Change USER to a non privileged user.  Add the following to the Dockerfile:
+        **Fix**: Change USER to a non privileged user.  Add the following to the Dockerfile **underneath RUN apk**:
 
         `RUN addgroup -S sasquatch`
 
@@ -138,6 +138,9 @@ git add Dockerfile
 git commit -m "Fixed Dockerfile linting issues."
 git push -u origin development
 ```
+
+Go to your <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view the progress and result.
+
 
 **View the Pull Request Feedback**
 
@@ -194,6 +197,9 @@ git commit -m "Removed access key."
 git push -u origin development
 ```
 
+Go to your <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view the progress and result.
+
+
 **View the Pull Request Feedback**
 
 Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.
@@ -244,7 +250,7 @@ In the feedback you should see information regarding any vulnerabilities that we
 
 Since the build fails the vulnerability analysis stage we need to fix the issue with so that the image does not contain any **"High"** rated vulnerabilitiy.
 
-1.  Click on the **Security Hub** link in the Pull Request feedback.
+1.  Go to the <a href="https://us-east-2.console.aws.amazon.com/securityhub/" target="_blank">Security Hub</a> console.
 
 2.  Click **Findings** in the left navigation
 

@@ -21,6 +21,7 @@ Resources:
       InstanceType: t2.small
       Name: !Join [ '-', [ !Ref ResourceName, 'ide'  ] ]
       SubnetId: !ImportValue 'AnchoreVpcStack:PublicSubnet1'
+      OwnerArn: !Sub "arn:aws:sts::${AWS::AccountId}:assumed-role/TeamRole/MasterKey"
 
   ### Anchore ECR Repository
   AnchoreRepository:
