@@ -746,7 +746,7 @@ git push -u origin master
 <p class="admonition-title">Image configuration defects</p>
 <p><strong>DL3002</strong>: Last USER should not be root.</p>
 <p><strong>Description</strong>: To adhere the principals of least privileges, your containers should not be running as root.  Most containerized processes are application services and therefore don’t require root access. </p>
-<p><strong>Fix</strong>: Change USER to a non privileged user.  Add the following to the Dockerfile:</p>
+<p><strong>Fix</strong>: Change USER to a non privileged user.  Add the following to the Dockerfile <strong>underneath RUN apk</strong>:</p>
 <p><code>RUN addgroup -S sasquatch</code></p>
 <p><code>RUN adduser -S sasquatch -G sasquatch</code></p>
 <p>Next, replace <code>USER root</code> with <code>USER sasquatch</code></p>
@@ -771,6 +771,7 @@ git push -u origin development
 </pre></div>
 
 
+<p>Go to your <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view the progress and result.</p>
 <p><strong>View the Pull Request Feedback</strong></p>
 <p>Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.</p>
 <ol>
@@ -827,6 +828,7 @@ git push -u origin development
 </pre></div>
 
 
+<p>Go to your <a href="https://us-east-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/container-devsecops-wksp-pipeline/view" target="_blank">AWS CodePipeline</a> to view the progress and result.</p>
 <p><strong>View the Pull Request Feedback</strong></p>
 <p>Updating the Pull Request branch automatically triggers the pipeline again.  You can view the feedback to see if the defects were remediated.</p>
 <ol>
@@ -874,7 +876,7 @@ git push -u origin development
 <p>Since the build fails the vulnerability analysis stage we need to fix the issue with so that the image does not contain any <strong>"High"</strong> rated vulnerabilitiy.</p>
 <ol>
 <li>
-<p>Click on the <strong>Security Hub</strong> link in the Pull Request feedback.</p>
+<p>Go to the <a href="https://us-east-2.console.aws.amazon.com/securityhub/" target="_blank">Security Hub</a> console.</p>
 </li>
 <li>
 <p>Click <strong>Findings</strong> in the left navigation</p>
