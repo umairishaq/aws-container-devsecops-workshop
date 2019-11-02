@@ -288,6 +288,29 @@ git commit -m "Update sqlite version to fix CVE-2019-8457"
 git push -u origin development
 ```
 
+## View malware
+
+In the feedback for the pull request you should see that our malware scanning stage picked up on something. Similar to the previous stage, you can see the details of the malware in <a href="https://us-east-2.console.aws.amazon.com/securityhub/" target="_blank">Security Hub</a>. Within the docker image that the codecommit repository was built from, the Eicar Test Signature has been found. 
+
+!!!info "Image malware"
+
+        **Description**: The Eicar Test String is a harmless piece of text, that resembles a virus for malware scanning test purposes.
+
+        **Fix**: Go into the Dockerfile and remove the line:
+
+        `RUN git clone https://github.com/todb-r7/eicar.git`
+
+        **Reference**: <a href="https://en.wikipedia.org/wiki/EICAR_test_file" target="_blank">The EICAR test file</a>
+
+Commit your application source code changes:
+
+```bash
+cd /home/ec2-user/environment/sample-application
+git add Dockerfile
+git commit -m "Update sqlite version to fix CVE-2019-8457"
+git push -u origin development
+```
+
 **View the CodePipeline**
 
 Updating the Pull Request branch automatically triggers the pipeline again.  This time go to the pipeline to view your code progress through the security testing.

@@ -680,6 +680,117 @@ Resources:
       Runtime: python3.7
       Timeout: 300
 
+  SendMalwareLambda: 
+    Type: AWS::Lambda::Function
+    Properties:
+      Layers:
+        - !Ref Boto3LambdaLayer
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'sendmalware', 'securityhub'  ] ]
+      Description: Sends payload with malware findings to Security Hub
+      Handler: index.lambda_handler
+      Role: !GetAtt SendFindingsLambdaRole.Arn
+      Environment:
+        Variables:
+          ACCOUNT_ID: !Ref AWS::AccountId
+          REGION: !Ref AWS::Region
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import boto3
+          import traceback
+          import os
+          import uuid
+          import datetime
+          from enum import Enum
+          from itertools import zip_longest
+
+          client = boto3.client('securityhub')
+          account_id = os.environ['ACCOUNT_ID']
+          region = os.environ['REGION']
+          uuid = str(uuid.uuid4())
+
+
+          def lambda_handler(event, context):
+              """Get the results of the scan and send them to Security Hub"""
+              
+
+              # product arn format arn:aws:securityhub:us-west-2:123456789012:product/123456789012/default
+              product_arn = "arn:aws:securityhub:{0}:{1}:product/{2}/default".format(
+                  region,
+                  account_id,
+                  account_id
+              )
+
+          
+              repo_url = event['repourl']
+              
+              curr_time = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc).isoformat()
+              malwareString = event['scanresults'].split("----------- SCAN SUMMARY -----------", 1)[0]
+              malwareString.replace('\t', '')
+              malwareString.replace('\n', '')
+              malwareFindings = malwareString.split("FOUND")
+              
+              
+              findings = []
+              for malware in malwareFindings:
+                  if (len(malware.split(":", 1)) == 2):
+                      malwareLocation = malware.split(":", 1)[0]
+                      malwareName = malware.split(":", 1)[1]
+                      print(malwareName)
+                      i = 0
+                      finding = {
+                          'SchemaVersion': '2018-10-08',
+                          'Id': '{0}-{1}-{2}'.format(repo_url,
+                              malwareName,
+                              str(i)),
+                          'ProductArn': product_arn,
+                          'ProductFields': {
+                            'ProviderName': 'ClamAV',
+                            'ProviderVersion': 'v0.101.2.',
+                          },
+                          'GeneratorId': uuid,
+                          'AwsAccountId': account_id,
+                          'Types': [
+                              "Unusual Behaviors/Application"
+                          ],
+                          'Malware' : [ {
+                              "Name": malwareName,
+                              "Path": malwareLocation,
+                              "State": 'OBSERVED'
+                          }],
+                          'CreatedAt': curr_time,
+                          'UpdatedAt': curr_time,
+                          'Severity': {
+                              'Normalized': 99
+                          },
+                          'Title': 'Malware {0} found in {1} '.format(malwareName,
+                              repo_url),
+                          'Description': '<Malware {0} found in {1} for {2}'.format(malwareName,
+                              malwareLocation,
+                              repo_url),
+                          'Resources': [
+                              {
+                                  'Type': 'AwsCodeCommitRepository',
+                                  'Id': repo_url,
+                                  
+                              }
+                          ],
+                          'Remediation': {
+                              'Recommendation': {
+                                  'Text': 'Find {0} malware and remove from {1}'.format(malwareName,
+                                                                              repo_url)
+                              }
+                          }
+                      }
+                      findings.append(finding)
+                      i += 1
+
+              # Report the chunk of findings
+              client.batch_import_findings(Findings=findings)
+
+      Runtime: python3.7
+      Timeout: 300
+
 Outputs:
   AnchoreLB:
     Value:
@@ -699,3 +810,10 @@ Outputs:
         - Arn
     Export:
       Name: AnchoreFargateStack:SendFindingsToSecurityHub
+  SendMalwareLambda:
+    Value:
+      !GetAtt
+        - SendMalwareLambda
+        - Arn
+    Export:
+      Name: AnchoreFargateStack:SendMalwareToSecurityHub

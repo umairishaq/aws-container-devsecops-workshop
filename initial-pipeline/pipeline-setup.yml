@@ -657,7 +657,115 @@ Resources:
       Action: "lambda:InvokeFunction"
       Principal: "events.amazonaws.com"
       SourceArn: !GetAtt CBVCEventRule.Arn
-  
+
+  ### Feedback Loop - Malware Scanning CodeBuild
+
+  CBMCEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: !Join [ '-', [ !Ref ResourceName, 'codebuild-malware'  ] ]
+      Description: "Triggers when builds fail/pass in CodeBuild for the malware scanning."
+      EventPattern:
+        source:
+          - "aws.codebuild"
+        detail-type:
+          - "CodeBuild Build State Change"
+        detail:
+          build-status:
+            - "FAILED"
+            - "SUCCEEDED"
+          project-name:
+            - !Ref CodeBuildMalwareProject
+      State: "ENABLED"
+      Targets:
+        - Arn: !GetAtt LambdaCBMC.Arn
+          Id: !Join [ '-', [ !Ref ResourceName, 'codebuild-malware'  ] ]
+
+  LambdaCBMC: 
+    Type: "AWS::Lambda::Function"
+    Properties: 
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-malware'  ] ]
+      Description: "Adds a comment to the pull request regarding the success or failure of the malware scanning codebuild."
+      Handler: "index.handler"
+      Environment:
+        Variables:
+          PREFIX: !Ref ResourceName
+          CODEBUILDMCPROJECT: !Ref CodeBuildMalwareProject
+      Role: !GetAtt 'LambdaPRCommentRole.Arn'
+      Code:
+        ZipFile: |
+          from __future__ import print_function
+          import boto3
+          import os
+          import json
+
+          codecommit_client = boto3.client('codecommit')
+          ssm = boto3.client('ssm')
+          scproject = os.environ['CODEBUILDMCPROJECT']
+
+          def handler(event, context):
+
+            # Log event
+            print(json.dumps(event))
+
+            # Get PR Details
+            pull_request_id = ssm.get_parameter(
+              Name='prid'
+            )
+
+            repository_name = ssm.get_parameter(
+              Name='repo'
+            )
+
+            source_commit = ssm.get_parameter(
+              Name='sourceCommit'
+            )
+
+            destination_commit = ssm.get_parameter(
+              Name='destinationCommit'
+            )
+
+            s3_prefix = 's3-{0}'.format(event['region']) if event['region'] != 'us-east-1' else 's3'
+            sec_hub = 'https://%s.console.aws.amazon.com/securityhub/' % event['region'] 
+            if event['detail']['project-name'] in [scproject]:
+              
+              # Add Errors
+              errors = '## Static Analysis - Malware Scanning  (using ClamAV)\n'
+              if event['detail']['build-status'] == 'SUCCEEDED':
+                errors = errors + 'No Malware found.'
+              else:
+                errors = errors + 'Malware found! Please review the logs and remove any infected files. Detailed findings in [Security Hub](%s).' % sec_hub
+              for phase in event['detail']['additional-information']['phases']:
+                if phase.get('phase-status') == 'FAILED':
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/failing.svg'.format(s3_prefix, event['region'])
+                    content = '![Failing]({0} "Failing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+                    break
+                else:
+                    badge = 'https://{0}.amazonaws.com/sa-security-specialist-workshops-{1}/devsecops/containers/badges/passing.svg'.format(s3_prefix, event['region'])
+                    content = '![Passing]({0} "Passing") - See the [Logs]({1})\n'.format(badge, event['detail']['additional-information']['logs']['deep-link'])
+                    content = content + errors
+
+            codecommit_client.post_comment_for_pull_request(
+              pullRequestId = pull_request_id['Parameter']['Value'],
+              repositoryName = repository_name['Parameter']['Value'],
+              beforeCommitId = source_commit['Parameter']['Value'],
+              afterCommitId = destination_commit['Parameter']['Value'],
+              content = content
+            )
+
+      Runtime: "python2.7"
+      Timeout: "35"
+      MemorySize: 128
+
+  PermissionForEventsToInvokeLambdaCBMC:
+    Type: "AWS::Lambda::Permission"
+    Properties:
+      FunctionName: !Join [ '-', [ !Ref ResourceName, 'codebuild-malware'  ] ]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn: !GetAtt CBMCEventRule.Arn
+
   ### Feedback Loop - Publish Image
 
   CBPUEventRule:
@@ -931,6 +1039,24 @@ Resources:
                   ProjectName: !Ref CodeBuildVulnProject
                   PrimarySource: "ConfigSource"
               RunOrder: 1
+        - Name: 'StaticAnalysis-Malware'
+          Actions:
+            - Name: MalwareScan
+              ActionTypeId:
+                  Category: Build
+                  Owner: AWS
+                  Version: 1
+                  Provider: CodeBuild
+              OutputArtifacts:
+                - Name: "MalwareAppSourceOutput"
+                - Name: "MalwareConfigSourceOutput"
+              InputArtifacts:
+                - Name: "AppSource"
+                - Name: "ConfigSource"
+              Configuration:
+                  ProjectName: !Ref CodeBuildMalwareProject
+                  PrimarySource: "ConfigSource"
+              RunOrder: 1
         - Name: 'PublishImage'
           Actions:
             - Name: Build
@@ -997,6 +1123,12 @@ Resources:
                 Action:
                   - ecr:*
                 Resource: '*'
+              -
+                Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                  - lambda:InvokeAsync
+                Resource: !ImportValue 'AnchoreFargateStack:SendMalwareToSecurityHub'
               -
                 Effect: Allow
                 Action:
@@ -1102,7 +1234,35 @@ Resources:
       Source: 
         Type: CODEPIPELINE
         BuildSpec: buildspec_vuln.yml
-      
+
+  #### CodeBuild Project - Malware Scanning ####
+  CodeBuildMalwareProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        Type: CODEPIPELINE
+      Environment:
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/docker:18.09.0
+        Type: LINUX_CONTAINER
+        EnvironmentVariables:
+          - Name: AWS_ACCOUNT_ID
+            Type: PLAINTEXT
+            Value: !Ref AWS::AccountId
+          - Name: IMAGE_REPO_NAME
+            Type: PLAINTEXT
+            Value: !Ref ScratchRepository
+          - Name: IMAGE_ARN
+            Type: PLAINTEXT
+            Value: !GetAtt ECRRepository.Arn
+          - Name: FUNCTION_ARN
+            Value: !ImportValue 'AnchoreFargateStack:SendMalwareToSecurityHub'
+      Name: !Join [ '-', [ !Ref ResourceName, 'malware', 'scan'  ] ]
+      ServiceRole: !GetAtt 'CodeBuildRole.Arn'
+      Source: 
+        Type: CODEPIPELINE
+        BuildSpec: buildspec_malware.yml
+
   #### CodeBuild Project - Publish Image ####
 
   CodeBuildPublishProject:
