@@ -817,3 +817,14 @@ Outputs:
         - Arn
     Export:
       Name: AnchoreFargateStack:SendMalwareToSecurityHub
+  AnchoreTaskExecutionRoleArn:
+    Value: 
+      !GetAtt
+          - AnchoreTaskExecutionRole
+          - Arn
+    Export: 
+      Name: ResourceStack:AnchoreTaskExecutionRoleArn
+  Cluster: 
+    Value: !Ref Cluster
+    Export:
+      Name: ResourceStack:Cluster

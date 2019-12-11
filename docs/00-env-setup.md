@@ -22,7 +22,7 @@ To setup your environment please expand one of the following dropdown sections (
 
     Region| Deploy
     ------|-----
-    US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp&templateURL=https://s3.us-east-2.amazonaws.com/sa-security-specialist-workshops-us-east-2/devsecops/containers/container-devsecops-workshop.yml" target="_blank">![Deploy Module 1 in us-east-2](./images/deploy-to-aws.png)</a>
+    US East 2 (Ohio) | <a href="https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=container-dso-wksp&templateURL=https://container-workshop-test-bucket-1.s3.us-east-2.amazonaws.com/container-devsecops-workshop.yml" target="_blank">![Deploy Module 1 in us-east-2](./images/deploy-to-aws.png)</a>
 
     1. Click the **Deploy to AWS** button above.  This will automatically take you to the console to run the template.
 

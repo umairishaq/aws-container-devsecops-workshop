@@ -8,7 +8,7 @@ In this workshop, you will learn how to leverage AWS development tools and open-
 * **<a href="https://www.nist.gov/cyberframework/online-learning/components-framework" target="_blank">CSF Functions</a>**: Prevent, Detect
 * **<a href="https://d0.awsstatic.com/whitepapers/AWS_CAF_Security_Perspective.pdf" target="_blank">CAF Components</a>**: Preventative, Detective
 * **AWS Services**: <a href="https://aws.amazon.com/cloudwatch/" target="_blank">Amazon CloudWatch</a>, <a href="https://aws.amazon.com/codecommit/" target="_blank">AWS CodeCommit</a>, <a href="https://aws.amazon.com/codebuild/" target="_blank">AWS CodeBuild</a>, <a href="https://aws.amazon.com/codepipeline/" target="_blank">AWS CodePipeline</a>, <a href="https://aws.amazon.com/ecr/" target="_blank">Amazon ECR</a>, <a href="https://aws.amazon.com/lambda/" target="_blank">AWS Lambda</a>, and <a href="https://aws.amazon.com/security-hub/ " target="_blank">AWS Security Hub</a>
-* **Open Source Projects**: <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, <a href="https://github.com/dxa4481/truffleHog" target="_blank">Trufflehog</a>, <a href="https://anchore.com/opensource/" target="_blank">Anchore</a>, and <a href="https://www.clamav.net/" target="_blank">ClamAV</a>
+* **Open Source Projects**: <a href="https://github.com/hadolint/hadolint" target="_blank">Hadolint</a>, <a href="https://github.com/dxa4481/truffleHog" target="_blank">Trufflehog</a>, <a href="https://anchore.com/opensource/" target="_blank">Anchore</a>, <a href="https://www.clamav.net/" target="_blank">ClamAV</a>, <a href="https://falco.org/docs/" target="_blank">Falco</a>, and <a href="https://github.com/docker/docker-bench-security" target="_blank">Docker Bench</a>
 
 ## Scenario
 

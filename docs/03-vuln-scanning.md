@@ -42,17 +42,6 @@ phases:
       - if cat scan_results.json |  jq -r --arg threshold $FAIL_WHEN '.vulnerabilities[] | (.severity==$threshold)' | grep -q true; then echo "Vulnerabilties Found" && exit 1; fi
 ```
 
-## Commit all configuration changes
-
-Since you've made changes to a number of files in the configuration repo, you need to commit those changes to ensure your pipeline is pulling in the right files.
-
-```
-cd /home/ec2-user/environment/configurations
-git add .
-git commit -m "Updated Build Spec files and configurations."
-git push -u origin master
-```
-
 ---
 
 ## Pipeline Architecture
@@ -61,4 +50,4 @@ Below is the current architecture of your pipeline.
 
 ![Architecture](./images/03-arch.png "Pipeline Architecture")
 
-After you have successfully configured the secrets scanning stage, you can proceed to the next module.
+After you have successfully configured the vulnerability scanning stage, you can proceed to the next module.

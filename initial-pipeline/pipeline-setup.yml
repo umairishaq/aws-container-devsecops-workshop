@@ -136,6 +136,213 @@ Resources:
     Properties: 
       RepositoryName: !Join [ '-', [ !Ref ResourceName, 'scratch'  ] ]
 
+  ### Scratch ECR repository
+  FalcoRepository:
+    Type: AWS::ECR::Repository
+    Properties: 
+      RepositoryName: !Join [ '-', [ !Ref ResourceName, 'falco'  ] ]
+
+    ## Sample ECS task definition
+
+  #### Role Definition for ECS Task
+
+  FalcoTaskLoggingLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      RetentionInDays: 365
+    DeletionPolicy: Retain
+
+  FalcoTaskTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                !Join
+                  - ""
+                  - - ecs-tasks.
+                    - !Ref AWS::URLSuffix
+        Version: 2012-10-17
+
+  FalcoTaskTaskRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - ecr:GetAuthorizationToken
+            Effect: Allow
+            Resource: "*"
+        Version: 2012-10-17
+      PolicyName: FalcoTaskTaskRoleDefaultPolicy
+      Roles:
+        - !Ref FalcoTaskTaskRole
+
+  FalcoTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                Fn::Join:
+                  - ""
+                  - - ecs-tasks.
+                    - !Ref AWS::URLSuffix
+        Version: 2012-10-17
+
+  FalcoTaskExecutionRoleDefaultPolicy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Action:
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:BatchGetImage
+            Effect: Allow
+            Resource: "*"
+          - Action: ecr:GetAuthorizationToken
+            Effect: Allow
+            Resource: "*"
+          - Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Effect: Allow
+            Resource:
+              !GetAtt
+                - FalcoTaskLoggingLogGroup
+                - Arn
+        Version: 2012-10-17
+      PolicyName: FalcoTaskExecutionRoleDefaultPolicy
+      Roles:
+        - !Ref FalcoTaskExecutionRole
+
+  ### Sample App Task Definition
+  SampleAppTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+        - Environment: []
+          Name: sample_app
+          MountPoints: []
+          Image: !Sub
+            - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}
+            - { Repo: !Ref ECRRepository}
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref FalcoTaskLoggingLogGroup
+              awslogs-stream-prefix: SampleApp
+              awslogs-region:
+                Ref: AWS::Region
+          Cpu: 0
+          PortMappings:
+            - Protocol: tcp
+              ContainerPort: 8080
+              HostPort: 8080
+            - Protocol: tcp
+              ContainerPort: 5000
+              HostPort: 5000
+          Command:
+            - nc
+            - "-l"
+            - "-p"
+            - '8080'
+            - "-e"
+            - "/bin/sh"
+          Memory: 300
+          Privileged: false
+          Essential: true
+          VolumesFrom: []
+        - Environment: []
+          ReadonlyRootFilesystem: false
+          Name: falco
+          MountPoints:
+            - SourceVolume: docker_sock
+              ReadOnly: false
+              ContainerPath: "/host/var/run/docker.sock"
+            - SourceVolume: dev
+              ReadOnly: true
+              ContainerPath: "/host/dev"
+            - SourceVolume: boot
+              ReadOnly: true
+              ContainerPath: "/host/boot"
+            - SourceVolume: lib_modules
+              ReadOnly: true
+              ContainerPath: "/host/lib/modules"
+            - SourceVolume: usr
+              ReadOnly: true
+              ContainerPath: "/host/usr"
+            - SourceVolume: proc
+              ReadOnly: true
+              ContainerPath: "/host/proc"
+          Image: !Sub
+            - ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${Repo}
+            - { Repo: !Join [ ':', [ !Ref FalcoRepository, 'slack' ] ] }
+          Cpu: 0
+          PortMappings: []
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref FalcoTaskLoggingLogGroup
+              awslogs-stream-prefix: Falco
+              awslogs-region:
+                Ref: AWS::Region
+          Memory: 700
+          Privileged: true
+          Essential: true
+          VolumesFrom: []
+      ExecutionRoleArn: !GetAtt FalcoTaskExecutionRole.Arn
+      Family: SampleAppTask
+      NetworkMode: host
+      PlacementConstraints: []
+      RequiresCompatibilities: 
+        - EC2
+      TaskRoleArn: !GetAtt FalcoTaskTaskRole.Arn
+      Volumes: 
+        - Host: 
+            SourcePath: /var/run/docker.sock
+          Name: docker_sock
+        - Host: 
+            SourcePath: /dev
+          Name: dev
+        - Host: 
+            SourcePath: /boot
+          Name: boot
+        - Host: 
+            SourcePath: /lib/modules
+          Name: lib_modules
+        - Host: 
+            SourcePath: /usr
+          Name: usr
+        - Host: 
+            SourcePath: /proc
+          Name: proc
+
+  ### Sample App Service
+  SampleAppService:
+    Type: AWS::ECS::Service
+    Properties:
+      TaskDefinition: !Ref SampleAppTask
+      Cluster: !ImportValue ResourceStack:Cluster
+      DeploymentConfiguration:
+        MaximumPercent: 200
+        MinimumHealthyPercent: 0
+      DesiredCount: 1
+      LaunchType: EC2
+      PlacementStrategies:
+        - Field: attribute:ecs.availability-zone
+          Type: spread
+        - Field: instanceId
+          Type: spread
+      SchedulingStrategy: REPLICA
+
   ### Feedback Loop - Pull Request
   PREventRuleRole: 
     Type: AWS::IAM::Role
