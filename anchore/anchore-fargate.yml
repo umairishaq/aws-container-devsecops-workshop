@@ -361,7 +361,6 @@ Resources:
     Type: AWS::AutoScaling::LaunchConfiguration
     Properties:
       ImageId: !Ref LatestEcsAmiId
-      KeyName: mylab_us-east-2_keypair
       SecurityGroups: [!Ref 'EcsSecurityGroup']
       InstanceType: t2.small
       IamInstanceProfile: !Ref 'EC2InstanceProfile'
