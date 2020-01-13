@@ -2,7 +2,7 @@ FROM python:3.7-alpine
 
 LABEL maintainer="Sasquatch"
 
-RUN apk add --no-cache sqlite-libs=3.28.0-r1 git=2.22.0-r0
+RUN apk add --no-cache sqlite-libs=3.30.1-r1 git=2.24.1-r0
 
 COPY . /app
 

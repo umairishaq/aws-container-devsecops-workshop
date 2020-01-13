@@ -21,11 +21,12 @@ Now let’s customize our Falco image for our slack channel and push it onto ECR
 In your cloud 9 workspace, perform the following terminal commands:
 
 ```
-docker pull awscontainerdemos/falco:v1
+docker pull falcosecurity/falco
 sudo yum -y install kernel-devel-$(uname -r)
-docker run --name falco --privileged -v /var/run/docker.sock:/host/var/run/docker.sock -v /dev:/host/dev -v /proc:/host/proc:ro -v /boot:/host/boot:ro -v /lib/modules:/host/lib/modules:ro -v /usr:/host/usr:ro awscontainerdemos/falco:v1 & 
+docker run --name falco --privileged -v /var/run/docker.sock:/host/var/run/docker.sock -v /dev:/host/dev -v /proc:/host/proc:ro -v /boot:/host/boot:ro -v /lib/modules:/host/lib/modules:ro -v /usr:/host/usr:ro falcosecurity/falco & 
 sleep 10 && docker exec -it falco /bin/bash
  sed -i 's/XXX/YOUR_SLACK_WEBHOOK_SUFFIX/g' /etc/falco/falco.yaml
+ sed -i 's/json_output:[ ]false/json_output: true/g' /etc/falco/falco.yaml
  sed -ri '/./{H;$!d} ; x ; s/(program_output:\n[ ].enabled:[ ])false/\1true/' /etc/falco/falco.yaml 
 exit
 ```
