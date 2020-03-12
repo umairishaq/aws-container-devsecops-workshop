@@ -24,15 +24,15 @@ phases:
     - echo Copying secrets_config.json to the application directory
     - cp secrets_config.json $CODEBUILD_SRC_DIR_AppSource/secrets_config.json
     - echo Switching to the application directory
-    - echo Installing pip and truffleHog
-    - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py 
-    - python get-pip.py 
-    - pip install truffleHog
+    - echo Installing truffleHog
+    - which pip3 && pip3 --version
+    - which python3 && python3 --version
+    - pip3 install 'truffleHog>=2.1.0,<3.0'
   build:
     commands:
     - echo Build started on `date`
-    - echo Scanning with truffleHog...          
-    - trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL" 
+    - echo Scanning with truffleHog...
+    - trufflehog --regex --rules secrets_config.json --entropy=False "$APP_REPO_URL"
   post_build:
     commands:
     - echo Build completed on `date`
